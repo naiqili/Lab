@@ -117,7 +117,7 @@ class RNN(Model):
         cost = x_flatten[T.arange(y_flatten.shape[0]), \
                          y_flatten]
         neg_log_cost = -T.log(cost) * mask.flatten()
-        neg_log_cost_s = cost.reshape(neg_log_cost.shape)
+        neg_log_cost_s = neg_log_cost.reshape(y.shape)
         sum_neg_log_cost = T.sum(neg_log_cost_s, axis=0)
         s_row = T.sum(mask, axis=0)
         norm_cost = sum_neg_log_cost / s_row
