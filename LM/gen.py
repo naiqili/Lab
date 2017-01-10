@@ -103,7 +103,7 @@ def main(args):
     logger.debug("State:\n{}".format(pprint.pformat(state)))
     logger.debug("Timings:\n{}".format(pprint.pformat(timings)))
  
-    model = RNN(state)
+    model = GRU(state)
     rng = model.rng 
 
     if args.resume != "":
@@ -131,7 +131,7 @@ def main(args):
     print("Generating example...")
     example_sent = [[1]]
     model.genReset()
-    for k in range(300):
+    for k in range(30):
         nw = model.genNext()
         example_sent.append(nw)
         if nw == 0:
@@ -157,5 +157,5 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/main_model'
+    args.resume = 'model/GRU_model'
     main(args)
