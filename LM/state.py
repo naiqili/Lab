@@ -41,7 +41,7 @@ def prototype_state():
     state['lr'] = 0.0001
 
     # Early stopping configuration
-    state['patience'] = 5
+    state['patience'] = 5000
     state['cost_threshold'] = 1.003
 
      
