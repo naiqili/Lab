@@ -117,9 +117,8 @@ def main(args):
         if 'run_id' not in model.state:
             raise Exception('Backward compatibility not ensured! (need run_id in state)')           
 
-    else:
-        # assign new run_id key
-        model.state['run_id'] = 'GRU'
+
+    model.state['run_id'] = 'GRU_overtrain'
 
     logger.debug("Compile trainer")
     logger.debug("Training with exact log-likelihood")
@@ -254,6 +253,7 @@ def main(args):
                 pylab.title("Validation Cost")
                 pylab.plot(timings["valid_cost"])
                 pylab.savefig(model.state['save_dir'] + '/' + str(step) + '.png')
+                pylab.close()
             except:
                 pass
             
@@ -273,5 +273,5 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    #args.resume = 'model/main_model'
+    args.resume = 'model/GRU_model'
     main(args)

@@ -68,7 +68,7 @@ class GRU(Model):
         res = self.gen_ot.argmax()
         updates[self.genx] = res
         updates[self.genh] = h_t
-        return (res, updates)
+        return (self.gen_ot, updates)
 
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.worddim, self.embdim), name='W_emb'+self.name))

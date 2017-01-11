@@ -23,7 +23,7 @@ import math
 import matplotlib
 matplotlib.use('Agg')
 import pylab
-
+import numpy as np
 
 class Unbuffered:
     def __init__(self, stream):
@@ -39,6 +39,7 @@ class Unbuffered:
 sys.stdout = Unbuffered(sys.stdout)
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.FileHandler('./log/' + __name__))
+logging.basicConfig(level=logging.ERROR)
 
 ### Unique RUN_ID for this execution
 RUN_ID = str(time.time())
@@ -52,23 +53,7 @@ def init_timings():
         timings[m] = []
     return timings
 
-def save(model, timings):
-    print("Saving the model...")
-
-    # ignore keyboard interrupt while saving
-    start = time.time()
-    s = signal.signal(signal.SIGINT, signal.SIG_IGN)
-    
-    model.save(model.state['save_dir'] + '/' + model.state['run_id'] + "_" + model.state['prefix'] + 'model.npz')
-    cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + "_" + model.state['prefix'] + 'state.pkl', 'w'))
-    cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + "_" + model.state['prefix'] + 'timings.pkl', 'w'))
-    signal.signal(signal.SIGINT, s)
-    
-    print("Model saved, took {}".format(time.time() - start))
-
 def load(model, filename):
-    print("Loading the model...")
-
     # ignore keyboard interrupt while saving
     start = time.time()
     s = signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -78,14 +63,14 @@ def load(model, filename):
     print("Model loaded, took {}".format(time.time() - start))
 
 def main(args):     
-    logging.basicConfig(level = logging.DEBUG,
+    logging.basicConfig(level = logging.ERROR,
                         format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
      
     state = eval(args.prototype)() 
     timings = init_timings() 
     
     
-    if args.resume != "":
+    if True: #args.resume != "":
         logger.debug("Resuming %s" % args.resume)
         
         state_file = args.resume + '_state.pkl'
@@ -126,27 +111,31 @@ def main(args):
     train_cost = 0
     
     (word2ind, ind2word) = cPickle.load(open('tmp/dic.pkl'))
-     
-
-    print("Generating example...")
-    example_sent = [[1]]
-    model.genReset()
-    for k in range(30):
-        nw = model.genNext()
-        example_sent.append(nw)
-        if nw == 0:
-            break
-    gen_str = ' '.join(map(str, [ind2word[np.int(idx[0])] for idx in example_sent]))
-    print()
-    print(gen_str)
-    print()
-      
+         
+    for nexample in range(args.n):
+        example_sent = []
+        model.genReset()
+        for k in range(40):
+            nw = model.genNext()[0]
+            ind_list = nw.argsort()[-args.nbest:]
+            rnd_list = []
+            for ind in ind_list:
+                rnd_list.append((ind, nw[ind]))
+            sel_ind = random_select(rnd_list)
+            model.genx.set_value(np.asarray(sel_ind, dtype='int64'))
+            example_sent.append(sel_ind)
+            if sel_ind == 0:
+                break
+        gen_str = ' '.join(map(str, [ind2word[idx] for idx in example_sent]))
+        print("%s: %s" % (nexample, gen_str))
             
     logger.debug("All done, exiting...")
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", type=str, default="", help="Resume training from that state")
+    parser.add_argument("--n", type=int, default=10, help="Generate n examples")
+    parser.add_argument("--nbest", type=int, default=5, help="Each step randomly select from the n best hypothesises")
     parser.add_argument("--prototype", type=str, help="Use the prototype", default='prototype_state')
 
     args = parser.parse_args()
@@ -158,4 +147,5 @@ if __name__ == "__main__":
 
     args = parse_args()
     args.resume = 'model/GRU_model'
+    args.nbest=3
     main(args)
