@@ -63,7 +63,7 @@ class GRU(Model):
         h_tilde = self.activation(T.dot(x_t, self.W_in) + T.dot(r_t * h_tm1, self.W_hh) + self.b_hh)
         h_t = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
 
-        o_t = self.activation(T.dot(h_tm1, self.W_out) + self.b_out)
+        o_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
         self.gen_ot = SoftMax(o_t)
         res = self.gen_ot.argmax()
         updates[self.genx] = res

@@ -92,3 +92,4 @@ ENV/
 *.png
 *.py~
 *.sh~
+model/

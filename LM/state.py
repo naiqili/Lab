@@ -33,15 +33,15 @@ def prototype_state():
     # ----- SIZES ----
     state['prefix'] = 'model_'
     state['worddim'] = 700
-    state['embdim'] = 100
-    state['hdim'] = 256
+    state['embdim'] = 80
+    state['hdim'] = 100
 
     # Threshold to clip the gradient
     state['cutoff'] = 1.
     state['lr'] = 0.0001
 
     # Early stopping configuration
-    state['patience'] = 5000
+    state['patience'] = 10
     state['cost_threshold'] = 1.003
 
      
@@ -51,7 +51,7 @@ def prototype_state():
     # Maximum sequence length / trim batches
     state['seqlen'] = 280
     # Batch size
-    state['bs'] = 500
+    state['bs'] = 2000
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
@@ -62,7 +62,7 @@ def prototype_state():
     
     # ----- TRAINING PROCESS -----
     # Frequency of training error reports (in number of batches)
-    state['train_freq'] = 50
+    state['train_freq'] = 1
     # Validation frequency
     state['valid_freq'] = 100
     # Number of batches to process
