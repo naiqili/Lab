@@ -207,18 +207,3 @@ class GRU(Model):
         gen_fn = self.build_gen_function()
         res = gen_fn()
         return res
-
-    def genExample(self, max_len=30):
-        example_sent = []
-        model.genReset()
-        for k in range(max_len):
-            nw = model.genNext()[0]
-            rnd_list = []
-            for ind in range(nw):
-                rnd_list.append((ind, nw[ind]))
-            sel_ind = random_select(rnd_list)
-            model.genx.set_value(np.asarray(sel_ind, dtype='int64'))
-            example_sent.append(sel_ind)
-            if sel_ind == 0:
-                break
-        return example_sent

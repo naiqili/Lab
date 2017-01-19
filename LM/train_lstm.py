@@ -52,16 +52,16 @@ def init_timings():
         timings[m] = []
     return timings
 
-def save(model, timings):
+def save(model, timings, iters=''):
     print("Saving the model...")
 
     # ignore keyboard interrupt while saving
     start = time.time()
     s = signal.signal(signal.SIGINT, signal.SIG_IGN)
     
-    model.save(model.state['save_dir'] + '/' + model.state['run_id'] + "_" + model.state['prefix'] + 'model.npz')
-    cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + "_" + model.state['prefix'] + 'state.pkl', 'w'))
-    cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + "_" + model.state['prefix'] + 'timings.pkl', 'w'))
+    model.save(model.state['save_dir'] + '/' + model.state['run_id'] + iters + "_" + model.state['prefix'] + 'model.npz')
+    cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + iters + "_" + model.state['prefix'] + 'state.pkl', 'w'))
+    cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + iters + "_" + model.state['prefix'] + 'timings.pkl', 'w'))
     signal.signal(signal.SIGINT, s)
     
     print("Model saved, took {}".format(time.time() - start))
@@ -117,9 +117,8 @@ def main(args):
         if 'run_id' not in model.state:
             raise Exception('Backward compatibility not ensured! (need run_id in state)')           
 
-    else:
-        # assign new run_id key
-        model.state['run_id'] = 'GRU'
+
+    model.state['run_id'] = args.run_id
 
     logger.debug("Compile trainer")
     logger.debug("Training with exact log-likelihood")
@@ -161,7 +160,7 @@ def main(args):
             logger.debug("Got None...")
             break
         
-        logger.debug("[TRAIN] - Got batch %d" % (batch['x'].shape[1]))
+        # logger.debug("[TRAIN] - Got batch %d" % (batch['x'].shape[1]))
         
         x_data = batch['x']
         y_data = batch['y']
@@ -180,7 +179,7 @@ def main(args):
         
         this_time = time.time()
         
-        if step % state['train_freq'] == 0:
+        if True: # step % state['train_freq'] == 0:
             elapsed = this_time - start_time
             h, m, s = ConvertTimedelta(this_time - start_time)
             logger.debug(".. %.2d:%.2d:%.2d %4d mb # %d bs %d cost = %.4f" % (h, m, s,\
@@ -190,18 +189,18 @@ def main(args):
                                                                  float(c)))
         
         if valid_data is not None and step % state['valid_freq'] == 0 and step > 1:
-            print("Generating example...")
-            example_sent = [[1]]
+            logger.debug("Generating example...")
+            example_sent = [1]
             model.genReset()
             for k in range(20):
-                nw = model.genNext()
-                example_sent.append(nw)
-                if nw == 0:
+                nw = model.genNext()[0]
+                sel_ind = nw.argmax()
+                example_sent.append(sel_ind)
+                if sel_ind == 0:
                     break
-            gen_str = ' '.join(map(str, [ind2word[int(idx[0])] for idx in example_sent]))
-            print()
-            print(gen_str)
-            print()
+            gen_str = ' '.join(map(str, [ind2word[idx] for idx in example_sent]))
+            logger.debug(gen_str)
+
 
             valid_data.start()
 
@@ -227,13 +226,15 @@ def main(args):
                 
             valid_cost = numpy.mean(vcost_list)
 
+            logger.debug("[VALIDATION STEP]: %d" % step)
             logger.debug("[VALIDATION COST]: %.4f" % (valid_cost))
             logger.debug("[VALIDATION END]")
+
+            save(model, timings)
             
             if len(timings["valid_cost"]) == 0 or valid_cost < numpy.min(timings["valid_cost"]):
                 patience = state['patience']
-                # Saving model if decrease in validation cost
-                save(model, timings)
+                
             elif valid_cost >= timings["valid_cost"][-1] * state['cost_threshold']:
                 patience -= 1
 
@@ -254,6 +255,7 @@ def main(args):
                 pylab.title("Validation Cost")
                 pylab.plot(timings["valid_cost"])
                 pylab.savefig(model.state['save_dir'] + '/' + str(step) + '.png')
+                pylab.close()
             except:
                 pass
             
@@ -264,6 +266,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", type=str, default="", help="Resume training from that state")
     parser.add_argument("--prototype", type=str, help="Use the prototype", default='prototype_state')
+    parser.add_argument("--run_id", type=str, help="RUN_ID", default='main')
 
     args = parser.parse_args()
     return args
@@ -273,5 +276,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    #args.resume = 'model/main_model'
+    args.run_id = 'GRU_emb80_h100_'
+    #args.resume = 'model/GRU_overtrain_model'
     main(args)

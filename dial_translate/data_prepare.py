@@ -25,6 +25,12 @@ dev_data_full = []
 train_data_coded = []
 dev_data_coded = []
 
+
+acttype_len = 0
+for act in acttype:
+    acttype_len = acttype_len + max(1, acttype[act])
+logger.info("acttype full len: %d" % acttype_len)
+
 for (data, trans) in train_data:
     abstract_list = []
     natural_list = []
@@ -37,9 +43,10 @@ for (data, trans) in train_data:
         abstract_list = abstract_list + s
     natural_list = ['<START>'] + trans.split() + ['<END>']
     all_words = all_words + trans.split()
+    all_words = list(set(all_words))
     train_data_full.append((abstract_list, natural_list))
 
-logger.INFO("Train data size: %d", len(train_data))
+logger.info("Train data size: %d", len(train_data))
 
 for (data, trans) in dev_data:
     abstract_list = []
@@ -53,10 +60,10 @@ for (data, trans) in dev_data:
         abstract_list = abstract_list + s
     natural_list = ['<START>'] + trans.split() + ['<END>']
     all_words = all_words + trans.split()
-    logger.info((abstract_list, natural_list))
+    all_words = list(set(all_words))
     dev_data_full.append((abstract_list, natural_list))
 
-logger.INFO("Dev data size: %d", len(dev_data))
+logger.info("Dev data size: %d", len(dev_data))
 
 all_words = ['<END>', '<START>', '<YES>', '<NO>', '<NULL>'] + list(set(all_words))
 for (ind, w) in enumerate(all_words):
@@ -67,34 +74,32 @@ for (data, trans) in train_data_full:
     (data_coded, trans_coded) = ([word2ind[w] for w in data],
                                  [word2ind[w] for w in trans])
     train_data_coded.append((data_coded, trans_coded))
-    logger.info((data_coded, trans_coded))
 
 for (data, trans) in dev_data_full:
     (data_coded, trans_coded) = ([word2ind[w] for w in data],
                                  [word2ind[w] for w in trans])
     dev_data_coded.append((data_coded, trans_coded))
-    logger.info((data_coded, trans_coded))
 
-cPickle((word2ind, ind2word), open('tmp/dict.pkl', 'w'))
-cPickle(train_data_full, open('tmp/train_data_full.pkl', 'w'))
-cPickle(dev_data_full, open('tmp/dev_data_full.pkl', 'w'))
-cPickle(train_data_coded, open('tmp/train_data_coded.pkl', 'w'))
-cPickle(dev_data_coded, open('tmp/dev_data_coded.pkl', 'w'))
+cPickle.dump((word2ind, ind2word), open('tmp/dict.pkl', 'w'))
+cPickle.dump(train_data_full, open('tmp/train_data_full.pkl', 'w'))
+cPickle.dump(dev_data_full, open('tmp/dev_data_full.pkl', 'w'))
+cPickle.dump(train_data_coded, open('tmp/train_data_coded.pkl', 'w'))
+cPickle.dump(dev_data_coded, open('tmp/dev_data_coded.pkl', 'w'))
 
-logger.INFO('dict examples')
-for (k,v) in word2ind[:10] + ind2word[:10]:
-    logger.INFO((k,v))
-logger.INFO('train_data_full examples')
+logger.info('dict examples')
+for (k,v) in list(word2ind.items())[:10] + list(ind2word.items())[:10]:
+    logger.info((k,v))
+logger.info('train_data_full examples')
 for (data, trans) in train_data_full[:5]:
-    logger.INFO((data, trans))
-logger.INFO('dev_data_full examples')
+    logger.info((data, trans))
+logger.info('dev_data_full examples')
 for (data, trans) in dev_data_full[:5]:
-    logger.INFO((data, trans))
-logger.INFO('train_data_coded examples')
+    logger.info((data, trans))
+logger.info('train_data_coded examples')
 for (data, trans) in train_data_coded[:5]:
-    logger.INFO((data, trans))
-logger.INFO('dev_data_coded examples')
-for (data, trans) in dev_data_codedvv[:5]:
-    logger.INFO((data, trans))
+    logger.info((data, trans))
+logger.info('dev_data_coded examples')
+for (data, trans) in dev_data_coded[:5]:
+    logger.info((data, trans))
 
-logger.INFO('FINISH.')
+logger.info('FINISH.')

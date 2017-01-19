@@ -45,13 +45,14 @@ class EmbModel(Model):
 
         self.noise_vars = []
         for k in range(self.noise_cnt):
-            self.noise_vars.append(T.imatrix('noise_' + str(k)))
+            self.noise_vars.append(T.irow('noise_' + str(k)))
         self.natural_input = T.imatrix('natural_input')
         self.abstract_input = T.imatrix('abstract_input')
 
         self.cost = self.build_cost(self.natural_input,
                                     self.abstract_input,
                                     self.noise_vars)
+        self.updates = self.compute_updates(self.training_cost, self.params)
         
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.word_dim, self.emb_dim), name='W_emb'+self.name))
@@ -65,11 +66,27 @@ class EmbModel(Model):
             noise_embs.append(noise_emb)
         cost_nat_abs = T.sum( (nat_emb-abs_emb) ** 2 )
         cost_nat_noise = T.sum( [(nat_emb-noise_emb) ** 2 for noise_emb in noise_embs] )
-        cost = T.max(
+        cost = T.max(0, self.margin + cost_nat_abs - cost_nat_noise)
+        return cost
 
     def build_train_function(self):
+        if not hasattr(self, 'train_fn'):
+            self.train_fn = \
+                            theano.function(inputs=[self.abstract_input,
+                                                    self.natural_input] + self.noise_vars,
+                                            outputs=self.cost,
+                                            updates=self.updates,
+                                            name="train_fn")
+        return self.train_fn
 
     def build_eval_function(self):
+        if not hasattr(self, 'eval_fn'):
+            self.eval_fn = \
+                           theano.function(inputs=[self.abstract_input,
+                                                    self.natural_input] + self.noise_vars,
+                                           outputs=[self.cost],
+                                           name="eval_fn")
+            return self.eval_fn
 
     def compute_updates(self, training_cost, params):
         updates = []

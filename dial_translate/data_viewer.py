@@ -84,7 +84,7 @@ for (abstract, trans) in user_train:
     train_data.append((data, trans))
                 
 dev_data = []
-for (abstract, trans) in user_train:
+for (abstract, trans) in user_dev:
     data = {}
     for act_type in uni_act_type:
         data[act_type] = '<NO>'

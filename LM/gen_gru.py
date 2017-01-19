@@ -113,19 +113,7 @@ def main(args):
     (word2ind, ind2word) = cPickle.load(open('tmp/dic.pkl'))
          
     for nexample in range(args.n):
-        example_sent = []
-        model.genReset()
-        for k in range(40):
-            nw = model.genNext()[0]
-            ind_list = nw.argsort()[-args.nbest:]
-            rnd_list = []
-            for ind in ind_list:
-                rnd_list.append((ind, nw[ind]))
-            sel_ind = random_select(rnd_list)
-            model.genx.set_value(np.asarray(sel_ind, dtype='int64'))
-            example_sent.append(sel_ind)
-            if sel_ind == 0:
-                break
+        example_sent = model.genExample(args.max_len)
         gen_str = ' '.join(map(str, [ind2word[idx] for idx in example_sent]))
         print("%s: %s" % (nexample, gen_str))
             
@@ -135,7 +123,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", type=str, default="", help="Resume training from that state")
     parser.add_argument("--n", type=int, default=10, help="Generate n examples")
-    parser.add_argument("--nbest", type=int, default=5, help="Each step randomly select from the n best hypothesises")
+    parser.add_argument("--maxlen", type=int, default=5, help="Maximum length of the generated sentence")
     parser.add_argument("--prototype", type=str, help="Use the prototype", default='prototype_state')
 
     args = parser.parse_args()

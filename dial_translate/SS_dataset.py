@@ -41,16 +41,23 @@ class SSFetcher(threading.Thread):
                         offset = 0
 
                 index = self.indexes[offset]
-                s = diter.data[index]
-                s = map(int, s.split())
+                (_abs, _nat) = diter.data[index]
+
+                
                 offset += 1
 
-                # Append only if it is shorter than max_len
-                if diter.max_len == -1 or len(s) <= diter.max_len:
-                    data_x_y.append(s)
+                data_x_y.append((_abs, _nat))
 
+            # random noise
+            noise_data = [] # abstract noise
+            noise_ind = range(len(diter.data))
+            self.rng.shuffle(noise_ind)
+            for nk in range(diter.state['noise_cnt']):
+                noise_data.append(diter.data[noise_ind[nk]][0])
+
+                
             if len(data_x_y):
-                diter.queue.put(data_x_y)
+                diter.queue.put((data_x_y, noise_data))
 
             if last_batch:
                 diter.queue.put(None)
@@ -75,19 +82,7 @@ class SSIterator(object):
         self.exit_flag = False
 
     def load_files(self):
-        self.data = []
-        load_cnt = 0
-        print("SSFetch loading data ...")
-        with open(self.data_file) as f_in:
-            while True:
-                l1 = f_in.readline()
-                if l1 == "":
-                    break
-                self.data.append(l1)
-                load_cnt = load_cnt + 1
-                if load_cnt % 100 == 0:
-                    print(load_cnt, "loaded ...")
-
+        self.data = cPickle.load(open(self.data_file))
         self.data_len = len(self.data)
         logger.debug('Data len is %d' % self.data_len)
 

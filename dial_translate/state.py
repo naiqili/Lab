@@ -3,39 +3,28 @@ from collections import OrderedDict
 def prototype_state():
     state = {}
 
-    state['train_file'] = 'tmp/train_data.txt'
-    state['valid_file'] = 'tmp/dev_data.txt'
+    state['train_file'] = 'tmp/train_data_coded.pkl'
+    state['valid_file'] = 'tmp/dev_data_coded.pkl'
 
-    state['triple_step_type'] = 'gated'
-    state['output_dim'] = 5
     # Random seed
     state['seed'] = 1234
     
     # Logging level
-    state['level'] = 'DEBUG'
-
-    state['oov'] = '<oov>' # Not used
-    
-    # These are end-of-sequence marks
-    state['end_sym_system'] = '</s>'
-    state['end_sym_turn'] = '</t>'
-    
     state['eos_sym'] = 0	# end of system action
 
     # ----- ACTIV ---- 
     state['activation'] = 'lambda x: T.tanh(x)'
     
-    state['decoder_bias_type'] = 'all' # first, or selective 
-
-    state['sent_step_type'] = 'gated'
-    # state['triple_step_type'] = 'gated' 
-
     # ----- SIZES ----
     state['prefix'] = 'model_'
-    state['worddim'] = 700
-    state['embdim'] = 100
-    state['hdim'] = 256
+    state['word_dim'] = 700
+    state['emb_dim'] = 100
+    state['h_dim'] = 256
 
+    state['margin'] = 50
+    state['noise_cnt'] = 50
+    state['acttype_cnt'] = 35
+    
     # Threshold to clip the gradient
     state['cutoff'] = 1.
     state['lr'] = 0.0001

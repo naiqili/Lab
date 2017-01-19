@@ -20,22 +20,27 @@ def create_padded_batch(state, x):
     mx = state['seqlen']
     n = state['bs']
     
-    X = numpy.zeros((mx, n), dtype='int32')
-    Y = numpy.zeros((mx, n), dtype='int32')
-    
-    for idx in xrange(len(x[0])):
+    Nat = numpy.zeros((mx, n), dtype='int32')
+    Abs = numpy.zeros((n, state['acttype_cnt']), dtype='int32')
+    NoiseRows = []
+
+    dataxy, _noises = x[0]
+    for idx in xrange(len(dataxy)):
         # Insert sequence idx in a column of matrix X
-        sent_length = len(x[0][idx]) 
+        (_abs, _nat) = dataxy[idx]
+        
+        sent_length = len(_nat)
 
-        # Fiddle-it if it is too long ..
-        if mx < sent_length: 
-            continue
+        Nat[:sent_length, idx] = _nat[:sent_length]
+        Abs[idx, :len(_abs)] = _abs
 
-        X[:sent_length-1, idx] = x[0][idx][:sent_length-1]
-        Y[:sent_length-1, idx] = x[0][idx][1:sent_length]
+    for noise in _noises:
+        noiserow = numpy.asarray([noise], dtype='int32')
+        NoiseRows.append(noiserow)
     
-    return {'x': X,                                                 \
-            'y': Y
+    return {'Nat': Nat,                                                 \
+            'Abs': Abs,
+            'NoiseRows': NoiseRows
            }
 
 class Iterator(SSIterator):
@@ -136,15 +141,20 @@ def get_test_iterator(state):
 if __name__=='__main__':
     numpy.set_printoptions(threshold='nan')
     state = {}
-    state = {'bs': 7, 'seed': 1234, 'seqlen': 30, 'output_dim': 5}
-    state['train_file'] = './tmp/train_data.txt'
-    state['dev_file'] = './tmp/dev_data.txt'
+    state = {'bs': 5, 'seed': 1234, 'acttype_cnt': 35, 'seqlen': 30, 'output_dim': 5, 'noise_cnt': 5}
+    state['train_file'] = './tmp/train_data_coded.pkl'
+    state['dev_file'] = './tmp/dev_data_coded.pkl'
     train_data = Iterator(state['train_file'],
                           int(state['bs']),
                           state=state,
                           use_infinite_loop=True)
     train_data.start()
 
-    for i in xrange(1):
+    for i in xrange(2):
         batch = train_data.next()
-        print(batch)
+        print batch['Abs']
+        print
+        print batch['Nat']
+        print
+        print len(batch['NoiseRows'])
+        print batch['NoiseRows']
