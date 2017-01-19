@@ -92,5 +92,6 @@ ENV/
 *.png
 *.py~
 *.sh~
+*.out
 model/
 tmp/
