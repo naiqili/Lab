@@ -93,3 +93,4 @@ ENV/
 *.py~
 *.sh~
 model/
+tmp/
