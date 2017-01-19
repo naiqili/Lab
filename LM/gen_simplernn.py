@@ -116,7 +116,7 @@ def main(args):
         example_sent = []
         model.genReset()
         for k in range(40):
-            nw = model.genNext()[0]
+            nw = model.genNext()[0][0]
             ind_list = nw.argsort()[-args.nbest:]
             rnd_list = []
             for ind in ind_list:
@@ -146,6 +146,5 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/GRU_emb80_h100__model'
-    args.nbest=3
+    args.resume = 'model/SimpleRNN_100_model'
     main(args)

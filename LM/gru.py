@@ -210,14 +210,14 @@ class GRU(Model):
 
     def genExample(self, max_len=30):
         example_sent = []
-        model.genReset()
+        self.genReset()
         for k in range(max_len):
-            nw = model.genNext()[0]
+            nw = self.genNext()[0]
             rnd_list = []
-            for ind in range(nw):
+            for ind in range(len(nw)):
                 rnd_list.append((ind, nw[ind]))
             sel_ind = random_select(rnd_list)
-            model.genx.set_value(np.asarray(sel_ind, dtype='int64'))
+            self.genx.set_value(np.asarray(sel_ind, dtype='int64'))
             example_sent.append(sel_ind)
             if sel_ind == 0:
                 break

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import theano
 import theano.tensor as T
 import numpy as np
@@ -47,6 +45,28 @@ class SimpleRNN(Model):
         self.training_cost = self.build_cost(self.ot, self.y_data, training_mask)
         self.updates = self.compute_updates(self.training_cost, self.params)
         self.y_pred = self.ot.argmax(axis=2) # See lab/argmax_test.py
+
+        self.genReset()
+        (self.gen_pred, self.gen_updates) = self.build_gen_pred()
+        
+    def build_gen_pred(self):
+        updates = collections.OrderedDict()
+        x_t = self.genx
+        x_t = self.approx_embedder(x_t).dimshuffle('x', 0)
+        h_tm1 = self.genh.dimshuffle('x', 0)
+
+        xx_t = T.concatenate([x_t, h_tm1], axis=1)
+        h_t = self.activation(T.dot(xx_t, self.W) + self.b)
+        # return both reset state and non-reset state
+        y_t = T.dot(h_t, self.W_out) + self.b_out
+        o_t = SoftMax(y_t)
+        
+        self.gen_ot = o_t
+        res = self.gen_ot.argmax()
+        updates[self.genx] = res
+        updates[self.genh] = h_t[0]
+        return (self.gen_ot, updates)
+
         
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.worddim, self.embdim), name='W_emb'+self.name))
@@ -62,7 +82,7 @@ class SimpleRNN(Model):
         if m_t.ndim >= 1:
             m_t = m_t.dimshuffle(0, 'x')
 
-        xx_t = T.concatenate(x_t, h_tm1)
+        xx_t = T.concatenate([x_t, h_tm1], axis=1)
         h_t_tmp = self.activation(T.dot(xx_t, self.W) + self.b)
         h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
         # return both reset state and non-reset state
@@ -70,10 +90,10 @@ class SimpleRNN(Model):
         o_t = SoftMax(y_t)
         return [h_t, o_t]
 
-    def bulid_hidden_states(self, x):
+    def build_output(self, x):
         batch_size = x.shape[1]
         h_0 = T.alloc(np.float32(0), batch_size, self.hdim)
-        o_enc_info = [h_0]
+        o_enc_info = [h_0, None]
         xe = self.approx_embedder(x)
         xmask = T.neq(x, self.eos_sym)
         f_enc = self.simplernn_step
@@ -160,7 +180,7 @@ class SimpleRNN(Model):
         return updates
 
     def genReset(self):
-        self.genh =  theano.shared(np.zeros((self.hdim,), dtype='float32'), name='h_gen')
+        self.genh =  theano.shared(np.zeros((self.hdim, ), dtype='float32'), name='h_gen')
         self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
         
     def genNext(self):

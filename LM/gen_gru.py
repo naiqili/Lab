@@ -113,7 +113,7 @@ def main(args):
     (word2ind, ind2word) = cPickle.load(open('tmp/dic.pkl'))
          
     for nexample in range(args.n):
-        example_sent = model.genExample(args.max_len)
+        example_sent = model.genExample(args.maxlen)
         gen_str = ' '.join(map(str, [ind2word[idx] for idx in example_sent]))
         print("%s: %s" % (nexample, gen_str))
             

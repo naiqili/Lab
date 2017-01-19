@@ -254,7 +254,7 @@ def main(args):
                 pylab.subplot(2,1,2)
                 pylab.title("Validation Cost")
                 pylab.plot(timings["valid_cost"])
-                pylab.savefig(model.state['save_dir'] + '/' + str(step) + '.png')
+                pylab.savefig(model.state['save_dir'] + '/' + args.run_id + '.png')
                 pylab.close()
             except:
                 pass
@@ -276,6 +276,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'GRU_emb80_h100_'
+    args.run_id = 'GRU_emb20_h20_'
     #args.resume = 'model/GRU_overtrain_model'
     main(args)
