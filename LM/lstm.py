@@ -26,7 +26,7 @@ def add_to_params(params, new_param):
     params.append(new_param)
     return new_param
     
-class GRU(Model):
+class LSTM(Model):
     def __init__(self, state):
         Model.__init__(self)
         self.rng = numpy.random.RandomState(state['seed'])
@@ -41,8 +41,7 @@ class GRU(Model):
         self.x_data = T.imatrix('x_data')
         self.y_data = T.imatrix('y_data')
         
-        self.hs = self.bulid_hidden_states(self.x_data)
-        self.ot = self.build_output(self.hs)
+        [self.hs, self.ot] = self.build_output(self.hs)
         
         training_mask = T.neq(self.x_data, self.eos_sym)
         self.training_cost = self.build_cost(self.ot, self.y_data, training_mask)
@@ -72,18 +71,25 @@ class GRU(Model):
 
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.worddim, self.embdim), name='W_emb'+self.name))
-        self.W_in = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_in'+self.name))
-        self.W_hh = add_to_params(self.params, theano.shared(value=OrthogonalInit(self.rng, self.hdim, self.hdim), name='W_hh'+self.name))
-        self.b_hh = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_hh'+self.name))
+
         self.W_out = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.hdim, self.worddim), name='W_out'+self.name))
         self.b_out = add_to_params(self.params, theano.shared(value=np.zeros((self.worddim,), dtype='float32'), name='b_out'+self.name))
         
-        self.W_in_r = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_in_r'+self.name))
-        self.W_in_z = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_in_z'+self.name))
-        self.W_hh_r = add_to_params(self.params, theano.shared(value=OrthogonalInit(self.rng, self.hdim, self.hdim), name='W_hh_r'+self.name))
-        self.W_hh_z = add_to_params(self.params, theano.shared(value=OrthogonalInit(self.rng, self.hdim, self.hdim), name='W_hh_z'+self.name))
-        self.b_z = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_z'+self.name))
-        self.b_r = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_r'+self.name))
+        self.U_i = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_i'+self.name))
+        self.W_i = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_i'+self.name))
+        self.b_i = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_i'+self.name))
+
+        self.U_f = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_f'+self.name))
+        self.W_f = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_f'+self.name))
+        self.b_f = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_f'+self.name))
+
+        self.U_o = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_o'+self.name))
+        self.W_o = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_o'+self.name))
+        self.b_o = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_o'+self.name))
+
+        self.U_g = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_g'+self.name))
+        self.W_g = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_g'+self.name))
+        self.b_g = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_g'+self.name))
         
     def approx_embedder(self, x):
         return self.W_emb[x]
@@ -97,31 +103,22 @@ class GRU(Model):
         h_tilde = self.activation(T.dot(x_t, self.W_in) + T.dot(r_t * h_tm1, self.W_hh) + self.b_hh)
         h_t_tmp = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
         h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
-        # return both reset state and non-reset state
-        return h_t
 
-    def bulid_hidden_states(self, x):
+        o_t = self.activation(T.dot(hs, self.W_out) + self.b_out)
+        o_t = SoftMax(o_t)
+        return [h_t, o_t]
+
+    def bulid_output(self, x):
         batch_size = x.shape[1]
         h_0 = T.alloc(np.float32(0), batch_size, self.hdim)
         o_enc_info = [h_0]
         xe = self.approx_embedder(x)
         xmask = T.neq(x, self.eos_sym)
         f_enc = self.gated_step
-        _res, _ = theano.scan(f_enc,
-                              sequences=[xe, xmask],\
-                              outputs_info=o_enc_info)
-        return _res
-        
-    def simple_step(self, hs):
-        o_t = self.activation(T.dot(hs, self.W_out) + self.b_out)
-        o_t = SoftMax(o_t)
-        return o_t
-        
-    def build_output(self, hs):
-         _res, _ = theano.scan(self.simple_step, \
-                                  sequences=[hs])
-         return _res
-        
+        [h_t, o_t], _ = theano.scan(f_enc, \
+                                    sequences=[hs, None])
+        return [h_t, o_t]        
+
     def build_cost(self, ot, y, mask):
         x_flatten = ot.dimshuffle(2,0,1)
         x_flatten = x_flatten.flatten(2).dimshuffle(1, 0)
@@ -207,3 +204,18 @@ class GRU(Model):
         gen_fn = self.build_gen_function()
         res = gen_fn()
         return res
+
+    def genExample(self, max_len=30):
+        example_sent = []
+        self.genReset()
+        for k in range(max_len):
+            nw = self.genNext()[0]
+            rnd_list = []
+            for ind in range(len(nw)):
+                rnd_list.append((ind, nw[ind]))
+            sel_ind = random_select(rnd_list)
+            self.genx.set_value(np.asarray(sel_ind, dtype='int64'))
+            example_sent.append(sel_ind)
+            if sel_ind == 0:
+                break
+        return example_sent

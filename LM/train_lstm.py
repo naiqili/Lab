@@ -190,15 +190,14 @@ def main(args):
         
         if valid_data is not None and step % state['valid_freq'] == 0 and step > 1:
             logger.debug("Generating example...")
-            example_sent = [1]
-            model.genReset()
-            for k in range(20):
-                nw = model.genNext()[0]
-                sel_ind = nw.argmax()
-                example_sent.append(sel_ind)
-                if sel_ind == 0:
-                    break
-            gen_str = ' '.join(map(str, [ind2word[idx] for idx in example_sent]))
+            example_sent = [1] + model.genExample()
+            tran_sent =[]
+            for ind in example_sent:
+                if ind in ind2word:
+                    tran_sent.append(ind2word[ind])
+                else:
+                    tran_sent.append('<OOV>')
+            gen_str = ' '.join(tran_sent)
             logger.debug(gen_str)
 
 
@@ -254,7 +253,7 @@ def main(args):
                 pylab.subplot(2,1,2)
                 pylab.title("Validation Cost")
                 pylab.plot(timings["valid_cost"])
-                pylab.savefig(model.state['save_dir'] + '/' + str(step) + '.png')
+                pylab.savefig(model.state['save_dir'] + '/' + args.run_id + '.png')
                 pylab.close()
             except:
                 pass
@@ -276,6 +275,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'GRU_emb80_h100_'
+    args.run_id = 'GRU_emb20_h20_'
+    args.prototype = 'gru_state'
     #args.resume = 'model/GRU_overtrain_model'
     main(args)
