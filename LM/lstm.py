@@ -112,7 +112,7 @@ class LSTM(Model):
         h_t_tmp = self.activation(c_t) * o_t
         h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
 
-        op_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
+        op_t = T.dot(h_t, self.W_out) + self.b_out
         op_t = SoftMax(op_t)
         return [h_t, c_t, op_t]
 
