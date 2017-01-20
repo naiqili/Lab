@@ -275,7 +275,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'GRU_emb20_h20_'
+    args.run_id = 'GRU_emb20_h20'
     args.prototype = 'gru_state'
-    #args.resume = 'model/GRU_overtrain_model'
+#    args.resume = 'model/GRU_emb20_h20__model'
     main(args)

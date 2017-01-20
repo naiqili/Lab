@@ -41,7 +41,7 @@ class LSTM(Model):
         self.x_data = T.imatrix('x_data')
         self.y_data = T.imatrix('y_data')
         
-        [self.hs, self.ot] = self.build_output(self.hs)
+        [self.hs, self.ot] = self.build_output(self.x_data)
         
         training_mask = T.neq(self.x_data, self.eos_sym)
         self.training_cost = self.build_cost(self.ot, self.y_data, training_mask)
@@ -63,8 +63,7 @@ class LSTM(Model):
         o_t = T.nnet.sigmoid(T.dot(x_t, self.U_o) + T.dot(h_tm1, self.W_o) + self.b_o)
         g_t = self.activation(T.dot(x_t, self.U_g) + T.dot(h_tm1, self. W_g) + self.b_g)
         c_t = c_tm1 * f_t + g_t * i_t
-        h_t_tmp = self.activation(c_t) * o_t
-        h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
+        h_t = self.activation(c_t) * o_t
 
         op_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
         op_t = SoftMax(op_t)
@@ -117,14 +116,14 @@ class LSTM(Model):
         op_t = SoftMax(op_t)
         return [h_t, c_t, op_t]
 
-    def bulid_output(self, x):
+    def build_output(self, x):
         batch_size = x.shape[1]
         h_0 = T.alloc(np.float32(0), batch_size, self.hdim)
         c_0 = T.alloc(np.float32(0), batch_size, self.hdim)
         xe = self.approx_embedder(x)
         xmask = T.neq(x, self.eos_sym)
         f_enc = self.gated_step
-        [h_t, o_t], _ = theano.scan(f_enc, \
+        [h_t, c_t, o_t], _ = theano.scan(f_enc, \
                                     sequences=[xe, xmask], \
                                     outputs_info=[h_0, c_0, None])
         return [h_t, o_t]        

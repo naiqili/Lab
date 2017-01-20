@@ -32,7 +32,7 @@ class GRU(Model):
         self.rng = numpy.random.RandomState(state['seed'])
         self.state = state
         self.__dict__.update(state)
-        self.name = 'RNN'
+        self.name = 'GRU'
         self.activation = eval(self.activation)
         self.params = []
         self.global_params = []
@@ -87,7 +87,7 @@ class GRU(Model):
     def approx_embedder(self, x):
         return self.W_emb[x]
 
-    def gated_step(self, x_t, m_t, h_tm1):
+    def gated_step(self, x_t, m_t, h_tm1, *args):
         if m_t.ndim >= 1:
             m_t = m_t.dimshuffle(0, 'x')
         
@@ -97,19 +97,20 @@ class GRU(Model):
         h_t_tmp = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
         h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
 
-        o_t = self.activation(T.dot(hs, self.W_out) + self.b_out)
+        o_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
         o_t = SoftMax(o_t)
         return [h_t, o_t]
 
-    def bulid_output(self, x):
+    def build_output(self, x):
         batch_size = x.shape[1]
         h_0 = T.alloc(np.float32(0), batch_size, self.hdim)
         o_enc_info = [h_0]
         xe = self.approx_embedder(x)
         xmask = T.neq(x, self.eos_sym)
         f_enc = self.gated_step
-        [h_t, o_t], _ = theano.scan(self.f_enc, \
-                                    sequences=[hs, None])
+        [h_t, o_t], _ = theano.scan(f_enc, \
+                                    sequences=[xe, xmask], \
+                                    outputs_info=[h_0, None])
         return [h_t, o_t]        
 
     def build_cost(self, ot, y, mask):
