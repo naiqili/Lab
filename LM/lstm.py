@@ -32,7 +32,7 @@ class LSTM(Model):
         self.rng = numpy.random.RandomState(state['seed'])
         self.state = state
         self.__dict__.update(state)
-        self.name = 'RNN'
+        self.name = 'LSTM'
         self.activation = eval(self.activation)
         self.params = []
         self.global_params = []
@@ -56,17 +56,24 @@ class LSTM(Model):
         x_t = self.genx
         x_t = self.approx_embedder(x_t)
         h_tm1 = self.genh
-        
-        r_t = T.nnet.sigmoid(T.dot(x_t, self.W_in_r) + T.dot(h_tm1, self.W_hh_r) + self.b_r)
-        z_t = T.nnet.sigmoid(T.dot(x_t, self.W_in_z) + T.dot(h_tm1, self.W_hh_z) + self.b_z)
-        h_tilde = self.activation(T.dot(x_t, self.W_in) + T.dot(r_t * h_tm1, self.W_hh) + self.b_hh)
-        h_t = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
+        c_tm1 = self.genc
 
-        o_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
-        self.gen_ot = SoftMax(o_t)
+        i_t = T.nnet.sigmoid(T.dot(x_t, self.U_i) + T.dot(h_tm1, self.W_i) + self.b_i)
+        f_t = T.nnet.sigmoid(T.dot(x_t, self.U_f) + T.dot(h_tm1, self.W_f) + self.b_f)
+        o_t = T.nnet.sigmoid(T.dot(x_t, self.U_o) + T.dot(h_tm1, self.W_o) + self.b_o)
+        g_t = self.activation(T.dot(x_t, self.U_g) + T.dot(h_tm1, self. W_g) + self.b_g)
+        c_t = c_tm1 * f_t + g_t * i_t
+        h_t_tmp = self.activation(c_t) * o_t
+        h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
+
+        op_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
+        op_t = SoftMax(op_t)
+
+        self.gen_ot = op_t
         res = self.gen_ot.argmax()
-        updates[self.genx] = res
+
         updates[self.genh] = h_t
+        updates[self.genc] = c_t
         return (self.gen_ot, updates)
 
     def init_params(self):
@@ -94,29 +101,32 @@ class LSTM(Model):
     def approx_embedder(self, x):
         return self.W_emb[x]
 
-    def gated_step(self, x_t, m_t, h_tm1):
+    def gated_step(self, x_t, m_t, h_tm1, c_tm1, *args):
         if m_t.ndim >= 1:
             m_t = m_t.dimshuffle(0, 'x')
         
-        r_t = T.nnet.sigmoid(T.dot(x_t, self.W_in_r) + T.dot(h_tm1, self.W_hh_r) + self.b_r)
-        z_t = T.nnet.sigmoid(T.dot(x_t, self.W_in_z) + T.dot(h_tm1, self.W_hh_z) + self.b_z)
-        h_tilde = self.activation(T.dot(x_t, self.W_in) + T.dot(r_t * h_tm1, self.W_hh) + self.b_hh)
-        h_t_tmp = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
+        i_t = T.nnet.sigmoid(T.dot(x_t, self.U_i) + T.dot(h_tm1, self.W_i) + self.b_i)
+        f_t = T.nnet.sigmoid(T.dot(x_t, self.U_f) + T.dot(h_tm1, self.W_f) + self.b_f)
+        o_t = T.nnet.sigmoid(T.dot(x_t, self.U_o) + T.dot(h_tm1, self.W_o) + self.b_o)
+        g_t = self.activation(T.dot(x_t, self.U_g) + T.dot(h_tm1, self. W_g) + self.b_g)
+        c_t = c_tm1 * f_t + g_t * i_t
+        h_t_tmp = self.activation(c_t) * o_t
         h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
 
-        o_t = self.activation(T.dot(hs, self.W_out) + self.b_out)
-        o_t = SoftMax(o_t)
-        return [h_t, o_t]
+        op_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
+        op_t = SoftMax(op_t)
+        return [h_t, c_t, op_t]
 
     def bulid_output(self, x):
         batch_size = x.shape[1]
         h_0 = T.alloc(np.float32(0), batch_size, self.hdim)
-        o_enc_info = [h_0]
+        c_0 = T.alloc(np.float32(0), batch_size, self.hdim)
         xe = self.approx_embedder(x)
         xmask = T.neq(x, self.eos_sym)
         f_enc = self.gated_step
         [h_t, o_t], _ = theano.scan(f_enc, \
-                                    sequences=[hs, None])
+                                    sequences=[xe, xmask], \
+                                    outputs_info=[h_0, c_0, None])
         return [h_t, o_t]        
 
     def build_cost(self, ot, y, mask):
@@ -197,7 +207,8 @@ class LSTM(Model):
         return updates
 
     def genReset(self):
-        self.genh =  theano.shared(np.zeros((self.hdim,), dtype='float32'), name='h_gen')
+        self.genh = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='h_gen')
+        self.genc = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='c_gen')
         self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
         
     def genNext(self):
