@@ -3,7 +3,7 @@
 
 from data_iterator import *
 from state import *
-from gru import *
+from lstm import *
 from utils import *
 
 import time
@@ -103,7 +103,7 @@ def main(args):
     logger.debug("State:\n{}".format(pprint.pformat(state)))
     logger.debug("Timings:\n{}".format(pprint.pformat(timings)))
  
-    model = GRU(state)
+    model = LSTM(state)
     rng = model.rng 
 
     if args.resume != "":
