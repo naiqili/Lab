@@ -28,7 +28,6 @@ def add_to_params(params, new_param):
     
 class AbstractEncoder():
     def __init__(self, state, rng, emb):
-        Model.__init__(self)
         self.rng = rng
         self.state = state
         self.__dict__.update(state)
@@ -40,7 +39,7 @@ class AbstractEncoder():
     def init_params(self, emb):
         #self.W_abs_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.word_dim, self.abs_emb_dim), name='W_abs_emb'+self.name))
         self.W_emb = emb
-        self.W = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.abs_emb_dim * self.acttype_cnt, self.h_dim), name='W'+self.name))
+        self.W = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.emb_dim * self.acttype_cnt, self.h_dim), name='W'+self.name))
         self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='b'+self.name))
         
     def approx_embedder(self, x):

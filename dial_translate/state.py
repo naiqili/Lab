@@ -53,7 +53,7 @@ def prototype_state():
     # Frequency of training error reports (in number of batches)
     state['train_freq'] = 50
     # Validation frequency
-    state['valid_freq'] = 100
+    state['valid_freq'] = 1
     # Number of batches to process
     state['loop_iters'] = 3000000
     # Maximum number of minutes to run
