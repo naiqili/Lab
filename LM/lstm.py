@@ -65,7 +65,7 @@ class LSTM(Model):
         c_t = c_tm1 * f_t + g_t * i_t
         h_t = self.activation(c_t) * o_t
 
-        op_t = self.activation(T.dot(h_t, self.W_out) + self.b_out)
+        op_t = T.dot(h_t, self.W_out) + self.b_out
         op_t = SoftMax(op_t)
 
         self.gen_ot = op_t

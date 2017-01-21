@@ -183,7 +183,7 @@ def lstm_state():
     state['prefix'] = 'model_'
     state['worddim'] = 700
     state['embdim'] = 50
-    state['hdim'] = 50
+    state['hdim'] = 300
 
     # Threshold to clip the gradient
     state['cutoff'] = 1.

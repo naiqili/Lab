@@ -59,23 +59,15 @@ def save(model, timings, iters=''):
     start = time.time()
     s = signal.signal(signal.SIGINT, signal.SIG_IGN)
     
-    model.save(model.state['save_dir'] + '/' + model.state['run_id'] + iters + "_" + model.state['prefix'] + 'model.npz')
-    cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + iters + "_" + model.state['prefix'] + 'state.pkl', 'w'))
-    cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + iters + "_" + model.state['prefix'] + 'timings.pkl', 'w'))
+    model.abstract_encoder.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_abstract_model.npz')
+    model.natural_encoder.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_natural_model.npz')
+    vals = dict([(model.W_emb.name, model.W_emb.get_value())])
+    numpy.savez(model.state['save_dir'] + '/' + 'word_emb', **vals)
+    cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_state.pkl', 'w'))
+    cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_timings.pkl', 'w'))
     signal.signal(signal.SIGINT, s)
     
     print("Model saved, took {}".format(time.time() - start))
-
-def load(model, filename):
-    print("Loading the model...")
-
-    # ignore keyboard interrupt while saving
-    start = time.time()
-    s = signal.signal(signal.SIGINT, signal.SIG_IGN)
-    model.load(filename)
-    signal.signal(signal.SIGINT, s)
-
-    print("Model loaded, took {}".format(time.time() - start))
 
 def main(args):     
     logging.basicConfig(level = logging.DEBUG,

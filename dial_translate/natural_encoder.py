@@ -26,8 +26,9 @@ def add_to_params(params, new_param):
     params.append(new_param)
     return new_param
     
-class NaturalEncoder():
+class NaturalEncoder(Model):
     def __init__(self, state, rng, emb):
+        Model.__init__(self)
         self.rng = rng
         self.state = state
         self.__dict__.update(state)
