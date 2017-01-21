@@ -82,19 +82,19 @@ class LSTM(Model):
         self.b_out = add_to_params(self.params, theano.shared(value=np.zeros((self.worddim,), dtype='float32'), name='b_out'+self.name))
         
         self.U_i = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_i'+self.name))
-        self.W_i = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_i'+self.name))
+        self.W_i = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.hdim, self.hdim), name='W_i'+self.name))
         self.b_i = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_i'+self.name))
 
         self.U_f = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_f'+self.name))
-        self.W_f = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_f'+self.name))
+        self.W_f = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.hdim, self.hdim), name='W_f'+self.name))
         self.b_f = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_f'+self.name))
 
         self.U_o = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_o'+self.name))
-        self.W_o = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_o'+self.name))
+        self.W_o = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.hdim, self.hdim), name='W_o'+self.name))
         self.b_o = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_o'+self.name))
 
         self.U_g = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='U_g'+self.name))
-        self.W_g = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.embdim, self.hdim), name='W_g'+self.name))
+        self.W_g = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.hdim, self.hdim), name='W_g'+self.name))
         self.b_g = add_to_params(self.params, theano.shared(value=np.zeros((self.hdim,), dtype='float32'), name='b_g'+self.name))
         
     def approx_embedder(self, x):
