@@ -3,7 +3,7 @@
 
 from data_iterator import *
 from state import *
-from gru import *
+from layer2_gru import *
 from utils import *
 
 import time
@@ -39,7 +39,6 @@ class Unbuffered:
 sys.stdout = Unbuffered(sys.stdout)
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.FileHandler('./log/' + __name__))
-logging.basicConfig(level=logging.ERROR)
 
 ### Unique RUN_ID for this execution
 RUN_ID = str(time.time())
@@ -63,7 +62,7 @@ def load(model, filename):
     print("Model loaded, took {}".format(time.time() - start))
 
 def main(args):     
-    logging.basicConfig(level = logging.ERROR,
+    logging.basicConfig(level = logging.DEBUG,
                         format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
      
     state = eval(args.prototype)() 
@@ -88,7 +87,7 @@ def main(args):
     logger.debug("State:\n{}".format(pprint.pformat(state)))
     logger.debug("Timings:\n{}".format(pprint.pformat(timings)))
  
-    model = GRU(state)
+    model = Layer2GRU(state)
     rng = model.rng 
 
     if args.resume != "":
@@ -123,8 +122,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", type=str, default="", help="Resume training from that state")
     parser.add_argument("--n", type=int, default=10, help="Generate n examples")
-    parser.add_argument("--maxlen", type=int, default=5, help="Maximum length of the generated sentence")
-    parser.add_argument("--prototype", type=str, help="Use the prototype", default='prototype_state')
+    parser.add_argument("--maxlen", type=int, default=20, help="Maximum length of the generated sentence")
+    parser.add_argument("--prototype", type=str, help="Use the prototype")
 
     args = parser.parse_args()
     return args
@@ -134,6 +133,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/GRU_emb80_h100__model'
-    args.nbest=3
+    args.resume = 'model/Layer2_GRU_emb50_hs128x128_model'
+    args.prototype = 'layer2_gru_state'
     main(args)

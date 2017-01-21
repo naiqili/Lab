@@ -38,7 +38,7 @@ class Unbuffered:
 
 sys.stdout = Unbuffered(sys.stdout)
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.FileHandler('./log/' + __name__))
+
 
 ### Unique RUN_ID for this execution
 RUN_ID = str(time.time())
@@ -78,6 +78,7 @@ def load(model, filename):
     print("Model loaded, took {}".format(time.time() - start))
 
 def main(args):     
+    logger.addHandler(logging.FileHandler('./log/' + args.run_id))
     logging.basicConfig(level = logging.DEBUG,
                         format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
      

@@ -107,8 +107,8 @@ def gru_state():
     # ----- SIZES ----
     state['prefix'] = 'model_'
     state['worddim'] = 700
-    state['embdim'] = 20
-    state['hdim'] = 20
+    state['embdim'] = 50
+    state['hdim'] = 300
 
     # Threshold to clip the gradient
     state['cutoff'] = 1.
@@ -182,8 +182,8 @@ def lstm_state():
     # ----- SIZES ----
     state['prefix'] = 'model_'
     state['worddim'] = 700
-    state['embdim'] = 20
-    state['hdim'] = 20
+    state['embdim'] = 50
+    state['hdim'] = 50
 
     # Threshold to clip the gradient
     state['cutoff'] = 1.
