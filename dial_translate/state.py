@@ -41,7 +41,7 @@ def prototype_state():
     # Maximum sequence length / trim batches
     state['seqlen'] = 280
     # Batch size
-    state['bs'] = 60
+    state['bs'] = 2000
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
@@ -52,9 +52,9 @@ def prototype_state():
     
     # ----- TRAINING PROCESS -----
     # Frequency of training error reports (in number of batches)
-    state['train_freq'] = 50
+    state['train_freq'] = 1
     # Validation frequency
-    state['valid_freq'] = 1
+    state['valid_freq'] = 50
     # Number of batches to process
     state['loop_iters'] = 3000000
     # Maximum number of minutes to run

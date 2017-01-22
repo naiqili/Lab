@@ -117,3 +117,1107 @@ b_o_NaturalEncoder = 0.0000
 U_g_NaturalEncoder = 1.5973
 W_g_NaturalEncoder = 2.5610
 b_g_NaturalEncoder = 0.0000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 60,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 50,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 60,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 50,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 60,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 50,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 60,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 50,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 60,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 50,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+.. 00:00:01 44639 mb # 0 bs 60 cost = 49.5687
+.. 00:00:02 44639 mb # 1 bs 60 cost = 48.4917
+.. 00:00:02 44639 mb # 2 bs 60 cost = 46.6012
+[VALIDATION START]
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALIDATION STEP]: 2
+[VALIDATION COST]: 43.7316
+[VALIDATION END]
+[VALIDATION COST]: 43.731625
+.. 00:00:13 44639 mb # 3 bs 60 cost = 43.7422
+[VALIDATION START]
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALIDATION STEP]: 3
+[VALIDATION COST]: 39.8543
+[VALIDATION END]
+[VALIDATION COST]: 39.854309
+.. 00:00:24 44639 mb # 4 bs 60 cost = 39.8899
+[VALIDATION START]
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+[VALID] - Got batch 60
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 50,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+.. 00:00:09 44639 mb # 0 bs 2000 cost = 49.5687
+.. 00:00:12 44639 mb # 1 bs 2000 cost = 48.4920
+.. 00:00:16 44639 mb # 2 bs 2000 cost = 46.6011
+.. 00:00:19 44639 mb # 3 bs 2000 cost = 43.7408
+.. 00:00:22 44639 mb # 4 bs 2000 cost = 39.8882
+.. 00:00:26 44639 mb # 5 bs 2000 cost = 34.8257
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 50,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+.. 00:00:08 44639 mb # 0 bs 2000 cost = 49.5687
+.. 00:00:11 44639 mb # 1 bs 2000 cost = 48.4920
+.. 00:00:15 44639 mb # 2 bs 2000 cost = 46.6011
+.. 00:00:18 44639 mb # 3 bs 2000 cost = 43.7408
+.. 00:00:22 44639 mb # 4 bs 2000 cost = 39.8882
+.. 00:00:25 44639 mb # 5 bs 2000 cost = 34.8257
+.. 00:00:28 44639 mb # 6 bs 2000 cost = 28.8326
+.. 00:00:32 44639 mb # 7 bs 2000 cost = 21.4788
+.. 00:00:35 44639 mb # 8 bs 2000 cost = 12.8363
+.. 00:00:39 44639 mb # 9 bs 2000 cost = 3.0348
+.. 00:00:42 44639 mb # 10 bs 2000 cost = 0.0000
+.. 00:00:45 44639 mb # 11 bs 2000 cost = 0.0000
+.. 00:00:49 44639 mb # 12 bs 2000 cost = 0.0000
+.. 00:00:52 44639 mb # 13 bs 2000 cost = 0.0000
+.. 00:00:56 44639 mb # 14 bs 2000 cost = 0.0000
+.. 00:00:59 44639 mb # 15 bs 2000 cost = 0.0000
+.. 00:01:02 44638 mb # 16 bs 2000 cost = 0.0000
+.. 00:01:06 44638 mb # 17 bs 2000 cost = 0.0000
+.. 00:01:09 44638 mb # 18 bs 2000 cost = 0.0000
+.. 00:01:13 44638 mb # 19 bs 2000 cost = 0.0000
+.. 00:01:16 44638 mb # 20 bs 2000 cost = 0.0000
+.. 00:01:19 44638 mb # 21 bs 2000 cost = 0.0000
+.. 00:01:23 44638 mb # 22 bs 2000 cost = 0.0000
+.. 00:01:26 44638 mb # 23 bs 2000 cost = 0.0000
+.. 00:01:30 44638 mb # 24 bs 2000 cost = 0.0000
+.. 00:01:33 44638 mb # 25 bs 2000 cost = 0.0000
+.. 00:01:36 44638 mb # 26 bs 2000 cost = 0.0000
+.. 00:01:40 44638 mb # 27 bs 2000 cost = 0.0000
+.. 00:01:43 44638 mb # 28 bs 2000 cost = 0.0000
+.. 00:01:47 44638 mb # 29 bs 2000 cost = 0.0000
+.. 00:01:50 44638 mb # 30 bs 2000 cost = 0.0000
+.. 00:01:53 44638 mb # 31 bs 2000 cost = 0.0000
+.. 00:01:57 44638 mb # 32 bs 2000 cost = 0.0000
+.. 00:02:00 44637 mb # 33 bs 2000 cost = 0.0000
+.. 00:02:04 44637 mb # 34 bs 2000 cost = 0.0000
+.. 00:02:07 44637 mb # 35 bs 2000 cost = 0.0000
+.. 00:02:10 44637 mb # 36 bs 2000 cost = 0.0000
+.. 00:02:14 44637 mb # 37 bs 2000 cost = 0.0000
+.. 00:02:17 44637 mb # 38 bs 2000 cost = 0.0000
+.. 00:02:21 44637 mb # 39 bs 2000 cost = 0.0000
+.. 00:02:24 44637 mb # 40 bs 2000 cost = 0.0000
+.. 00:02:27 44637 mb # 41 bs 2000 cost = 0.0000
+.. 00:02:31 44637 mb # 42 bs 2000 cost = 0.0000
+.. 00:02:34 44637 mb # 43 bs 2000 cost = 0.0000
+.. 00:02:38 44637 mb # 44 bs 2000 cost = 0.0000
+.. 00:02:41 44637 mb # 45 bs 2000 cost = 0.0000
+.. 00:02:44 44637 mb # 46 bs 2000 cost = 0.0000
+.. 00:02:48 44637 mb # 47 bs 2000 cost = 0.0000
+.. 00:02:51 44637 mb # 48 bs 2000 cost = 0.0000
+.. 00:02:55 44637 mb # 49 bs 2000 cost = 0.0000
+.. 00:02:58 44637 mb # 50 bs 2000 cost = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 50
+[VALIDATION COST]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 0.000000
+.. 00:03:03 44636 mb # 51 bs 2000 cost = 0.0000
+.. 00:03:06 44636 mb # 52 bs 2000 cost = 0.0000
+.. 00:03:10 44636 mb # 53 bs 2000 cost = 0.0000
+.. 00:03:13 44636 mb # 54 bs 2000 cost = 0.0000
+.. 00:03:17 44636 mb # 55 bs 2000 cost = 0.0000
+.. 00:03:20 44636 mb # 56 bs 2000 cost = 0.0000
+.. 00:03:23 44636 mb # 57 bs 2000 cost = 0.0000
+.. 00:03:27 44636 mb # 58 bs 2000 cost = 0.0000
+.. 00:03:30 44636 mb # 59 bs 2000 cost = 0.0000
+.. 00:03:34 44636 mb # 60 bs 2000 cost = 0.0000
+.. 00:03:37 44636 mb # 61 bs 2000 cost = 0.0000
+.. 00:03:40 44636 mb # 62 bs 2000 cost = 0.0000
+.. 00:03:44 44636 mb # 63 bs 2000 cost = 0.0000
+.. 00:03:47 44636 mb # 64 bs 2000 cost = 0.0000
+.. 00:03:51 44636 mb # 65 bs 2000 cost = 0.0000
+.. 00:03:54 44636 mb # 66 bs 2000 cost = 0.0000
+.. 00:03:57 44636 mb # 67 bs 2000 cost = 0.0000
+.. 00:04:01 44635 mb # 68 bs 2000 cost = 0.0000
+.. 00:04:04 44635 mb # 69 bs 2000 cost = 0.0000
+.. 00:04:08 44635 mb # 70 bs 2000 cost = 0.0000
+.. 00:04:11 44635 mb # 71 bs 2000 cost = 0.0000
+.. 00:04:14 44635 mb # 72 bs 2000 cost = 0.0000
+.. 00:04:18 44635 mb # 73 bs 2000 cost = 0.0000
+.. 00:04:21 44635 mb # 74 bs 2000 cost = 0.0000
+.. 00:04:25 44635 mb # 75 bs 2000 cost = 0.0000
+.. 00:04:28 44635 mb # 76 bs 2000 cost = 0.0000
+.. 00:04:32 44635 mb # 77 bs 2000 cost = 0.0000
+.. 00:04:35 44635 mb # 78 bs 2000 cost = 0.0000
+.. 00:04:38 44635 mb # 79 bs 2000 cost = 0.0000
+.. 00:04:42 44635 mb # 80 bs 2000 cost = 0.0000
+.. 00:04:45 44635 mb # 81 bs 2000 cost = 0.0000
+.. 00:04:49 44635 mb # 82 bs 2000 cost = 0.0000
+.. 00:04:52 44635 mb # 83 bs 2000 cost = 0.0000
+.. 00:04:55 44635 mb # 84 bs 2000 cost = 0.0000
+.. 00:04:59 44635 mb # 85 bs 2000 cost = 0.0000
+.. 00:05:02 44634 mb # 86 bs 2000 cost = 0.0000
+.. 00:05:05 44634 mb # 87 bs 2000 cost = 0.0000
+.. 00:05:09 44634 mb # 88 bs 2000 cost = 0.0000
+.. 00:05:12 44634 mb # 89 bs 2000 cost = 0.0000
+.. 00:05:16 44634 mb # 90 bs 2000 cost = 0.0000
+.. 00:05:19 44634 mb # 91 bs 2000 cost = 0.0000
+.. 00:05:22 44634 mb # 92 bs 2000 cost = 0.0000
+.. 00:05:26 44634 mb # 93 bs 2000 cost = 0.0000
+.. 00:05:29 44634 mb # 94 bs 2000 cost = 0.0000
+.. 00:05:33 44634 mb # 95 bs 2000 cost = 0.0000
+.. 00:05:36 44634 mb # 96 bs 2000 cost = 0.0000
+.. 00:05:39 44634 mb # 97 bs 2000 cost = 0.0000
+.. 00:05:43 44634 mb # 98 bs 2000 cost = 0.0000
+.. 00:05:46 44634 mb # 99 bs 2000 cost = 0.0000
+.. 00:05:50 44634 mb # 100 bs 2000 cost = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 100
+[VALIDATION COST]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 0.000000
+.. 00:05:56 44634 mb # 101 bs 2000 cost = 0.0000
+.. 00:05:59 44634 mb # 102 bs 2000 cost = 0.0000
+.. 00:06:02 44633 mb # 103 bs 2000 cost = 0.0000
+.. 00:06:06 44633 mb # 104 bs 2000 cost = 0.0000
+.. 00:06:09 44633 mb # 105 bs 2000 cost = 0.0000
+.. 00:06:13 44633 mb # 106 bs 2000 cost = 0.0000
+.. 00:06:16 44633 mb # 107 bs 2000 cost = 0.0000
+.. 00:06:19 44633 mb # 108 bs 2000 cost = 0.0000
+.. 00:06:23 44633 mb # 109 bs 2000 cost = 0.0000
+.. 00:06:26 44633 mb # 110 bs 2000 cost = 0.0000
+.. 00:06:30 44633 mb # 111 bs 2000 cost = 0.0000
+.. 00:06:33 44633 mb # 112 bs 2000 cost = 0.0000
+.. 00:06:36 44633 mb # 113 bs 2000 cost = 0.0000
+.. 00:06:40 44633 mb # 114 bs 2000 cost = 0.0000
+.. 00:06:43 44633 mb # 115 bs 2000 cost = 0.0000
+.. 00:06:47 44633 mb # 116 bs 2000 cost = 0.0000
+.. 00:06:50 44633 mb # 117 bs 2000 cost = 0.0000
+.. 00:06:53 44633 mb # 118 bs 2000 cost = 0.0000
+.. 00:06:57 44633 mb # 119 bs 2000 cost = 0.0000
+.. 00:07:00 44632 mb # 120 bs 2000 cost = 0.0000
+.. 00:07:04 44632 mb # 121 bs 2000 cost = 0.0000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 50,
+ 'word_dim': 700}
+Timings:
+{'train_cost': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+.. 00:07:07 44632 mb # 122 bs 2000 cost = 0.0000
+.. 00:07:10 44632 mb # 123 bs 2000 cost = 0.0000
+.. 00:07:14 44632 mb # 124 bs 2000 cost = 0.0000
+.. 00:07:17 44632 mb # 125 bs 2000 cost = 0.0000
+.. 00:07:21 44632 mb # 126 bs 2000 cost = 0.0000
+.. 00:07:24 44632 mb # 127 bs 2000 cost = 0.0000
+.. 00:07:27 44632 mb # 128 bs 2000 cost = 0.0000
+.. 00:07:31 44632 mb # 129 bs 2000 cost = 0.0000
+.. 00:07:34 44632 mb # 130 bs 2000 cost = 0.0000
+.. 00:07:38 44632 mb # 131 bs 2000 cost = 0.0000
+.. 00:07:41 44632 mb # 132 bs 2000 cost = 0.0000
+.. 00:07:44 44632 mb # 133 bs 2000 cost = 0.0000
+.. 00:07:48 44632 mb # 134 bs 2000 cost = 0.0000
+Load data
+.. 00:07:51 44632 mb # 135 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6366
+W_AbstractEncoder = 9.4647
+b_AbstractEncoder = 0.0000
+W_out_NaturalEncoder = 2.5634
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5973
+W_g_NaturalEncoder = 2.5610
+b_g_NaturalEncoder = 0.0000
+.. 00:07:55 44632 mb # 136 bs 2000 cost = 0.0000
+.. 00:07:59 44632 mb # 137 bs 2000 cost = 0.0000
+.. 00:00:11 44639 mb # 0 bs 2000 cost = 49.5687
+.. 00:00:14 44639 mb # 1 bs 2000 cost = 48.4920
+.. 00:00:17 44639 mb # 2 bs 2000 cost = 46.6011
+.. 00:00:21 44639 mb # 3 bs 2000 cost = 43.7408
+.. 00:00:24 44639 mb # 4 bs 2000 cost = 39.8882
+W_embAbstractEncoder = 2.6389
+W_AbstractEncoder = 9.5186
+b_AbstractEncoder = 0.0154
+W_out_NaturalEncoder = 2.5749
+b_out_NaturalEncoder = 0.0154
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0069
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0067
+U_o_NaturalEncoder = 1.5977
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0069
+U_g_NaturalEncoder = 1.6049
+W_g_NaturalEncoder = 2.5631
+b_g_NaturalEncoder = 0.0140
+.. 00:00:28 44639 mb # 5 bs 2000 cost = 34.8257
+.. 00:00:31 44639 mb # 6 bs 2000 cost = 28.8326
+.. 00:00:35 44639 mb # 7 bs 2000 cost = 21.4788
+.. 00:00:38 44639 mb # 8 bs 2000 cost = 12.8363
+.. 00:00:41 44639 mb # 9 bs 2000 cost = 3.0348
+W_embAbstractEncoder = 2.6450
+W_AbstractEncoder = 9.6419
+b_AbstractEncoder = 0.0293
+W_out_NaturalEncoder = 2.6092
+b_out_NaturalEncoder = 0.0293
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0184
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0173
+U_o_NaturalEncoder = 1.5978
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0184
+U_g_NaturalEncoder = 1.6254
+W_g_NaturalEncoder = 2.5763
+b_g_NaturalEncoder = 0.0284
+.. 00:00:45 44639 mb # 10 bs 2000 cost = 0.0000
+.. 00:00:48 44639 mb # 11 bs 2000 cost = 0.0000
+.. 00:00:52 44639 mb # 12 bs 2000 cost = 0.0000
+.. 00:00:55 44639 mb # 13 bs 2000 cost = 0.0000
+.. 00:00:58 44639 mb # 14 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6520
+W_AbstractEncoder = 9.7717
+b_AbstractEncoder = 0.0388
+W_out_NaturalEncoder = 2.6494
+b_out_NaturalEncoder = 0.0388
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5747
+b_i_NaturalEncoder = 0.0281
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0265
+U_o_NaturalEncoder = 1.5978
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0281
+U_g_NaturalEncoder = 1.6484
+W_g_NaturalEncoder = 2.5964
+b_g_NaturalEncoder = 0.0394
+.. 00:01:02 44638 mb # 15 bs 2000 cost = 0.0000
+.. 00:01:05 44638 mb # 16 bs 2000 cost = 0.0000
+.. 00:01:09 44638 mb # 17 bs 2000 cost = 0.0000
+.. 00:01:12 44638 mb # 18 bs 2000 cost = 0.0000
+.. 00:01:15 44638 mb # 19 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6573
+W_AbstractEncoder = 9.8674
+b_AbstractEncoder = 0.0447
+W_out_NaturalEncoder = 2.6797
+b_out_NaturalEncoder = 0.0447
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0340
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0321
+U_o_NaturalEncoder = 1.5978
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0340
+U_g_NaturalEncoder = 1.6655
+W_g_NaturalEncoder = 2.6128
+b_g_NaturalEncoder = 0.0460
+.. 00:01:19 44638 mb # 20 bs 2000 cost = 0.0000
+.. 00:01:22 44638 mb # 21 bs 2000 cost = 0.0000
+.. 00:01:26 44638 mb # 22 bs 2000 cost = 0.0000
+.. 00:01:29 44638 mb # 23 bs 2000 cost = 0.0000
+.. 00:01:32 44638 mb # 24 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6609
+W_AbstractEncoder = 9.9332
+b_AbstractEncoder = 0.0483
+W_out_NaturalEncoder = 2.7006
+b_out_NaturalEncoder = 0.0483
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0377
+U_f_NaturalEncoder = 1.6112
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0357
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0377
+U_g_NaturalEncoder = 1.6773
+W_g_NaturalEncoder = 2.6246
+b_g_NaturalEncoder = 0.0502
+.. 00:01:36 44638 mb # 25 bs 2000 cost = 0.0000
+.. 00:01:39 44638 mb # 26 bs 2000 cost = 0.0000
+.. 00:01:43 44638 mb # 27 bs 2000 cost = 0.0000
+.. 00:01:46 44638 mb # 28 bs 2000 cost = 0.0000
+.. 00:01:49 44638 mb # 29 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6633
+W_AbstractEncoder = 9.9769
+b_AbstractEncoder = 0.0506
+W_out_NaturalEncoder = 2.7145
+b_out_NaturalEncoder = 0.0506
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0400
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0379
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0400
+U_g_NaturalEncoder = 1.6851
+W_g_NaturalEncoder = 2.6326
+b_g_NaturalEncoder = 0.0528
+.. 00:01:53 44638 mb # 30 bs 2000 cost = 0.0000
+.. 00:01:56 44638 mb # 31 bs 2000 cost = 0.0000
+.. 00:02:00 44637 mb # 32 bs 2000 cost = 0.0000
+.. 00:02:03 44637 mb # 33 bs 2000 cost = 0.0000
+.. 00:02:06 44637 mb # 34 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6649
+W_AbstractEncoder = 10.0052
+b_AbstractEncoder = 0.0520
+W_out_NaturalEncoder = 2.7236
+b_out_NaturalEncoder = 0.0520
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0415
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0393
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0415
+U_g_NaturalEncoder = 1.6902
+W_g_NaturalEncoder = 2.6378
+b_g_NaturalEncoder = 0.0544
+.. 00:02:10 44637 mb # 35 bs 2000 cost = 0.0000
+.. 00:02:13 44637 mb # 36 bs 2000 cost = 0.0000
+.. 00:02:17 44637 mb # 37 bs 2000 cost = 0.0000
+.. 00:02:20 44637 mb # 38 bs 2000 cost = 0.0000
+.. 00:02:23 44637 mb # 39 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6660
+W_AbstractEncoder = 10.0233
+b_AbstractEncoder = 0.0529
+W_out_NaturalEncoder = 2.7294
+b_out_NaturalEncoder = 0.0529
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0424
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0402
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0424
+U_g_NaturalEncoder = 1.6934
+W_g_NaturalEncoder = 2.6412
+b_g_NaturalEncoder = 0.0555
+.. 00:02:27 44637 mb # 40 bs 2000 cost = 0.0000
+.. 00:02:30 44637 mb # 41 bs 2000 cost = 0.0000
+.. 00:02:34 44637 mb # 42 bs 2000 cost = 0.0000
+.. 00:02:37 44637 mb # 43 bs 2000 cost = 0.0000
+.. 00:02:40 44637 mb # 44 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6666
+W_AbstractEncoder = 10.0347
+b_AbstractEncoder = 0.0535
+W_out_NaturalEncoder = 2.7331
+b_out_NaturalEncoder = 0.0535
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0430
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0407
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0430
+U_g_NaturalEncoder = 1.6954
+W_g_NaturalEncoder = 2.6434
+b_g_NaturalEncoder = 0.0561
+.. 00:02:44 44637 mb # 45 bs 2000 cost = 0.0000
+.. 00:02:47 44637 mb # 46 bs 2000 cost = 0.0000
+.. 00:02:51 44637 mb # 47 bs 2000 cost = 0.0000
+.. 00:02:54 44637 mb # 48 bs 2000 cost = 0.0000
+.. 00:02:57 44637 mb # 49 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6670
+W_AbstractEncoder = 10.0419
+b_AbstractEncoder = 0.0538
+W_out_NaturalEncoder = 2.7354
+b_out_NaturalEncoder = 0.0538
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0434
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0411
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0434
+U_g_NaturalEncoder = 1.6967
+W_g_NaturalEncoder = 2.6447
+b_g_NaturalEncoder = 0.0565
+.. 00:03:01 44636 mb # 50 bs 2000 cost = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 50
+[VALIDATION COST]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 0.000000
+.. 00:03:06 44636 mb # 51 bs 2000 cost = 0.0000
+.. 00:03:09 44636 mb # 52 bs 2000 cost = 0.0000
+.. 00:03:13 44636 mb # 53 bs 2000 cost = 0.0000
+.. 00:03:16 44636 mb # 54 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6673
+W_AbstractEncoder = 10.0464
+b_AbstractEncoder = 0.0540
+W_out_NaturalEncoder = 2.7368
+b_out_NaturalEncoder = 0.0540
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0436
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0413
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0436
+U_g_NaturalEncoder = 1.6975
+W_g_NaturalEncoder = 2.6456
+b_g_NaturalEncoder = 0.0568
+.. 00:03:20 44636 mb # 55 bs 2000 cost = 0.0000
+.. 00:03:23 44636 mb # 56 bs 2000 cost = 0.0000
+.. 00:03:26 44636 mb # 57 bs 2000 cost = 0.0000
+.. 00:03:30 44636 mb # 58 bs 2000 cost = 0.0000
+.. 00:03:33 44636 mb # 59 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6674
+W_AbstractEncoder = 10.0491
+b_AbstractEncoder = 0.0542
+W_out_NaturalEncoder = 2.7377
+b_out_NaturalEncoder = 0.0542
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0437
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0414
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0437
+U_g_NaturalEncoder = 1.6980
+W_g_NaturalEncoder = 2.6461
+b_g_NaturalEncoder = 0.0569
+.. 00:03:37 44636 mb # 60 bs 2000 cost = 0.0000
+.. 00:03:40 44636 mb # 61 bs 2000 cost = 0.0000
+.. 00:03:43 44636 mb # 62 bs 2000 cost = 0.0000
+.. 00:03:47 44636 mb # 63 bs 2000 cost = 0.0000
+.. 00:03:50 44636 mb # 64 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6675
+W_AbstractEncoder = 10.0508
+b_AbstractEncoder = 0.0542
+W_out_NaturalEncoder = 2.7382
+b_out_NaturalEncoder = 0.0542
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0438
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0415
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0438
+U_g_NaturalEncoder = 1.6983
+W_g_NaturalEncoder = 2.6464
+b_g_NaturalEncoder = 0.0570
+.. 00:03:54 44636 mb # 65 bs 2000 cost = 0.0000
+.. 00:03:57 44636 mb # 66 bs 2000 cost = 0.0000
+.. 00:04:00 44635 mb # 67 bs 2000 cost = 0.0000
+.. 00:04:04 44635 mb # 68 bs 2000 cost = 0.0000
+.. 00:04:07 44635 mb # 69 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6676
+W_AbstractEncoder = 10.0519
+b_AbstractEncoder = 0.0543
+W_out_NaturalEncoder = 2.7386
+b_out_NaturalEncoder = 0.0543
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0438
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0415
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0438
+U_g_NaturalEncoder = 1.6985
+W_g_NaturalEncoder = 2.6466
+b_g_NaturalEncoder = 0.0571
+.. 00:04:11 44635 mb # 70 bs 2000 cost = 0.0000
+.. 00:04:14 44635 mb # 71 bs 2000 cost = 0.0000
+.. 00:04:17 44635 mb # 72 bs 2000 cost = 0.0000
+.. 00:04:21 44635 mb # 73 bs 2000 cost = 0.0000
+.. 00:04:24 44635 mb # 74 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6676
+W_AbstractEncoder = 10.0525
+b_AbstractEncoder = 0.0543
+W_out_NaturalEncoder = 2.7388
+b_out_NaturalEncoder = 0.0543
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0439
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0416
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0439
+U_g_NaturalEncoder = 1.6986
+W_g_NaturalEncoder = 2.6467
+b_g_NaturalEncoder = 0.0571
+.. 00:04:28 44635 mb # 75 bs 2000 cost = 0.0000
+.. 00:04:31 44635 mb # 76 bs 2000 cost = 0.0000
+.. 00:04:34 44635 mb # 77 bs 2000 cost = 0.0000
+.. 00:04:38 44635 mb # 78 bs 2000 cost = 0.0000
+.. 00:04:41 44635 mb # 79 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6676
+W_AbstractEncoder = 10.0529
+b_AbstractEncoder = 0.0543
+W_out_NaturalEncoder = 2.7389
+b_out_NaturalEncoder = 0.0543
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0439
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0416
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0439
+U_g_NaturalEncoder = 1.6987
+W_g_NaturalEncoder = 2.6468
+b_g_NaturalEncoder = 0.0571
+.. 00:04:45 44635 mb # 80 bs 2000 cost = 0.0000
+.. 00:04:48 44635 mb # 81 bs 2000 cost = 0.0000
+.. 00:04:52 44635 mb # 82 bs 2000 cost = 0.0000
+.. 00:04:55 44635 mb # 83 bs 2000 cost = 0.0000
+.. 00:04:58 44635 mb # 84 bs 2000 cost = 0.0000
+W_embAbstractEncoder = 2.6676
+W_AbstractEncoder = 10.0532
+b_AbstractEncoder = 0.0544
+W_out_NaturalEncoder = 2.7390
+b_out_NaturalEncoder = 0.0544
+U_i_NaturalEncoder = 1.6020
+W_i_NaturalEncoder = 2.5748
+b_i_NaturalEncoder = 0.0439
+U_f_NaturalEncoder = 1.6111
+W_f_NaturalEncoder = 2.5648
+b_f_NaturalEncoder = 0.0416
+U_o_NaturalEncoder = 1.5979
+W_o_NaturalEncoder = 2.5655
+b_o_NaturalEncoder = 0.0439
+U_g_NaturalEncoder = 1.6987
+W_g_NaturalEncoder = 2.6468
+b_g_NaturalEncoder = 0.0571

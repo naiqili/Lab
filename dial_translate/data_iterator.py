@@ -25,14 +25,8 @@ def create_padded_batch(state, x):
     NoiseRows = []
 
     (dataxy, _noises) = x
-    print 'x'
-    print x
-    print 'dataxy'
     
     for idx in xrange(len(dataxy)):
-        # Insert sequence idx in a column of matrix X
-        print 'dataxy[idx]'
-        print dataxy[idx]
         (_abs, _nat) = dataxy[idx]
         
         sent_length = len(_nat)
