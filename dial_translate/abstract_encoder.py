@@ -49,7 +49,7 @@ class AbstractEncoder(Model):
     def build_output(self, x):
         embx = self.approx_embedder(x)
         embx_flatten = embx.flatten(2)
-        self.ot = self.activation(T.dot(embx_flatten, self.W) + self.b)
+        self.ot = T.dot(embx_flatten, self.W) + self.b
         return self.ot
 
 

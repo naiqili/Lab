@@ -52,7 +52,7 @@ class EmbModel(Model):
         self.cost = self.build_cost(self.natural_input,
                                     self.abstract_input,
                                     self.noise_vars)
-        self.updates = self.compute_updates(self.training_cost, self.params)
+        self.updates = self.compute_updates(self.cost, self.params)
         
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.word_dim, self.emb_dim), name='W_emb'+self.name))
@@ -64,9 +64,10 @@ class EmbModel(Model):
         for var in noise_vars:
             noise_emb = self.abstract_encoder.build_output(var)
             noise_embs.append(noise_emb)
-        cost_nat_abs = T.sum( (nat_emb-abs_emb) ** 2 )
-        cost_nat_noise = T.sum( [(nat_emb-noise_emb) ** 2 for noise_emb in noise_embs] )
-        cost = T.max(0, self.margin + cost_nat_abs - cost_nat_noise)
+        cost_nat_abs = T.sum( (nat_emb-abs_emb) ** 2, axis=1 )
+        cost_nat_noise = T.sum( sum( [(nat_emb-noise_emb) ** 2 for noise_emb in noise_embs] ), axis=1)
+        cost = T.maximum(0, self.margin + cost_nat_abs - cost_nat_noise)
+        cost = T.mean(cost)
         return cost
 
     def build_train_function(self):
