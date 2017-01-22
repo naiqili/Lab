@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-#!/usr/bin/env python
-
 from data_iterator import *
 from state import *
-from gru import *
+from lstm import *
 from utils import *
 
 import time
@@ -88,7 +85,7 @@ def main(args):
     logger.debug("State:\n{}".format(pprint.pformat(state)))
     logger.debug("Timings:\n{}".format(pprint.pformat(timings)))
  
-    model = GRU(state)
+    model = LSTM(state)
     rng = model.rng 
 
     if args.resume != "":
@@ -134,6 +131,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/GRU_emb80_h100__model'
-    args.nbest=3
+    args.resume = 'model/LSTM_hardsig_emb50_h300_actfix_model'
+    args.nbest=3000
     main(args)

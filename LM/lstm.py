@@ -58,9 +58,9 @@ class LSTM(Model):
         h_tm1 = self.genh
         c_tm1 = self.genc
 
-        i_t = T.nnet.sigmoid(T.dot(x_t, self.U_i) + T.dot(h_tm1, self.W_i) + self.b_i)
-        f_t = T.nnet.sigmoid(T.dot(x_t, self.U_f) + T.dot(h_tm1, self.W_f) + self.b_f)
-        o_t = T.nnet.sigmoid(T.dot(x_t, self.U_o) + T.dot(h_tm1, self.W_o) + self.b_o)
+        i_t = T.nnet.hard_sigmoid(T.dot(x_t, self.U_i) + T.dot(h_tm1, self.W_i) + self.b_i)
+        f_t = T.nnet.hard_sigmoid(T.dot(x_t, self.U_f) + T.dot(h_tm1, self.W_f) + self.b_f)
+        o_t = T.nnet.hard_sigmoid(T.dot(x_t, self.U_o) + T.dot(h_tm1, self.W_o) + self.b_o)
         g_t = self.activation(T.dot(x_t, self.U_g) + T.dot(h_tm1, self. W_g) + self.b_g)
         c_t = c_tm1 * f_t + g_t * i_t
         h_t = self.activation(c_t) * o_t
@@ -104,9 +104,9 @@ class LSTM(Model):
         if m_t.ndim >= 1:
             m_t = m_t.dimshuffle(0, 'x')
         
-        i_t = T.nnet.sigmoid(T.dot(x_t, self.U_i) + T.dot(h_tm1, self.W_i) + self.b_i)
-        f_t = T.nnet.sigmoid(T.dot(x_t, self.U_f) + T.dot(h_tm1, self.W_f) + self.b_f)
-        o_t = T.nnet.sigmoid(T.dot(x_t, self.U_o) + T.dot(h_tm1, self.W_o) + self.b_o)
+        i_t = T.nnet.hard_sigmoid(T.dot(x_t, self.U_i) + T.dot(h_tm1, self.W_i) + self.b_i)
+        f_t = T.nnet.hard_sigmoid(T.dot(x_t, self.U_f) + T.dot(h_tm1, self.W_f) + self.b_f)
+        o_t = T.nnet.hard_sigmoid(T.dot(x_t, self.U_o) + T.dot(h_tm1, self.W_o) + self.b_o)
         g_t = self.activation(T.dot(x_t, self.U_g) + T.dot(h_tm1, self. W_g) + self.b_g)
         c_t = c_tm1 * f_t + g_t * i_t
         h_t_tmp = self.activation(c_t) * o_t
