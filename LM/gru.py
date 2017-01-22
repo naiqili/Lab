@@ -60,7 +60,7 @@ class GRU(Model):
         r_t = T.nnet.hard_sigmoid(T.dot(x_t, self.W_in_r) + T.dot(h_tm1, self.W_hh_r) + self.b_r)
         z_t = T.nnet.hard_sigmoid(T.dot(x_t, self.W_in_z) + T.dot(h_tm1, self.W_hh_z) + self.b_z)
         h_tilde = self.activation(T.dot(x_t, self.W_in) + T.dot(r_t * h_tm1, self.W_hh) + self.b_hh)
-        h_t = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
+        h_t = (T.ones_like(z_t) - z_t) * h_tm1 + z_t * h_tilde
 
         o_t = T.dot(h_t, self.W_out) + self.b_out
         self.gen_ot = SoftMax(o_t)
@@ -94,8 +94,7 @@ class GRU(Model):
         r_t = T.nnet.hard_sigmoid(T.dot(x_t, self.W_in_r) + T.dot(h_tm1, self.W_hh_r) + self.b_r)
         z_t = T.nnet.hard_sigmoid(T.dot(x_t, self.W_in_z) + T.dot(h_tm1, self.W_hh_z) + self.b_z)
         h_tilde = self.activation(T.dot(x_t, self.W_in) + T.dot(r_t * h_tm1, self.W_hh) + self.b_hh)
-        h_t_tmp = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
-        h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
+        h_t = (T.ones_like(z_t) - z_t) * h_tm1 + z_t * h_tilde
 
         o_t = T.dot(h_t, self.W_out) + self.b_out
         o_t = SoftMax(o_t)
@@ -204,10 +203,8 @@ class GRU(Model):
         self.genReset()
         for k in range(max_len):
             nw = self.genNext()[0]
-            rnd_list = []
-            for ind in range(len(nw)):
-                rnd_list.append((ind, nw[ind]))
-            sel_ind = random_select(rnd_list)
+            t_sel_ind = np.random.multinomial(1, nw)
+            sel_ind = np.argmax(samples)
             self.genx.set_value(np.asarray(sel_ind, dtype='int64'))
             example_sent.append(sel_ind)
             if sel_ind == 0:

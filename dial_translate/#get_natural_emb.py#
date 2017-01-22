@@ -1,0 +1,11 @@
+from natural_encoder import *
+from emb_model import *
+from state import *
+
+modelfile = 'model/trainemb
+
+state = prototype_state()
+embModel = EmbModel(state)
+
+nat_encoder = embModel.natural_encoder
+nat_encoder.load(modelfile)
