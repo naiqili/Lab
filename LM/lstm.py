@@ -205,19 +205,19 @@ class LSTM(Model):
 
         return updates
 
-    def genReset(self):
+    def genReset(self, start_token=1):
         self.genh = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='h_gen')
         self.genc = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='c_gen')
-        self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
+        self.genx = theano.shared(np.asarray(start_token, dtype='int64'), name='x_gen')
         
     def genNext(self):
         gen_fn = self.build_gen_function()
         res = gen_fn()
         return res
 
-    def genExample(self, max_len=30):
+    def genExample(self, max_len=30, start_token=1):
         example_sent = []
-        self.genReset()
+        self.genReset(start_token)
         for k in range(max_len):
             nw = self.genNext()[0]
             rnd_list = []

@@ -19,6 +19,7 @@ def prototype_state():
     state['prefix'] = 'model_'
     state['word_dim'] = 700
     state['emb_dim'] = 100
+    state['rnnh_dim'] = 256
     state['h_dim'] = 256
 
     state['margin'] = 50
