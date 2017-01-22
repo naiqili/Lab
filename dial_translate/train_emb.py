@@ -38,7 +38,7 @@ class Unbuffered:
 
 sys.stdout = Unbuffered(sys.stdout)
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.FileHandler('./log/train_emb'))
+
 
 ### Unique RUN_ID for this execution
 RUN_ID = str(time.time())
@@ -70,6 +70,7 @@ def save(model, timings, iters=''):
     print("Model saved, took {}".format(time.time() - start))
 
 def main(args):     
+    logger.addHandler(logging.FileHandler(args.run_id))
     logging.basicConfig(level = logging.DEBUG,
                         format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
      
@@ -131,7 +132,7 @@ def main(args):
      
     train_cost = 0
     
-    (word2ind, ind2word) = cPickle.load(open('tmp/dic.pkl'))
+    (word2ind, ind2word) = cPickle.load(open('tmp/dict.pkl'))
      
     while (step < state['loop_iters'] and
             (time.time() - start_time)/60. < state['time_stop'] and
@@ -231,7 +232,7 @@ def main(args):
                 pylab.subplot(2,1,2)
                 pylab.title("Validation Cost")
                 pylab.plot(timings["valid_cost"])
-                pylab.savefig(model.state['save_dir'] + '/' + args.run_id + '.png')
+                pylab.savefig('log/' + args.run_id + '.png')
                 pylab.close()
             except:
                 pass
@@ -252,6 +253,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'embedding_emb100_h100'
+    args.run_id = 'trainemb_emb100_h100'
     #args.resume = 'model/GRU_overtrain_model'
     main(args)

@@ -4,7 +4,7 @@ from scripts.dataset_walker import *
 from pprint import pprint, pformat
 import cPickle
 
-dataroot_path = "../../corpus/DSTC2/data"
+dataroot_path = "../../DSTC2/data"
 dataset_train = dataset_walker("dstc2_train", dataroot=dataroot_path, \
                                labels=True)
 dataset_dev = dataset_walker("dstc2_dev", dataroot=dataroot_path, \
