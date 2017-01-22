@@ -119,12 +119,15 @@ class GRU(Model):
         
         cost = x_flatten[T.arange(y_flatten.shape[0]), \
                          y_flatten]
-        neg_log_cost = -T.log(cost) * mask.flatten()
-        neg_log_cost_s = neg_log_cost.reshape(y.shape)
-        sum_neg_log_cost = T.sum(neg_log_cost_s, axis=0)
-        s_row = T.sum(mask, axis=0)
-        norm_cost = sum_neg_log_cost / s_row
-        cost_res = T.mean(norm_cost)
+        neg_log_cost_sum = T.sum(-T.log(cost) * mask.flatten())
+        mask_sum = T.sum(mask.flatten())
+        cost_res = neg_log_cost_sum / mask_sum
+#        neg_log_cost = -T.log(cost) * mask.flatten()
+#        neg_log_cost_s = neg_log_cost.reshape(y.shape)
+#        sum_neg_log_cost = T.sum(neg_log_cost_s, axis=0)
+#        s_row = T.sum(mask, axis=0)
+#        norm_cost = sum_neg_log_cost / s_row
+#        cost_res = T.mean(norm_cost)
         return cost_res
 
     def build_train_function(self):
