@@ -4,7 +4,7 @@ import theano.tensor as T
 import sys, getopt
 import logging
 
-# from state import *
+from state import *
 # from utils import *
 from SS_dataset import *
 
@@ -24,9 +24,15 @@ def create_padded_batch(state, x):
     Abs = numpy.zeros((n, state['acttype_cnt']), dtype='int32')
     NoiseRows = []
 
-    dataxy, _noises = x[0]
+    (dataxy, _noises) = x
+    print 'x'
+    print x
+    print 'dataxy'
+    
     for idx in xrange(len(dataxy)):
         # Insert sequence idx in a column of matrix X
+        print 'dataxy[idx]'
+        print dataxy[idx]
         (_abs, _nat) = dataxy[idx]
         
         sent_length = len(_nat)
@@ -55,36 +61,12 @@ class Iterator(SSIterator):
 
     def get_homogenous_batch_iter(self, batch_size = -1):
         while True:
-            batch_size = self.batch_size if (batch_size == -1) else batch_size 
-           
-            data = []
-            for k in range(self.k_batches):
-                batch = SSIterator.next(self)
-                if batch:
-                    data.append(batch)
-            if not len(data):
+            batch = SSIterator.next(self)
+            if not batch:
                 return
-            
-            number_of_batches = len(data)
-            # data is a set of batches
-            # After chain.from_iterable, is a batch
-            data = list(itertools.chain.from_iterable(data))
-            
-            data_x = []
-            for i in range(len(data)):
-                data_x.append(data[i])
-
-            x = numpy.asarray(list(itertools.chain(data_x)))
-
-            lens = numpy.asarray([map(len, x)])
-            order = numpy.argsort(lens.max(axis=0))
-                 
-            for k in range(number_of_batches):
-                indices = order[k * batch_size:(k + 1) * batch_size]
-                batch = create_padded_batch(self.state, [x[indices]])
-
-                if batch:
-                    yield batch
+            batch = create_padded_batch(self.state, batch)
+            if batch:
+                yield batch
     
     def start(self):
         SSIterator.start(self)
@@ -140,14 +122,12 @@ def get_test_iterator(state):
 # Test
 if __name__=='__main__':
     numpy.set_printoptions(threshold='nan')
-    state = {}
-    state = {'bs': 5, 'seed': 1234, 'acttype_cnt': 35, 'seqlen': 30, 'output_dim': 5, 'noise_cnt': 5}
-    state['train_file'] = './tmp/train_data_coded.pkl'
-    state['dev_file'] = './tmp/dev_data_coded.pkl'
-    train_data = Iterator(state['train_file'],
-                          int(state['bs']),
-                          state=state,
-                          use_infinite_loop=True)
+#    state = {}
+#    state = {'bs': 5, 'seed': 1234, 'acttype_cnt': 35, 'seqlen': 30, 'output_dim': 5, 'noise_cnt': 5}
+#    state['train_file'] = './tmp/train_data_coded.pkl'
+#    state['valid_file'] = './tmp/dev_data_coded.pkl'
+    state = prototype_state()
+    train_data, valid_data = get_train_iterator(state)
     train_data.start()
 
     for i in xrange(2):
@@ -158,3 +138,4 @@ if __name__=='__main__':
         print
         print len(batch['NoiseRows'])
         print batch['NoiseRows']
+

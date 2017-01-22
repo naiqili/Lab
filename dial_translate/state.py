@@ -41,7 +41,7 @@ def prototype_state():
     # Maximum sequence length / trim batches
     state['seqlen'] = 280
     # Batch size
-    state['bs'] = 500
+    state['bs'] = 60
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
