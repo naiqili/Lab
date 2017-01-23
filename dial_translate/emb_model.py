@@ -65,7 +65,7 @@ class EmbModel(Model):
             noise_emb = self.abstract_encoder.build_output(var)
             noise_embs.append(noise_emb)
         cost_nat_abs = T.sum( (nat_emb-abs_emb) ** 2, axis=1 )
-        cost_nat_noise = T.sum( sum( [(nat_emb-noise_emb) ** 2 for noise_emb in noise_embs] ), axis=1)
+        cost_nat_noise = T.mean( sum( [(nat_emb-noise_emb) ** 2 for noise_emb in noise_embs] ), axis=1)
         cost = T.maximum(0, self.margin + cost_nat_abs - cost_nat_noise)
         cost = T.mean(cost)
         return cost

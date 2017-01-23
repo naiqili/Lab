@@ -255,5 +255,6 @@ if __name__ == "__main__":
 
     args = parse_args()
     args.run_id = 'trainemb_emb100_h100'
+    args.prototype = 'simple_state'
     #args.resume = 'model/GRU_overtrain_model'
     main(args)
