@@ -62,7 +62,7 @@ def save(model, timings, iters=''):
     model.abstract_encoder.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_abstract_model.npz')
     model.natural_encoder.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_natural_model.npz')
     vals = dict([(model.W_emb.name, model.W_emb.get_value())])
-    numpy.savez(model.state['save_dir'] + '/' + 'word_emb', **vals)
+    numpy.savez(model.state['save_dir'] + '/' + model.state['run_id'] + '_word_emb', **vals)
     cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_state.pkl', 'w'))
     cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_timings.pkl', 'w'))
     signal.signal(signal.SIGINT, s)

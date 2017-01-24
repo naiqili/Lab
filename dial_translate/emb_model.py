@@ -59,7 +59,9 @@ class EmbModel(Model):
         
     def build_cost(self, natural, abstract, noise_vars):
         nat_emb = self.natural_encoder.build_output(natural)
+        self.nat_output = nat_emb
         abs_emb = self.abstract_encoder.build_output(abstract)
+        self.abs_output = abs_emb
         noise_embs = []
         for var in noise_vars:
             noise_emb = self.abstract_encoder.build_output(var)

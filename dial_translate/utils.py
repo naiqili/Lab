@@ -198,3 +198,27 @@ def ConvertTimedelta(seconds_diff):
 def SoftMax(x):
     x = T.exp(x - T.max(x, axis=x.ndim-1, keepdims=True))
     return x / T.sum(x, axis=x.ndim-1, keepdims=True)
+
+def abs_translate(abs_emb, acttype):
+    lst = []
+    for k in range(len(abs_emb)):
+        if abs_emb[k] == 1:
+            lst.append(acttype[k])
+    res = ' '.join(lst)
+    if lst == []:
+        res = 'None'
+    return res
+
+def nat_translate(nat_emb, dic):
+    lst = []
+    for e in nat_emb:
+        if e in dic:
+            lst.append(dic[e])
+        else:
+            lst.append('<OOV>')
+    res = ' '.join(lst)
+    return res
+
+def emb_dist(e1, e2):
+    res = sum( (e1-e2) ** 2)
+    return res
