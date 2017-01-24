@@ -27,11 +27,11 @@ def add_to_params(params, new_param):
     return new_param
     
 class GRU():
-    def __init__(self, state, rng, in_dim, h_dim):
+    def __init__(self, state, rng, in_dim, h_dim, name='GRU'):
         self.rng = rng
         self.state = state
         self.__dict__.update(state)
-        self.name = 'GRU'
+        self.name = name
         self.in_dim = in_dim
         self.h_dim = h_dim
         self.activation = eval(self.activation)
@@ -49,24 +49,21 @@ class GRU():
         self.W_hh_z = add_to_params(self.params, theano.shared(value=OrthogonalInit(self.rng, h_dim, h_dim), name='W_hh_z'+self.name))
         self.b_z = add_to_params(self.params, theano.shared(value=np.zeros((h_dim,), dtype='float32'), name='b_z'+self.name))
         self.b_r = add_to_params(self.params, theano.shared(value=np.zeros((h_dim,), dtype='float32'), name='b_r'+self.name))
+
         
-    def gated_step(self, x_t, m_t, h_tm1, *args):
-        if m_t.ndim >= 1:
-            m_t = m_t.dimshuffle(0, 'x')
         
+    def gated_step(self, x_t, h_tm1, *args):
         r_t = T.nnet.hard_sigmoid(T.dot(x_t, self.W_in_r) + T.dot(h_tm1, self.W_hh_r) + self.b_r)
         z_t = T.nnet.hard_sigmoid(T.dot(x_t, self.W_in_z) + T.dot(h_tm1, self.W_hh_z) + self.b_z)
         h_tilde = self.activation(T.dot(x_t, self.W_in) + T.dot(r_t * h_tm1, self.W_hh) + self.b_hh)
-        h_t_tmp = (np.float32(1.0) - z_t) * h_tm1 + z_t * h_tilde
-        h_t = m_t * h_t_tmp + (np.float32(1.0) - m_t) * h_tm1
+        h_t = (T.ones_like(z_t) - z_t) * h_tm1 + z_t * h_tilde
 
         return h_t
 
-    def build_output(self, batch_size, xe, xmask):
+    def build_output(self, batch_size, xe):
         h_0 = T.alloc(np.float32(0), batch_size, self.h_dim)
-        o_enc_info = [h_0]
         f_enc = self.gated_step
         h_t, _ = theano.scan(f_enc, \
-                                    sequences=[xe, xmask], \
+                                    sequences=[xe], \
                                     outputs_info=[h_0])
         return h_t

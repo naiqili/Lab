@@ -206,8 +206,9 @@ class GRU(Model):
         self.genReset()
         for k in range(max_len):
             nw = self.genNext()[0]
-            t_sel_ind = np.random.multinomial(1, nw)
-            sel_ind = np.argmax(samples)
+            norm_nw = [1.0 * x / sum(nw) for x in nw]
+            t_sel_ind = np.random.multinomial(1, norm_nw)
+            sel_ind = np.argmax(t_sel_ind)
             self.genx.set_value(np.asarray(sel_ind, dtype='int64'))
             example_sent.append(sel_ind)
             if sel_ind == 0:

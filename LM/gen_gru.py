@@ -123,7 +123,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", type=str, default="", help="Resume training from that state")
     parser.add_argument("--n", type=int, default=10, help="Generate n examples")
-    parser.add_argument("--maxlen", type=int, default=5, help="Maximum length of the generated sentence")
+    parser.add_argument("--maxlen", type=int, default=30, help="Maximum length of the generated sentence")
     parser.add_argument("--prototype", type=str, help="Use the prototype", default='prototype_state')
 
     args = parser.parse_args()
@@ -134,6 +134,5 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/GRU_emb80_h100__model'
-    args.nbest=3
+    args.resume = 'model/GRU_hardsig_1act_emb50_h300_v2_model'
     main(args)
