@@ -170,7 +170,6 @@ def main(args):
         # x_semantic = batch['x_semantic']
 
         [c, ot] = train_batch(x_data, y_data)
-        print 'mask sum:', ot
 
         if numpy.isinf(c) or numpy.isnan(c):
             logger.warn("Got NaN cost .. skipping")
@@ -277,7 +276,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'mono_Layer2_GRU_emb20_hs50x50'
+    args.run_id = 'mono_Layer2_GRU_emb50_hs80x80_v2'
     args.prototype = 'layer2_gru_state'
     #args.resume = 'model/mono_Layer2_GRU_emb50_hs128x128_model'
     main(args)

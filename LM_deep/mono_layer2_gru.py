@@ -47,7 +47,9 @@ class Layer2GRU(Model):
         self.updates = self.compute_updates(self.training_cost, self.params)
         self.y_pred = self.ot.argmax(axis=2) # See lab/argmax_test.py
         
-        self.genReset()
+        self.genh1 =  theano.shared(np.zeros((self.h1_dim,), dtype='float32'), name='h1_gen')
+        self.genh2 =  theano.shared(np.zeros((self.h2_dim,), dtype='float32'), name='h2_gen')
+        self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
         (self.gen_pred, self.gen_updates) = self.build_gen_pred()
         
     def build_gen_pred(self):
@@ -60,12 +62,12 @@ class Layer2GRU(Model):
         r1_t = T.nnet.hard_sigmoid(T.dot(x_t, self._1W_in_r) + T.dot(h1_tm1, self._1W_hh_r) + self._1b_r)
         z1_t = T.nnet.hard_sigmoid(T.dot(x_t, self._1W_in_z) + T.dot(h1_tm1, self._1W_hh_z) + self._1b_z)
         h1_tilde = self.activation(T.dot(x_t, self._1W_in) + T.dot(r1_t * h1_tm1, self._1W_hh) + self._1b_hh)
-        h1_t = (T.ones_like(z1_t) - z1_t) * h1_tm1 + z1_t * h1_tilde
+        h1_t = (T.ones_like(z1_t) - z1_t) * h1_tilde + z1_t * h1_tm1
 
         r2_t = T.nnet.hard_sigmoid(T.dot(h1_t, self._2W_in_r) + T.dot(h2_tm1, self._2W_hh_r) + self._2b_r)
         z2_t = T.nnet.hard_sigmoid(T.dot(h1_t, self._2W_in_z) + T.dot(h2_tm1, self._2W_hh_z) + self._2b_z)
         h2_tilde = self.activation(T.dot(h1_t, self._2W_in) + T.dot(r2_t * h2_tm1, self._2W_hh) + self._2b_hh)
-        h2_t = (T.ones_like(z2_t) - z2_t) * h2_tm1 + z2_t * h2_tilde
+        h2_t = (T.ones_like(z2_t) - z2_t) * h2_tilde + z2_t * h2_tm1
 
         self.gen_ot = SoftMax(T.dot(h2_t, self.W_out) + self.b_out)
         
@@ -109,12 +111,12 @@ class Layer2GRU(Model):
         r1_t = T.nnet.hard_sigmoid(T.dot(x_t, self._1W_in_r) + T.dot(h1_tm1, self._1W_hh_r) + self._1b_r)
         z1_t = T.nnet.hard_sigmoid(T.dot(x_t, self._1W_in_z) + T.dot(h1_tm1, self._1W_hh_z) + self._1b_z)
         h1_tilde = self.activation(T.dot(x_t, self._1W_in) + T.dot(r1_t * h1_tm1, self._1W_hh) + self._1b_hh)
-        h1_t = (T.ones_like(z1_t) - z1_t) * h1_tm1 + z1_t * h1_tilde
+        h1_t = (T.ones_like(z1_t) - z1_t) * h1_tilde + z1_t * h1_tm1
 
         r2_t = T.nnet.hard_sigmoid(T.dot(h1_t, self._2W_in_r) + T.dot(h2_tm1, self._2W_hh_r) + self._2b_r)
         z2_t = T.nnet.hard_sigmoid(T.dot(h1_t, self._2W_in_z) + T.dot(h2_tm1, self._2W_hh_z) + self._2b_z)
         h2_tilde = self.activation(T.dot(h1_t, self._2W_in) + T.dot(r2_t * h2_tm1, self._2W_hh) + self._2b_hh)
-        h2_t = (T.ones_like(z2_t) - z2_t) * h2_tm1 + z2_t * h2_tilde
+        h2_t = (T.ones_like(z2_t) - z2_t) * h2_tilde + z2_t * h2_tm1
 
         o_t = SoftMax(T.dot(h2_t, self.W_out) + self.b_out)
         return [h1_t, h2_t, o_t]
@@ -210,9 +212,9 @@ class Layer2GRU(Model):
         return updates
 
     def genReset(self):
-        self.genh1 =  theano.shared(np.zeros((self.h1_dim,), dtype='float32'), name='h1_gen')
-        self.genh2 =  theano.shared(np.zeros((self.h2_dim,), dtype='float32'), name='h2_gen')
-        self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
+        self.genh1.set_value(np.zeros((self.h1_dim,), dtype='float32'))
+        self.genh2.set_value(np.zeros((self.h2_dim,), dtype='float32'))
+        self.genx.set_value(np.asarray(1, dtype='int64'))       
         
     def genNext(self):
         gen_fn = self.build_gen_function()
@@ -223,7 +225,8 @@ class Layer2GRU(Model):
         example_sent = []
         self.genReset()
         for k in range(max_len):
-            nw = self.genNext()[0]
+            nw = self.genNext()
+            nw = nw[0]
             rnd_list = []
             for ind in range(len(nw)):
                 rnd_list.append((ind, nw[ind]))

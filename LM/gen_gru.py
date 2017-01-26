@@ -134,5 +134,5 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/GRU_hardsig_1act_emb50_h300_v2_model'
+    args.resume = 'model/GRU_hardsig_1act_emb50_h100_v3_model'
     main(args)

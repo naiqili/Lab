@@ -114,6 +114,9 @@ def main(args):
     for nexample in range(args.n):
         res = []
         example_sent = model.genExample(args.maxlen)
+        if len(example_sent) < 3:
+            nexample = nexample - 1
+            continue
         for idx in example_sent:
             if idx in ind2word:
                 res.append(ind2word[idx])
@@ -139,6 +142,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/mono_Layer2_GRU_emb50_hs128x128_model'
+    args.resume = 'model/mono_Layer2_GRU_emb50_hs80x80_v2_model'
     args.prototype = 'layer2_gru_state'
     main(args)

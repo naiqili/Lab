@@ -99,9 +99,9 @@ def layer2_gru_state():
     # ----- SIZES ----
     state['prefix'] = 'model_'
     state['word_dim'] = 700
-    state['emb_dim'] = 20
-    state['h1_dim'] = 50
-    state['h2_dim'] = 50
+    state['emb_dim'] = 50
+    state['h1_dim'] = 80
+    state['h2_dim'] = 80
 
     # Threshold to clip the gradient
     state['cutoff'] = 1.

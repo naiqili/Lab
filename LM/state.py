@@ -108,7 +108,7 @@ def gru_state():
     state['prefix'] = 'model_'
     state['worddim'] = 700
     state['embdim'] = 50
-    state['hdim'] = 300
+    state['hdim'] = 100
 
     # Threshold to clip the gradient
     state['cutoff'] = 1.

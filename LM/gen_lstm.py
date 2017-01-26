@@ -110,10 +110,7 @@ def main(args):
     (word2ind, ind2word) = cPickle.load(open('tmp/dic.pkl'))
          
     for nexample in range(args.n):
-        if args.randstart:
-            start_token = random.randint(1, 600)
-        else:
-            start_token = 1
+        start_token = 1
         example_sent = [start_token] + model.genExample(args.maxlen, start_token)
         gen_str = ' '.join(map(str, [ind2word[idx] for idx in example_sent]))
         print("%s: %s" % (nexample, gen_str))
@@ -126,7 +123,6 @@ def parse_args():
     parser.add_argument("--n", type=int, default=10, help="Generate n examples")
     parser.add_argument("--maxlen", type=int, default=5, help="Maximum length of the generated sentence")
     parser.add_argument("--prototype", type=str, help="Use the prototype", default='prototype_state')
-    parser.add_argument("--randstart", type=bool, help="Starts with a random token", default=True)
 
     args = parser.parse_args()
     return args
@@ -136,6 +132,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/LSTM_hardsig_emb50_h300_actfix_model'
+    args.resume = './model/LSTM_hardsig_emb50_h300_actfix_model'
     args.nbest=3000
     main(args)
