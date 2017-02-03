@@ -52,7 +52,9 @@ class Layer2GRU(Model):
         self.updates = self.compute_updates(self.training_cost, self.params)
         self.y_pred = self.ot.argmax(axis=2) # See lab/argmax_test.py
         
-        self.genReset()
+        self.genh1 =  theano.shared(np.zeros((self.h1_dim,), dtype='float32'), name='h1_gen')
+        self.genh2 =  theano.shared(np.zeros((self.h2_dim,), dtype='float32'), name='h2_gen')
+        self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
         (self.gen_pred, self.gen_updates) = self.build_gen_pred()
         
     def build_gen_pred(self):
@@ -179,9 +181,9 @@ class Layer2GRU(Model):
         return updates
 
     def genReset(self):
-        self.genh1 =  theano.shared(np.zeros((self.h1_dim,), dtype='float32'), name='h1_gen')
-        self.genh2 =  theano.shared(np.zeros((self.h2_dim,), dtype='float32'), name='h2_gen')
-        self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
+        self.genh1.set_value(np.zeros((self.h1_dim,), dtype='float32'))
+        self.genh2.set_value(np.zeros((self.h2_dim,), dtype='float32'))
+        self.genx.set_value(np.asarray(1, dtype='int64'))
         
     def genNext(self):
         gen_fn = self.build_gen_function()
