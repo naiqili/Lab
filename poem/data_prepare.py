@@ -9,7 +9,7 @@ author = ''
 title = ''
 text = ''
 
-path = '/home/likit/corpus/poem/full_poem.txt'
+path = 'data/full_poem.txt'
 
 with open(path) as f:
     for l in f:        
@@ -43,12 +43,12 @@ with codecs.open('tmp/data_poem.txt', 'w', 'utf-8') as f:
         all_words = list(set(all_words))
         maxlen = max(maxlen, len(row[2]))
 
-all_words = ["<START>", "<END>"] + all_words
+all_words = ["<END>", "<START>"] + all_words
 for (ind, w) in enumerate(all_words):
     word2ind[w] = ind
     ind2word[ind] = w
 
-cPickle.dump((word2ind, ind2word), codecs.open('tmp/dict.pkl', 'w'))
+cPickle.dump((word2ind, ind2word), codecs.open('tmp/dic.pkl', 'w'))
 
 random.shuffle(data)
 sp = int(len(data)*0.8)
