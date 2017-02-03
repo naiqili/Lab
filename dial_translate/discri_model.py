@@ -29,7 +29,7 @@ def add_to_params(params, new_param):
     params.append(new_param)
     return new_param
     
-class EmbModel(Model):
+class DiscriModel(Model):
     def __init__(self, state):
         Model.__init__(self)
         self.rng = numpy.random.RandomState(state['seed'])
@@ -40,39 +40,59 @@ class EmbModel(Model):
         self.params = []
         self.init_params()
         self.natural_encoder = NaturalEncoder(state, self.rng, self.W_emb)
-        self.params = self.params + self.abstract_encoder.params + self.natural_encoder.params
+        self.params = self.params + self.natural_encoder.params
 
         self.natural_input = T.imatrix('natural_input')
-        self.abstract_input = T.imatrix('abstract_input')
+        self.abstract_output = T.imatrix('abstract_output')
 
-        self.cost = self.build_cost(self.natural_input,
-                                    self.abstract_input)
+        self.output = self.build_output(self.natural_input)
+        (self.cost, self.acc) = self.build_cost(self.natural_input,
+                                    self.abstract_output)
         self.updates = self.compute_updates(self.cost, self.params)
         
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.word_dim, self.emb_dim), name='W_emb'+self.name))
+        self.W_abs = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.acttype_cnt, self.emb_dim, self.word_dim), name='W_abs'+self.name))
+        self.b_abs = add_to_params(self.params, theano.shared(value=np.zeros((self.acttype_cnt, self.word_dim,), dtype='float32'), name='b_abs'+self.name))
+
+    def build_output(self, natural_input):
+        # nat_emb: bs x emb_dim
+        # y:       bs x acttype_cnt
+        # W_abs:   acttype_cnt x emb_dim x word_dim
+        # ot = nat_emb x W_abs:
+        #          bs x acttype_cnt x word_dimn
+        # (nat_emb x W_abs).flatten(2):
+        #          bs x (acttype_cnt x word_dim)
+        nat_emb = self.natural_encoder.build_output(natural_input)
+        o_t = T.dot(nat_emb, self.W_abs) + self.b_abs
+        o_t = SoftMax(o_t)
+        return o_t
         
-    def build_cost(self, natural, abstract, noise_vars):
-        nat_emb = self.natural_encoder.build_output(natural)
-        self.nat_output = nat_emb
-        abs_emb = self.abstract_encoder.build_output(abstract)
-        self.abs_output = abs_emb
-        noise_embs = []
-        for var in noise_vars:
-            noise_emb = self.abstract_encoder.build_output(var)
-            noise_embs.append(noise_emb)
-        cost_nat_abs = T.sum( (nat_emb-abs_emb) ** 2, axis=1 )
-        cost_nat_noise = T.mean( sum( [(nat_emb-noise_emb) ** 2 for noise_emb in noise_embs] ), axis=1)
-        cost = T.maximum(0, self.margin + cost_nat_abs - cost_nat_noise)
-        cost = T.mean(cost)
-        return cost
+    def build_cost(self, ot, y):
+        # nat_emb: bs x emb_dim
+        # y:       bs x acttype_cnt
+        # W_abs:   acttype_cnt x emb_dim x word_dim
+        # ot = nat_emb x W_abs:
+        #          bs x acttype_cnt x word_dimn
+        # (nat_emb x W_abs).flatten(2):
+        #          bs x (acttype_cnt x word_dim)
+        nat_flatten = ot.flatten(2)
+        y_flatten = y.flatten()
+        cost = nat_flatten[T.arange(y_flatten.shape[0]), \
+                           y_flatten]
+        neg_log = T.sum(-T.log(cost))
+        cost = neg_log
+        self.pred = T.argmax(nat_flatten, axis=1)
+        acc = T.sum(T.eq(self.pred, y_flatten))
+        acc = acc / (self.bs * self.acttype_cnt)
+        return (cost, acc)
 
     def build_train_function(self):
         if not hasattr(self, 'train_fn'):
             self.train_fn = \
                             theano.function(inputs=[self.abstract_input,
-                                                    self.natural_input] + self.noise_vars,
-                                            outputs=self.cost,
+                                                    self.natural_input],
+                                            outputs=[self.cost, self.acc],
                                             updates=self.updates,
                                             name="train_fn")
         return self.train_fn
@@ -81,8 +101,8 @@ class EmbModel(Model):
         if not hasattr(self, 'eval_fn'):
             self.eval_fn = \
                            theano.function(inputs=[self.abstract_input,
-                                                    self.natural_input] + self.noise_vars,
-                                           outputs=[self.cost],
+                                                    self.natural_input],
+                                           outputs=[self.cost, self.acc],
                                            name="eval_fn")
             return self.eval_fn
 
