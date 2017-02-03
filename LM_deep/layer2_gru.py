@@ -191,11 +191,10 @@ class Layer2GRU(Model):
         return res
 
     def genExample(self, max_len=30):
-        example_sent = []
+        example_sent = [1]
         self.genReset()
         for k in range(max_len):
             nw = self.genNext()[0]
-            print nw
             rnd_list = []
             for ind in range(len(nw)):
                 rnd_list.append((ind, nw[ind]))
