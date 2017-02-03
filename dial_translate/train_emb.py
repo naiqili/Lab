@@ -141,7 +141,7 @@ def main(args):
 
         step = step + 1
         # Sample stuff
-        if step % 5 == 0:
+        if step % 200 == 0:
             for param in model.params:
                 logger.debug("%s = %.4f" % (param.name, numpy.sum(param.get_value() ** 2) ** 0.5))
 

@@ -47,8 +47,10 @@ class LSTM(Model):
         self.training_cost = self.build_cost(self.ot, self.y_data, training_mask)
         self.updates = self.compute_updates(self.training_cost, self.params)
         self.y_pred = self.ot.argmax(axis=2) # See lab/argmax_test.py
-        
-        self.genReset()
+
+        self.genh = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='h_gen')
+        self.genc = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='c_gen')
+        self.genx = theano.shared(np.asarray(1, dtype='int64'), name='x_gen')
         (self.gen_pred, self.gen_updates) = self.build_gen_pred()
         
     def build_gen_pred(self):
@@ -206,9 +208,9 @@ class LSTM(Model):
         return updates
 
     def genReset(self, start_token=1):
-        self.genh = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='h_gen')
-        self.genc = theano.shared(np.zeros((self.hdim,), dtype='float32'), name='c_gen')
-        self.genx = theano.shared(np.asarray(start_token, dtype='int64'), name='x_gen')
+        self.genh.set_value(np.zeros((self.hdim,), dtype='float32'))
+        self.genc.set_value(np.zeros((self.hdim,), dtype='float32'))
+        self.genx.set_value(np.asarray(start_token, dtype='int64'))
         
     def genNext(self):
         gen_fn = self.build_gen_function()

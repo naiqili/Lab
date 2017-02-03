@@ -3,7 +3,7 @@
 
 from data_iterator import *
 from state import *
-from layer2_gru import *
+from mono_layer2_gru import *
 from utils import *
 
 import time
@@ -169,7 +169,7 @@ def main(args):
         # x_cost_mask = batch['x_mask']
         # x_semantic = batch['x_semantic']
 
-        c = train_batch(x_data, y_data)
+        [c, ot] = train_batch(x_data, y_data)
 
         if numpy.isinf(c) or numpy.isnan(c):
             logger.warn("Got NaN cost .. skipping")
@@ -254,7 +254,7 @@ def main(args):
                 pylab.subplot(2,1,2)
                 pylab.title("Validation Cost")
                 pylab.plot(timings["valid_cost"])
-                pylab.savefig(model.state['save_dir'] + '/' + args.run_id + '.png')
+                pylab.savefig('log/' + args.run_id + '.png')
                 pylab.close()
             except:
                 pass
@@ -276,7 +276,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'Layer2_GRU_emb50_hs128x128'
+    args.run_id = 'mono_Layer2_GRU_emb50_hs80x80_v2'
     args.prototype = 'layer2_gru_state'
-#    args.resume = 'model/GRU_emb20_h20__model'
+    #args.resume = 'model/mono_Layer2_GRU_emb50_hs128x128_model'
     main(args)

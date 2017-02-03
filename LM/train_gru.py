@@ -37,8 +37,7 @@ class Unbuffered:
         return getattr(self.stream, attr)
 
 sys.stdout = Unbuffered(sys.stdout)
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.FileHandler('./log/' + __name__))
+
 
 ### Unique RUN_ID for this execution
 RUN_ID = str(time.time())
@@ -78,6 +77,8 @@ def load(model, filename):
     print("Model loaded, took {}".format(time.time() - start))
 
 def main(args):     
+    logger = logging.getLogger(__name__)
+    logger.addHandler(logging.FileHandler('./log/' + args.run_id))
     logging.basicConfig(level = logging.DEBUG,
                         format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
      
@@ -253,7 +254,7 @@ def main(args):
                 pylab.subplot(2,1,2)
                 pylab.title("Validation Cost")
                 pylab.plot(timings["valid_cost"])
-                pylab.savefig(model.state['save_dir'] + '/' + args.run_id + '.png')
+                pylab.savefig('log/' + args.run_id + '.png')
                 pylab.close()
             except:
                 pass
@@ -275,7 +276,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'GRU_hardsig_1act_emb50_h300'
+    args.run_id = 'GRU_hardsig_1act_emb50_h100_v3'
     args.prototype = 'gru_state'
 #    args.resume = 'model/GRU_emb20_h20__model'
     main(args)
