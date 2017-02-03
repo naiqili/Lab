@@ -3,8 +3,8 @@ from collections import OrderedDict
 def layer2_gru_state():
     state = {}
 
-    state['train_file'] = 'tmp/train_data.txt'
-    state['valid_file'] = 'tmp/dev_data.txt'
+    state['train_file'] = 'tmp/train_coded.txt'
+    state['valid_file'] = 'tmp/dev_coded.txt'
 
     # Random seed
     state['seed'] = 1234
@@ -44,7 +44,7 @@ def layer2_gru_state():
     # Maximum sequence length / trim batches
     state['seqlen'] = 300
     # Batch size
-    state['bs'] = 1000
+    state['bs'] = 50
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
@@ -57,7 +57,7 @@ def layer2_gru_state():
     # Frequency of training error reports (in number of batches)
     state['train_freq'] = 1
     # Validation frequency
-    state['valid_freq'] = 1
+    state['valid_freq'] = 500
     # Number of batches to process
     state['loop_iters'] = 3000000
     # Maximum number of minutes to run

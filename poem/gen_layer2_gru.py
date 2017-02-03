@@ -142,6 +142,6 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.resume = 'model/Layer2_GRU_emb50_hs128x128_v2_model'
+    args.resume = 'model/Layer2_GRU_emb128_hs256x256_model'
     args.prototype = 'layer2_gru_state'
     main(args)

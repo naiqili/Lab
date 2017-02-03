@@ -175,7 +175,8 @@ def main(args):
             logger.warn("Got NaN cost .. skipping")
             continue
 
-        train_cost = c / (x_data != 0).sum()
+        c = c / (x_data != 0).sum()
+        train_cost = c
         timings["train_cost"].append(train_cost)
         
         this_time = time.time()
@@ -191,7 +192,7 @@ def main(args):
         
         if valid_data is not None and step % state['valid_freq'] == 0 and step > 1:
             logger.debug("Generating example...")
-            example_sent = [1] + model.genExample()
+            example_sent = model.genExample()
             tran_sent =[]
             for ind in example_sent:
                 if ind in ind2word:
@@ -221,6 +222,7 @@ def main(args):
 
                 if numpy.isinf(c) or numpy.isnan(c):
                     continue
+                c = c / (x_data != 0).sum()
                         
                 vcost_list.append(c)
                 
