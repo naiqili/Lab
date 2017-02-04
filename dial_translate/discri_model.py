@@ -60,8 +60,8 @@ class DiscriModel(Model):
         # y:       bs x acttype_cnt
         # W_abs:   acttype_cnt x emb_dim x word_dim
         # ot = nat_emb x W_abs:
-        #          bs x acttype_cnt x word_dimn
-        # (nat_emb x W_abs).flatten(2) & dimshuffle:
+        #          bs x acttype_cnt x word_dim
+        # (nat_emb x W_abs) & dimshuffle & flatten(2):
         #          (bs x acttype_cnt) x word_dim
         nat_emb = self.natural_encoder.build_output(natural_input)
         o_t = T.dot(nat_emb, self.W_abs) + self.b_abs
@@ -73,10 +73,10 @@ class DiscriModel(Model):
         # y:       bs x acttype_cnt
         # W_abs:   acttype_cnt x emb_dim x word_dim
         # ot = nat_emb x W_abs:
-        #          bs x acttype_cnt x word_dimn
-        # (nat_emb x W_abs).flatten(2):
-        #          bs x (acttype_cnt x word_dim)
-        nat_flatten = ot.flatten(2)
+        #          bs x acttype_cnt x word_dim
+        # (nat_emb x W_abs) & dimshuffle & flatten(2):
+        #          (bs x acttype_cnt) x word_dim
+        nat_flatten = ot.dimshuffle(2,0,1).flatten(2).dimshuffle(1,0)
         y_flatten = y.flatten()
         cost = nat_flatten[T.arange(y_flatten.shape[0]), \
                            y_flatten]
