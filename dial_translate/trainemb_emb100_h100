@@ -2131,3 +2131,118 @@ b_o_NaturalEncoder = 0.7673
 U_g_NaturalEncoder = 7.6953
 W_g_NaturalEncoder = 3.6735
 b_g_NaturalEncoder = 0.1061
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 28,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/simple_train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/simple_dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_acc': [], 'train_cost': [], 'valid_acc': [], 'valid_cost': []}
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 28,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/simple_train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/simple_dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_acc': [], 'train_cost': [], 'valid_acc': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 28,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/simple_train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/simple_dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_acc': [], 'train_cost': [], 'valid_acc': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embDiscriModel = 2.6366
+W_absDiscriModel = 37728.3936
+b_absDiscriModel = 0.0000
+W_out_NaturalEncoder = 2.5557
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.5919
+W_i_NaturalEncoder = 2.5573
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.5896
+W_f_NaturalEncoder = 2.5599
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.6045
+W_o_NaturalEncoder = 2.5597
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.6107
+W_g_NaturalEncoder = 2.5564
+b_g_NaturalEncoder = 0.0000

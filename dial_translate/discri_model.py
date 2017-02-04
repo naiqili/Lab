@@ -46,7 +46,7 @@ class DiscriModel(Model):
         self.abstract_output = T.imatrix('abstract_output')
 
         self.output = self.build_output(self.natural_input)
-        (self.cost, self.acc) = self.build_cost(self.natural_input,
+        (self.cost, self.acc) = self.build_cost(self.output,
                                     self.abstract_output)
         self.updates = self.compute_updates(self.cost, self.params)
         
@@ -61,8 +61,8 @@ class DiscriModel(Model):
         # W_abs:   acttype_cnt x emb_dim x word_dim
         # ot = nat_emb x W_abs:
         #          bs x acttype_cnt x word_dimn
-        # (nat_emb x W_abs).flatten(2):
-        #          bs x (acttype_cnt x word_dim)
+        # (nat_emb x W_abs).flatten(2) & dimshuffle:
+        #          (bs x acttype_cnt) x word_dim
         nat_emb = self.natural_encoder.build_output(natural_input)
         o_t = T.dot(nat_emb, self.W_abs) + self.b_abs
         o_t = SoftMax(o_t)
@@ -90,7 +90,7 @@ class DiscriModel(Model):
     def build_train_function(self):
         if not hasattr(self, 'train_fn'):
             self.train_fn = \
-                            theano.function(inputs=[self.abstract_input,
+                            theano.function(inputs=[self.abstract_output,
                                                     self.natural_input],
                                             outputs=[self.cost, self.acc],
                                             updates=self.updates,
@@ -100,7 +100,7 @@ class DiscriModel(Model):
     def build_eval_function(self):
         if not hasattr(self, 'eval_fn'):
             self.eval_fn = \
-                           theano.function(inputs=[self.abstract_input,
+                           theano.function(inputs=[self.abstract_output,
                                                     self.natural_input],
                                            outputs=[self.cost, self.acc],
                                            name="eval_fn")
