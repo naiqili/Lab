@@ -197,6 +197,7 @@ def main(args):
                 _nat = batch['Nat']
                 
                 (c, acc) = eval_batch(_abs, _nat)
+                
 
                 if numpy.isinf(c) or numpy.isnan(c):
                     continue
