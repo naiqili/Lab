@@ -59,10 +59,9 @@ def save(model, timings, iters=''):
     start = time.time()
     s = signal.signal(signal.SIGINT, signal.SIG_IGN)
     
-    model.abstract_encoder.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_abstract_model.npz')
-    model.natural_encoder.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_natural_model.npz')
-    vals = dict([(model.W_emb.name, model.W_emb.get_value())])
-    numpy.savez(model.state['save_dir'] + '/' + model.state['run_id'] + '_word_emb', **vals)
+    model.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_model.npz')
+    # vals = dict([(model.W_emb.name, model.W_emb.get_value())])
+    # numpy.savez(model.state['save_dir'] + '/' + model.state['run_id'] + '_word_emb', **vals)
     cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_state.pkl', 'w'))
     cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_timings.pkl', 'w'))
     signal.signal(signal.SIGINT, s)
@@ -71,7 +70,7 @@ def save(model, timings, iters=''):
 
 def main(args):     
     logger = logging.getLogger(__name__)
-    logger.addHandler(logging.FileHandler(args.run_id))
+    logger.addHandler(logging.FileHandler('log/' + args.run_id))
     logging.basicConfig(level = logging.DEBUG,
                         format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
      
@@ -159,7 +158,9 @@ def main(args):
         _abs = batch['Abs']
         _nat = batch['Nat']
 
-        (c, acc) = train_batch(_abs, _nat)
+        (c, acc, pred, y_flatten) = train_batch(_abs, _nat)
+        #print 'Pred:', pred
+        #print 'y_flatten:', y_flatten
 
         if numpy.isinf(c) or numpy.isnan(c):
             logger.warn("Got NaN cost .. skipping")
@@ -176,7 +177,7 @@ def main(args):
             h, m, s = ConvertTimedelta(this_time - start_time)
             logger.debug(".. %.2d:%.2d:%.2d %4d mb # %d bs %d cost = %.4f acc = %.4f" % (h, m, s,\
                                                                  state['time_stop'] - (time.time() - start_time)/60., \
-                                                                 step, batch['Nat'].shape[1], float(c), acc))
+                                                                                         step, batch['Nat'].shape[1], float(c), float(acc)))
         
         if valid_data is not None and step % state['valid_freq'] == 0 and step > 1:
             valid_data.start()
@@ -195,7 +196,7 @@ def main(args):
                 _abs = batch['Abs']
                 _nat = batch['Nat']
                 
-                (c, acc) = eval_batch([_abs, _nat])
+                (c, acc) = eval_batch(_abs, _nat)
 
                 if numpy.isinf(c) or numpy.isnan(c):
                     continue
@@ -266,7 +267,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'trainemb_emb100_h100'
-    args.prototype = 'simple_state'
+    args.run_id = 'train_discri_full_emb100_h256'
+    args.prototype = 'prototype_state'
     #args.resume = 'model/GRU_overtrain_model'
     main(args)

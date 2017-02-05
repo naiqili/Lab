@@ -122,7 +122,7 @@ def main(args):
                 res.append(ind2word[idx])
             else:
                 res.append('<OOV>')
-        gen_str = ' '.join(res)
+        gen_str = ''.join(res)
         print("%s: %s" % (nexample, gen_str))
             
     logger.debug("All done, exiting...")
@@ -131,7 +131,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", type=str, default="", help="Resume training from that state")
     parser.add_argument("--n", type=int, default=10, help="Generate n examples")
-    parser.add_argument("--maxlen", type=int, default=20, help="Maximum length of the generated sentence")
+    parser.add_argument("--maxlen", type=int, default=350, help="Maximum length of the generated sentence")
     parser.add_argument("--prototype", type=str, help="Use the prototype")
 
     args = parser.parse_args()

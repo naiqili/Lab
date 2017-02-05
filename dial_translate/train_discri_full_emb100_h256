@@ -1,0 +1,485 @@
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 50,
+ 'word_dim': 700}
+Timings:
+{'train_acc': [], 'train_cost': [], 'valid_acc': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embDiscriModel = 2.6366
+W_absDiscriModel = 14.4574
+b_absDiscriModel = 0.0000
+W_out_NaturalEncoder = 2.5553
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.5923
+W_i_NaturalEncoder = 2.5517
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6052
+W_f_NaturalEncoder = 2.5645
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5993
+W_o_NaturalEncoder = 2.5616
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5946
+W_g_NaturalEncoder = 2.5561
+b_g_NaturalEncoder = 0.0000
+.. 00:00:08 44639 mb # 0 bs 2000 cost = 6.5511 acc = 0.0000
+.. 00:00:12 44639 mb # 1 bs 2000 cost = 6.5506 acc = 0.0000
+.. 00:00:16 44639 mb # 2 bs 2000 cost = 6.5502 acc = 0.0000
+.. 00:00:19 44639 mb # 3 bs 2000 cost = 6.5497 acc = 0.0000
+.. 00:00:23 44639 mb # 4 bs 2000 cost = 6.5492 acc = 0.0000
+.. 00:00:27 44639 mb # 5 bs 2000 cost = 6.5487 acc = 0.0000
+.. 00:00:30 44639 mb # 6 bs 2000 cost = 6.5481 acc = 0.0000
+.. 00:00:34 44639 mb # 7 bs 2000 cost = 6.5475 acc = 0.0000
+.. 00:00:38 44639 mb # 8 bs 2000 cost = 6.5469 acc = 0.0000
+.. 00:00:41 44639 mb # 9 bs 2000 cost = 6.5462 acc = 0.0000
+.. 00:00:45 44639 mb # 10 bs 2000 cost = 6.5455 acc = 0.0000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 1,
+ 'word_dim': 700}
+Timings:
+{'train_acc': [], 'train_cost': [], 'valid_acc': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embDiscriModel = 2.6366
+W_absDiscriModel = 14.4574
+b_absDiscriModel = 0.0000
+W_out_NaturalEncoder = 2.5553
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.5923
+W_i_NaturalEncoder = 2.5517
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6052
+W_f_NaturalEncoder = 2.5645
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5993
+W_o_NaturalEncoder = 2.5616
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5946
+W_g_NaturalEncoder = 2.5561
+b_g_NaturalEncoder = 0.0000
+.. 00:00:09 44639 mb # 0 bs 2000 cost = 6.5511 acc = 0.0000
+.. 00:00:12 44639 mb # 1 bs 2000 cost = 6.5506 acc = 0.0000
+.. 00:00:16 44639 mb # 2 bs 2000 cost = 6.5502 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 2
+[VALIDATION COST]: 6.5497
+[VALIDATION ACC]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 6.549736
+.. 00:00:22 44639 mb # 3 bs 2000 cost = 6.5497 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 3
+[VALIDATION COST]: 6.5492
+[VALIDATION ACC]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 6.549246
+.. 00:00:28 44639 mb # 4 bs 2000 cost = 6.5492 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 4
+[VALIDATION COST]: 6.5487
+[VALIDATION ACC]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 6.548729
+.. 00:00:35 44639 mb # 5 bs 2000 cost = 6.5487 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 5
+[VALIDATION COST]: 6.5482
+[VALIDATION ACC]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 6.548182
+.. 00:00:41 44639 mb # 6 bs 2000 cost = 6.5481 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 6
+[VALIDATION COST]: 6.5476
+[VALIDATION ACC]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 6.547599
+.. 00:00:47 44639 mb # 7 bs 2000 cost = 6.5475 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 7
+[VALIDATION COST]: 6.5470
+[VALIDATION ACC]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 6.546976
+.. 00:00:53 44639 mb # 8 bs 2000 cost = 6.5469 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+State:
+{'activation': 'lambda x: T.tanh(x)',
+ 'acttype_cnt': 35,
+ 'bs': 2000,
+ 'cost_threshold': 1.003,
+ 'cutoff': 1.0,
+ 'emb_dim': 100,
+ 'eos_sym': 0,
+ 'h_dim': 256,
+ 'loop_iters': 3000000,
+ 'lr': 0.0001,
+ 'margin': 50,
+ 'max_iters': 10,
+ 'minerr': -1,
+ 'noise_cnt': 50,
+ 'patience': 5,
+ 'prefix': 'model_',
+ 'rnnh_dim': 256,
+ 'save_dir': './model',
+ 'seed': 1234,
+ 'seqlen': 280,
+ 'sort_k_batches': 1,
+ 'time_stop': 44640,
+ 'train_file': 'tmp/train_data_coded.pkl',
+ 'train_freq': 1,
+ 'updater': 'adam',
+ 'valid_file': 'tmp/dev_data_coded.pkl',
+ 'valid_freq': 100,
+ 'word_dim': 700}
+Timings:
+{'train_acc': [], 'train_cost': [], 'valid_acc': [], 'valid_cost': []}
+Compile trainer
+Training with exact log-likelihood
+Load data
+W_embDiscriModel = 2.6366
+W_absDiscriModel = 14.4574
+b_absDiscriModel = 0.0000
+W_out_NaturalEncoder = 2.5553
+b_out_NaturalEncoder = 0.0000
+U_i_NaturalEncoder = 1.5923
+W_i_NaturalEncoder = 2.5517
+b_i_NaturalEncoder = 0.0000
+U_f_NaturalEncoder = 1.6052
+W_f_NaturalEncoder = 2.5645
+b_f_NaturalEncoder = 0.0000
+U_o_NaturalEncoder = 1.5993
+W_o_NaturalEncoder = 2.5616
+b_o_NaturalEncoder = 0.0000
+U_g_NaturalEncoder = 1.5946
+W_g_NaturalEncoder = 2.5561
+b_g_NaturalEncoder = 0.0000
+.. 00:00:08 44639 mb # 0 bs 2000 cost = 6.5511 acc = 0.0000
+.. 00:00:12 44639 mb # 1 bs 2000 cost = 6.5506 acc = 0.0000
+.. 00:00:16 44639 mb # 2 bs 2000 cost = 6.5502 acc = 0.0000
+.. 00:00:20 44639 mb # 3 bs 2000 cost = 6.5497 acc = 0.0000
+.. 00:00:23 44639 mb # 4 bs 2000 cost = 6.5492 acc = 0.0000
+.. 00:00:27 44639 mb # 5 bs 2000 cost = 6.5487 acc = 0.0000
+.. 00:00:31 44639 mb # 6 bs 2000 cost = 6.5481 acc = 0.0000
+.. 00:00:35 44639 mb # 7 bs 2000 cost = 6.5475 acc = 0.0000
+.. 00:00:39 44639 mb # 8 bs 2000 cost = 6.5469 acc = 0.0000
+.. 00:00:42 44639 mb # 9 bs 2000 cost = 6.5462 acc = 0.0000
+.. 00:00:46 44639 mb # 10 bs 2000 cost = 6.5455 acc = 0.0000
+.. 00:00:50 44639 mb # 11 bs 2000 cost = 6.5447 acc = 0.0000
+.. 00:00:54 44639 mb # 12 bs 2000 cost = 6.5438 acc = 0.0000
+.. 00:00:58 44639 mb # 13 bs 2000 cost = 6.5429 acc = 0.0000
+.. 00:01:01 44638 mb # 14 bs 2000 cost = 6.5419 acc = 0.0000
+.. 00:01:05 44638 mb # 15 bs 2000 cost = 6.5407 acc = 0.0000
+.. 00:01:09 44638 mb # 16 bs 2000 cost = 6.5395 acc = 0.0000
+.. 00:01:13 44638 mb # 17 bs 2000 cost = 6.5381 acc = 0.0000
+.. 00:01:17 44638 mb # 18 bs 2000 cost = 6.5366 acc = 0.0000
+.. 00:01:21 44638 mb # 19 bs 2000 cost = 6.5349 acc = 0.0000
+.. 00:01:24 44638 mb # 20 bs 2000 cost = 6.5331 acc = 0.0000
+.. 00:01:28 44638 mb # 21 bs 2000 cost = 6.5310 acc = 0.0000
+.. 00:01:32 44638 mb # 22 bs 2000 cost = 6.5287 acc = 0.0000
+.. 00:01:36 44638 mb # 23 bs 2000 cost = 6.5260 acc = 0.0000
+.. 00:01:40 44638 mb # 24 bs 2000 cost = 6.5231 acc = 0.0000
+.. 00:01:43 44638 mb # 25 bs 2000 cost = 6.5199 acc = 0.0000
+.. 00:01:47 44638 mb # 26 bs 2000 cost = 6.5161 acc = 0.0000
+.. 00:01:51 44638 mb # 27 bs 2000 cost = 6.5118 acc = 0.0000
+.. 00:01:55 44638 mb # 28 bs 2000 cost = 6.5070 acc = 0.0000
+.. 00:01:59 44638 mb # 29 bs 2000 cost = 6.5018 acc = 0.0000
+.. 00:02:02 44637 mb # 30 bs 2000 cost = 6.4956 acc = 0.0000
+.. 00:02:06 44637 mb # 31 bs 2000 cost = 6.4883 acc = 0.0000
+.. 00:02:10 44637 mb # 32 bs 2000 cost = 6.4799 acc = 0.0000
+.. 00:02:14 44637 mb # 33 bs 2000 cost = 6.4713 acc = 0.0000
+.. 00:02:18 44637 mb # 34 bs 2000 cost = 6.4610 acc = 0.0000
+.. 00:02:22 44637 mb # 35 bs 2000 cost = 6.4480 acc = 0.0000
+.. 00:02:25 44637 mb # 36 bs 2000 cost = 6.4352 acc = 0.0000
+.. 00:02:29 44637 mb # 37 bs 2000 cost = 6.4169 acc = 0.0000
+.. 00:02:33 44637 mb # 38 bs 2000 cost = 6.4000 acc = 0.0000
+.. 00:02:37 44637 mb # 39 bs 2000 cost = 6.3770 acc = 0.0000
+.. 00:02:41 44637 mb # 40 bs 2000 cost = 6.3498 acc = 0.0000
+.. 00:02:44 44637 mb # 41 bs 2000 cost = 6.3186 acc = 0.0000
+.. 00:02:48 44637 mb # 42 bs 2000 cost = 6.2853 acc = 0.0000
+.. 00:02:52 44637 mb # 43 bs 2000 cost = 6.2381 acc = 0.0000
+.. 00:02:56 44637 mb # 44 bs 2000 cost = 6.1913 acc = 0.0000
+.. 00:03:00 44636 mb # 45 bs 2000 cost = 6.1264 acc = 0.0000
+.. 00:03:03 44636 mb # 46 bs 2000 cost = 6.0529 acc = 0.0000
+.. 00:03:07 44636 mb # 47 bs 2000 cost = 5.9489 acc = 0.0000
+.. 00:03:11 44636 mb # 48 bs 2000 cost = 5.7983 acc = 0.0000
+.. 00:03:14 44636 mb # 49 bs 2000 cost = 5.7107 acc = 0.0000
+.. 00:03:18 44636 mb # 50 bs 2000 cost = 5.5062 acc = 0.0000
+.. 00:03:22 44636 mb # 51 bs 2000 cost = 5.3129 acc = 0.0000
+.. 00:03:26 44636 mb # 52 bs 2000 cost = 5.2060 acc = 0.0000
+.. 00:03:29 44636 mb # 53 bs 2000 cost = 5.0915 acc = 0.0000
+.. 00:03:33 44636 mb # 54 bs 2000 cost = 4.8106 acc = 0.0000
+.. 00:03:37 44636 mb # 55 bs 2000 cost = 4.6868 acc = 0.0000
+.. 00:03:40 44636 mb # 56 bs 2000 cost = 4.4129 acc = 0.0000
+.. 00:03:44 44636 mb # 57 bs 2000 cost = 4.2814 acc = 0.0000
+.. 00:03:48 44636 mb # 58 bs 2000 cost = 4.1120 acc = 0.0000
+.. 00:03:51 44636 mb # 59 bs 2000 cost = 3.8618 acc = 0.0000
+.. 00:03:55 44636 mb # 60 bs 2000 cost = 3.7066 acc = 0.0000
+.. 00:03:59 44636 mb # 61 bs 2000 cost = 3.4953 acc = 0.0000
+.. 00:04:03 44635 mb # 62 bs 2000 cost = 3.3064 acc = 0.0000
+.. 00:04:06 44635 mb # 63 bs 2000 cost = 3.1386 acc = 0.0000
+.. 00:04:10 44635 mb # 64 bs 2000 cost = 2.8320 acc = 0.0000
+.. 00:04:14 44635 mb # 65 bs 2000 cost = 2.7985 acc = 0.0000
+.. 00:04:17 44635 mb # 66 bs 2000 cost = 2.5614 acc = 0.0000
+.. 00:04:21 44635 mb # 67 bs 2000 cost = 2.4312 acc = 0.0000
+.. 00:04:25 44635 mb # 68 bs 2000 cost = 2.2861 acc = 0.0000
+.. 00:04:29 44635 mb # 69 bs 2000 cost = 2.2297 acc = 0.0000
+.. 00:04:32 44635 mb # 70 bs 2000 cost = 2.0427 acc = 0.0000
+.. 00:04:36 44635 mb # 71 bs 2000 cost = 1.9687 acc = 0.0000
+.. 00:04:40 44635 mb # 72 bs 2000 cost = 1.8924 acc = 0.0000
+.. 00:04:43 44635 mb # 73 bs 2000 cost = 1.8428 acc = 0.0000
+.. 00:04:47 44635 mb # 74 bs 2000 cost = 1.7290 acc = 0.0000
+.. 00:04:51 44635 mb # 75 bs 2000 cost = 1.6220 acc = 0.0000
+.. 00:04:54 44635 mb # 76 bs 2000 cost = 1.5350 acc = 0.0000
+.. 00:04:58 44635 mb # 77 bs 2000 cost = 1.4614 acc = 0.0000
+.. 00:05:02 44634 mb # 78 bs 2000 cost = 1.4041 acc = 0.0000
+.. 00:05:06 44634 mb # 79 bs 2000 cost = 1.3456 acc = 0.0000
+.. 00:05:09 44634 mb # 80 bs 2000 cost = 1.2287 acc = 0.0000
+.. 00:05:13 44634 mb # 81 bs 2000 cost = 1.1856 acc = 0.0000
+.. 00:05:17 44634 mb # 82 bs 2000 cost = 1.1145 acc = 0.0000
+.. 00:05:20 44634 mb # 83 bs 2000 cost = 1.0459 acc = 0.0000
+.. 00:05:24 44634 mb # 84 bs 2000 cost = 0.9722 acc = 0.0000
+.. 00:05:28 44634 mb # 85 bs 2000 cost = 0.9285 acc = 0.0000
+.. 00:05:31 44634 mb # 86 bs 2000 cost = 0.9170 acc = 0.0000
+.. 00:05:35 44634 mb # 87 bs 2000 cost = 0.8919 acc = 0.0000
+.. 00:05:39 44634 mb # 88 bs 2000 cost = 0.7909 acc = 0.0000
+.. 00:05:43 44634 mb # 89 bs 2000 cost = 0.7409 acc = 0.0000
+.. 00:05:46 44634 mb # 90 bs 2000 cost = 0.7245 acc = 0.0000
+.. 00:05:50 44634 mb # 91 bs 2000 cost = 0.6733 acc = 0.0000
+.. 00:05:54 44634 mb # 92 bs 2000 cost = 0.6396 acc = 0.0000
+.. 00:05:57 44634 mb # 93 bs 2000 cost = 0.6189 acc = 0.0000
+.. 00:06:01 44633 mb # 94 bs 2000 cost = 0.5548 acc = 0.0000
+.. 00:06:05 44633 mb # 95 bs 2000 cost = 0.5219 acc = 0.0000
+.. 00:06:09 44633 mb # 96 bs 2000 cost = 0.4934 acc = 0.0000
+.. 00:06:12 44633 mb # 97 bs 2000 cost = 0.4671 acc = 0.0000
+.. 00:06:16 44633 mb # 98 bs 2000 cost = 0.4172 acc = 0.0000
+.. 00:06:20 44633 mb # 99 bs 2000 cost = 0.4107 acc = 0.0000
+.. 00:06:23 44633 mb # 100 bs 2000 cost = 0.3671 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 100
+[VALIDATION COST]: 0.4861
+[VALIDATION ACC]: 0.0000
+[VALIDATION END]
+[VALIDATION COST]: 0.486079
+.. 00:06:29 44633 mb # 101 bs 2000 cost = 0.3476 acc = 0.0000
+.. 00:06:33 44633 mb # 102 bs 2000 cost = 0.3375 acc = 0.0000
+.. 00:06:37 44633 mb # 103 bs 2000 cost = 0.3068 acc = 0.0000
+.. 00:06:41 44633 mb # 104 bs 2000 cost = 0.3001 acc = 0.0000
+.. 00:06:44 44633 mb # 105 bs 2000 cost = 0.2799 acc = 0.0000
+.. 00:06:48 44633 mb # 106 bs 2000 cost = 0.2833 acc = 0.0000
+.. 00:06:52 44633 mb # 107 bs 2000 cost = 0.2817 acc = 0.0000
+.. 00:06:55 44633 mb # 108 bs 2000 cost = 0.2692 acc = 0.0000
+.. 00:06:59 44633 mb # 109 bs 2000 cost = 0.2619 acc = 0.0000
+.. 00:07:03 44632 mb # 110 bs 2000 cost = 0.2582 acc = 0.0000
+.. 00:07:07 44632 mb # 111 bs 2000 cost = 0.2509 acc = 0.0000
+.. 00:07:10 44632 mb # 112 bs 2000 cost = 0.2530 acc = 0.0000
+.. 00:07:14 44632 mb # 113 bs 2000 cost = 0.2529 acc = 0.0000
+.. 00:07:18 44632 mb # 114 bs 2000 cost = 0.2502 acc = 0.0000
+.. 00:07:21 44632 mb # 115 bs 2000 cost = 0.2523 acc = 0.0000
+.. 00:07:25 44632 mb # 116 bs 2000 cost = 0.2617 acc = 0.0000
+.. 00:07:29 44632 mb # 117 bs 2000 cost = 0.2418 acc = 0.0000
+.. 00:07:32 44632 mb # 118 bs 2000 cost = 0.2483 acc = 0.0000
+.. 00:07:36 44632 mb # 119 bs 2000 cost = 0.2413 acc = 0.0000
+.. 00:07:40 44632 mb # 120 bs 2000 cost = 0.2531 acc = 0.0000
+.. 00:07:44 44632 mb # 121 bs 2000 cost = 0.2446 acc = 0.0000
+.. 00:07:47 44632 mb # 122 bs 2000 cost = 0.2440 acc = 0.0000
+.. 00:07:51 44632 mb # 123 bs 2000 cost = 0.2530 acc = 0.0000
+.. 00:07:55 44632 mb # 124 bs 2000 cost = 0.2358 acc = 0.0000
+.. 00:07:58 44632 mb # 125 bs 2000 cost = 0.2406 acc = 0.0000
+.. 00:08:02 44631 mb # 126 bs 2000 cost = 0.2454 acc = 0.0000
+.. 00:08:06 44631 mb # 127 bs 2000 cost = 0.2410 acc = 0.0000
+.. 00:08:10 44631 mb # 128 bs 2000 cost = 0.2425 acc = 0.0000
+.. 00:08:13 44631 mb # 129 bs 2000 cost = 0.2416 acc = 0.0000
+.. 00:08:17 44631 mb # 130 bs 2000 cost = 0.2329 acc = 0.0000
+.. 00:08:21 44631 mb # 131 bs 2000 cost = 0.2399 acc = 0.0000
+.. 00:08:24 44631 mb # 132 bs 2000 cost = 0.2374 acc = 0.0000
+.. 00:08:28 44631 mb # 133 bs 2000 cost = 0.2407 acc = 0.0000
+.. 00:08:32 44631 mb # 134 bs 2000 cost = 0.2459 acc = 0.0000
+.. 00:08:35 44631 mb # 135 bs 2000 cost = 0.2376 acc = 0.0000
+.. 00:08:39 44631 mb # 136 bs 2000 cost = 0.2348 acc = 0.0000
+.. 00:08:43 44631 mb # 137 bs 2000 cost = 0.2350 acc = 0.0000
+.. 00:08:47 44631 mb # 138 bs 2000 cost = 0.2379 acc = 0.0000
+.. 00:08:50 44631 mb # 139 bs 2000 cost = 0.2361 acc = 0.0000
+.. 00:08:54 44631 mb # 140 bs 2000 cost = 0.2275 acc = 0.0000
+.. 00:08:58 44631 mb # 141 bs 2000 cost = 0.2351 acc = 0.0000
+.. 00:09:01 44630 mb # 142 bs 2000 cost = 0.2397 acc = 0.0000
+.. 00:09:05 44630 mb # 143 bs 2000 cost = 0.2400 acc = 0.0000
+.. 00:09:09 44630 mb # 144 bs 2000 cost = 0.2374 acc = 0.0000
+.. 00:09:12 44630 mb # 145 bs 2000 cost = 0.2280 acc = 0.0000
+.. 00:09:16 44630 mb # 146 bs 2000 cost = 0.2341 acc = 0.0000
+.. 00:09:20 44630 mb # 147 bs 2000 cost = 0.2328 acc = 0.0000
+.. 00:09:24 44630 mb # 148 bs 2000 cost = 0.2436 acc = 0.0000
+.. 00:09:27 44630 mb # 149 bs 2000 cost = 0.2328 acc = 0.0000
+.. 00:09:31 44630 mb # 150 bs 2000 cost = 0.2338 acc = 0.0000
+.. 00:09:35 44630 mb # 151 bs 2000 cost = 0.2239 acc = 0.0000
+.. 00:09:38 44630 mb # 152 bs 2000 cost = 0.2364 acc = 0.0000
+.. 00:09:42 44630 mb # 153 bs 2000 cost = 0.2248 acc = 0.0000
+.. 00:09:46 44630 mb # 154 bs 2000 cost = 0.2339 acc = 0.0000
+.. 00:09:50 44630 mb # 155 bs 2000 cost = 0.2358 acc = 0.0000
+.. 00:09:53 44630 mb # 156 bs 2000 cost = 0.2340 acc = 0.0000
+.. 00:09:57 44630 mb # 157 bs 2000 cost = 0.2339 acc = 0.0000
+.. 00:10:01 44629 mb # 158 bs 2000 cost = 0.2372 acc = 0.0000
+.. 00:10:04 44629 mb # 159 bs 2000 cost = 0.2269 acc = 0.0000
+.. 00:10:08 44629 mb # 160 bs 2000 cost = 0.2275 acc = 0.0000
+.. 00:10:12 44629 mb # 161 bs 2000 cost = 0.2307 acc = 0.0000
+.. 00:10:15 44629 mb # 162 bs 2000 cost = 0.2317 acc = 0.0000
+.. 00:10:19 44629 mb # 163 bs 2000 cost = 0.2314 acc = 0.0000
+.. 00:10:23 44629 mb # 164 bs 2000 cost = 0.2266 acc = 0.0000
+.. 00:10:27 44629 mb # 165 bs 2000 cost = 0.2331 acc = 0.0000
+.. 00:10:30 44629 mb # 166 bs 2000 cost = 0.2332 acc = 0.0000
+.. 00:10:34 44629 mb # 167 bs 2000 cost = 0.2259 acc = 0.0000
+.. 00:10:38 44629 mb # 168 bs 2000 cost = 0.2299 acc = 0.0000
+.. 00:10:41 44629 mb # 169 bs 2000 cost = 0.2336 acc = 0.0000
+.. 00:10:45 44629 mb # 170 bs 2000 cost = 0.2256 acc = 0.0000
+.. 00:10:49 44629 mb # 171 bs 2000 cost = 0.2321 acc = 0.0000
+.. 00:10:53 44629 mb # 172 bs 2000 cost = 0.2289 acc = 0.0000
+.. 00:10:56 44629 mb # 173 bs 2000 cost = 0.2274 acc = 0.0000
+.. 00:11:00 44628 mb # 174 bs 2000 cost = 0.2237 acc = 0.0000
+.. 00:11:04 44628 mb # 175 bs 2000 cost = 0.2275 acc = 0.0000
+.. 00:11:07 44628 mb # 176 bs 2000 cost = 0.2258 acc = 0.0000
+.. 00:11:11 44628 mb # 177 bs 2000 cost = 0.2191 acc = 0.0000
+.. 00:11:15 44628 mb # 178 bs 2000 cost = 0.2303 acc = 0.0000
+.. 00:11:18 44628 mb # 179 bs 2000 cost = 0.2290 acc = 0.0000
+.. 00:11:22 44628 mb # 180 bs 2000 cost = 0.2310 acc = 0.0000
+.. 00:11:26 44628 mb # 181 bs 2000 cost = 0.2225 acc = 0.0000
+.. 00:11:30 44628 mb # 182 bs 2000 cost = 0.2284 acc = 0.0000
+.. 00:11:33 44628 mb # 183 bs 2000 cost = 0.2221 acc = 0.0000
+.. 00:11:37 44628 mb # 184 bs 2000 cost = 0.2319 acc = 0.0000
+.. 00:11:41 44628 mb # 185 bs 2000 cost = 0.2261 acc = 0.0000
+.. 00:11:44 44628 mb # 186 bs 2000 cost = 0.2219 acc = 0.0000
+.. 00:11:48 44628 mb # 187 bs 2000 cost = 0.2251 acc = 0.0000
+.. 00:11:52 44628 mb # 188 bs 2000 cost = 0.2222 acc = 0.0000
+.. 00:11:55 44628 mb # 189 bs 2000 cost = 0.2206 acc = 0.0000
+.. 00:11:59 44628 mb # 190 bs 2000 cost = 0.2312 acc = 0.0000
+.. 00:12:03 44627 mb # 191 bs 2000 cost = 0.2253 acc = 0.0000
+.. 00:12:07 44627 mb # 192 bs 2000 cost = 0.2290 acc = 0.0000
+.. 00:12:10 44627 mb # 193 bs 2000 cost = 0.2263 acc = 0.0000
+.. 00:12:14 44627 mb # 194 bs 2000 cost = 0.2233 acc = 0.0000
+.. 00:12:18 44627 mb # 195 bs 2000 cost = 0.2255 acc = 0.0000
+.. 00:12:21 44627 mb # 196 bs 2000 cost = 0.2180 acc = 0.0000
+.. 00:12:25 44627 mb # 197 bs 2000 cost = 0.2241 acc = 0.0000
+.. 00:12:29 44627 mb # 198 bs 2000 cost = 0.2232 acc = 0.0000
+.. 00:12:33 44627 mb # 199 bs 2000 cost = 0.2242 acc = 0.0000
+W_embDiscriModel = 4.7926
+W_absDiscriModel = 63.2466
+b_absDiscriModel = 2.1518
+W_out_NaturalEncoder = 7.5703
+b_out_NaturalEncoder = 0.3479
+U_i_NaturalEncoder = 5.3728
+W_i_NaturalEncoder = 5.9769
+b_i_NaturalEncoder = 0.4839
+U_f_NaturalEncoder = 3.9422
+W_f_NaturalEncoder = 4.8362
+b_f_NaturalEncoder = 0.3580
+U_o_NaturalEncoder = 5.3399
+W_o_NaturalEncoder = 5.5187
+b_o_NaturalEncoder = 0.4835
+U_g_NaturalEncoder = 5.3344
+W_g_NaturalEncoder = 6.3303
+b_g_NaturalEncoder = 0.4395
+.. 00:12:36 44627 mb # 200 bs 2000 cost = 0.2228 acc = 0.0000
+[VALIDATION START]
+[VALID] - Got batch 2000
+[VALID] - Got batch 2000
+[VALIDATION STEP]: 200
+[VALIDATION COST]: nan
+[VALIDATION ACC]: nan
+[VALIDATION END]
+[VALIDATION COST]: nan
+.. 00:12:42 44627 mb # 201 bs 2000 cost = 0.2202 acc = 0.0000
+.. 00:12:46 44627 mb # 202 bs 2000 cost = 0.2210 acc = 0.0000
+.. 00:12:50 44627 mb # 203 bs 2000 cost = 0.2241 acc = 0.0000
+.. 00:12:53 44627 mb # 204 bs 2000 cost = 0.2215 acc = 0.0000
+.. 00:12:57 44627 mb # 205 bs 2000 cost = 0.2231 acc = 0.0000
+.. 00:13:01 44626 mb # 206 bs 2000 cost = 0.2193 acc = 0.0000
+.. 00:13:04 44626 mb # 207 bs 2000 cost = 0.2164 acc = 0.0000
+.. 00:13:08 44626 mb # 208 bs 2000 cost = 0.2192 acc = 0.0000
+.. 00:13:12 44626 mb # 209 bs 2000 cost = 0.2291 acc = 0.0000
+.. 00:13:16 44626 mb # 210 bs 2000 cost = 0.2258 acc = 0.0000
+.. 00:13:19 44626 mb # 211 bs 2000 cost = 0.2196 acc = 0.0000
+.. 00:13:23 44626 mb # 212 bs 2000 cost = 0.2234 acc = 0.0000
+.. 00:13:27 44626 mb # 213 bs 2000 cost = 0.2198 acc = 0.0000
+.. 00:13:30 44626 mb # 214 bs 2000 cost = 0.2150 acc = 0.0000
+.. 00:13:34 44626 mb # 215 bs 2000 cost = 0.2171 acc = 0.0000
+.. 00:13:38 44626 mb # 216 bs 2000 cost = 0.2202 acc = 0.0000
+.. 00:13:41 44626 mb # 217 bs 2000 cost = 0.2190 acc = 0.0000
+.. 00:13:45 44626 mb # 218 bs 2000 cost = 0.2199 acc = 0.0000
+.. 00:13:49 44626 mb # 219 bs 2000 cost = 0.2233 acc = 0.0000
+.. 00:13:53 44626 mb # 220 bs 2000 cost = 0.2192 acc = 0.0000
+.. 00:13:56 44626 mb # 221 bs 2000 cost = 0.2204 acc = 0.0000
+.. 00:14:00 44625 mb # 222 bs 2000 cost = 0.2198 acc = 0.0000
+.. 00:14:04 44625 mb # 223 bs 2000 cost = 0.2127 acc = 0.0000
+.. 00:14:07 44625 mb # 224 bs 2000 cost = 0.2169 acc = 0.0000
+.. 00:14:11 44625 mb # 225 bs 2000 cost = 0.2130 acc = 0.0000
+.. 00:14:15 44625 mb # 226 bs 2000 cost = 0.2188 acc = 0.0000
+.. 00:14:18 44625 mb # 227 bs 2000 cost = 0.2201 acc = 0.0000

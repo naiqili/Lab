@@ -52,13 +52,13 @@ class DiscriModel(Model):
         
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.word_dim, self.emb_dim), name='W_emb'+self.name))
-        self.W_abs = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.acttype_cnt, self.emb_dim, self.word_dim), name='W_abs'+self.name))
+        self.W_abs = add_to_params(self.params, theano.shared(value=self.rng.uniform(size=(self.acttype_cnt, self.h_dim, self.word_dim), low=-0.01, high=0.01).astype(theano.config.floatX), name='W_abs'+self.name))
         self.b_abs = add_to_params(self.params, theano.shared(value=np.zeros((self.acttype_cnt, self.word_dim,), dtype='float32'), name='b_abs'+self.name))
 
     def build_output(self, natural_input):
-        # nat_emb: bs x emb_dim
+        # nat_emb: bs x h_dim
         # y:       bs x acttype_cnt
-        # W_abs:   acttype_cnt x emb_dim x word_dim
+        # W_abs:   acttype_cnt x h_dim x word_dim
         # ot = nat_emb x W_abs:
         #          bs x acttype_cnt x word_dim
         # (nat_emb x W_abs) & dimshuffle & flatten(2):
@@ -69,9 +69,9 @@ class DiscriModel(Model):
         return o_t
         
     def build_cost(self, ot, y):
-        # nat_emb: bs x emb_dim
+        # nat_emb: bs x h_dim
         # y:       bs x acttype_cnt
-        # W_abs:   acttype_cnt x emb_dim x word_dim
+        # W_abs:   acttype_cnt x h_dim x word_dim
         # ot = nat_emb x W_abs:
         #          bs x acttype_cnt x word_dim
         # (nat_emb x W_abs) & dimshuffle & flatten(2):
@@ -82,9 +82,10 @@ class DiscriModel(Model):
                            y_flatten]
         neg_log = T.sum(-T.log(cost))
         cost = neg_log
+        cost = cost / (self.bs * self.acttype_cnt)
         self.pred = T.argmax(nat_flatten, axis=1)
-        acc = T.sum(T.eq(self.pred, y_flatten))
-        acc = acc / (self.bs * self.acttype_cnt)
+        acc = 1.0 * T.sum(T.eq(self.pred, y_flatten)) / (self.bs * self.acttype_cnt)
+        self.y_flatten = y_flatten
         return (cost, acc)
 
     def build_train_function(self):
@@ -92,7 +93,7 @@ class DiscriModel(Model):
             self.train_fn = \
                             theano.function(inputs=[self.abstract_output,
                                                     self.natural_input],
-                                            outputs=[self.cost, self.acc],
+                                            outputs=[self.cost, self.acc, self.pred, self.y_flatten],
                                             updates=self.updates,
                                             name="train_fn")
         return self.train_fn
