@@ -18,9 +18,9 @@ def prototype_state():
     # ----- SIZES ----
     state['prefix'] = 'model_'
     state['word_dim'] = 700
-    state['emb_dim'] = 100
-    state['rnnh_dim'] = 256
-    state['h_dim'] = 256
+    state['emb_dim'] = 256
+    state['h_dim'] = 512
+    state['rnnh_dim'] = 512
 
     state['margin'] = 50
     state['noise_cnt'] = 50
@@ -41,7 +41,7 @@ def prototype_state():
     # Maximum sequence length / trim batches
     state['seqlen'] = 280
     # Batch size
-    state['bs'] = 2000
+    state['bs'] = 500
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
@@ -54,7 +54,7 @@ def prototype_state():
     # Frequency of training error reports (in number of batches)
     state['train_freq'] = 1
     # Validation frequency
-    state['valid_freq'] = 100
+    state['valid_freq'] = 20
     # Number of batches to process
     state['loop_iters'] = 3000000
     # Maximum number of minutes to run
