@@ -126,8 +126,8 @@ class AttentionModel(Model):
         neg_log_cost_sum = T.sum(-T.log(cost) * ymask.flatten())
         cost_res = neg_log_cost_sum
 
-        self.pred = x_flatten.argmax()
-        self.acc = 1.0 * T.sum(T.eq(self.pred, y_flatten)) / T.sum(ymask)
+        self.pred = x_flatten.argmax(axis=1)
+        self.acc = 1.0 * T.sum(T.eq(self.pred, y_flatten) * ymask.flatten()) / T.sum(ymask)
         return cost_res
 
     def build_train_function(self):
