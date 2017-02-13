@@ -27,11 +27,12 @@ def add_to_params(params, new_param):
     return new_param
     
 class AttentionModel(Model):
-    def __init__(self, state):
+    def __init__(self, state, test_mode=False):
         Model.__init__(self)
         self.rng = numpy.random.RandomState(state['seed'])
         self.state = state
         self.__dict__.update(state)
+        self.test_mode = test_mode
         self.name = 'AttentionModel'
         self.active = eval(self.active)
         self.params = []
@@ -44,7 +45,7 @@ class AttentionModel(Model):
         self.ymask = T.matrix('y_mask')
 
         self.h_enc = self.encode(self.x_data, self.xmask)
-        [self.pt, self.alpha] = self.decode(self.h_enc)
+        [self.ot, self.pt, self.alpha] = self.decode(self.h_enc)
 
         self.cost = self.build_cost(self.pt,
                                     self.y_data,
@@ -68,7 +69,10 @@ class AttentionModel(Model):
         return self.W_emb[x]
 
     def encode(self, x_data, mask):
-        batch_size = self.bs
+        if self.test_mode:
+            batch_size = 2
+        else:
+            batch_size = self.bs
         emb_x = self.approx_embedder(x_data)
         def encode_step(x_t, m_t, h_tm1):
             m_t = m_t.dimshuffle(0, 'x')
@@ -83,7 +87,10 @@ class AttentionModel(Model):
         return h_enc
 
     def decode(self, h_enc):
-        batch_size = self.bs
+        if self.test_mode:
+            batch_size = 2
+        else:
+            batch_size = self.bs
         self.b = self.b.dimshuffle('x', 'x', 0)
         def decode_step(x_tm1, h_tm1, h_enc, b):
             h_t = self.active(T.dot(h_tm1, self.H_dec) + \
@@ -99,7 +106,7 @@ class AttentionModel(Model):
             p_t = SoftMax(g_t)
             o_t = p_t.argmax(axis=1)
             x_t = self.approx_embedder(o_t)
-            return [x_t, p_t, h_t, alpha_t]
+            return [x_t, p_t, o_t, h_t, alpha_t]
         x_0 = theano.shared(np.zeros((batch_size, self.emb_dim), \
                                      dtype='float32'), \
                             name='decode_x0')
@@ -110,11 +117,11 @@ class AttentionModel(Model):
                                      dtype='float32'), \
                             name='decode_alpha0')
 
-        [x_t, p_t, hs, alpha], _ = theano.scan(decode_step, \
-                                               outputs_info=[x_0, None, h_0, None], \
+        [x_t, p_t, o_t, hs, alpha], _ = theano.scan(decode_step, \
+                                               outputs_info=[x_0, None, None, h_0, None], \
                                          non_sequences=[h_enc, self.b], \
                                          n_steps=self.seq_len_out)
-        return [p_t, alpha]
+        return [o_t, p_t, alpha]
         
     def build_cost(self, ot, y_data, ymask):
         x_flatten = ot.dimshuffle(2,0,1)

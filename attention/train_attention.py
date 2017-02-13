@@ -273,5 +273,5 @@ if __name__ == "__main__":
     args = parse_args()
     args.run_id = 'attention_emb125_h125'
     args.prototype = 'prototype_state'
-    # args.resume = 'model/'
+    #args.resume = 'model/attention_emb125_h125_model'
     main(args)
