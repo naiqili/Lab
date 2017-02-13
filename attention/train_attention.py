@@ -3,7 +3,7 @@
 
 from data_iterator import *
 from state import *
-from discri_model import *
+from attention_model import *
 from utils import *
 
 import time
@@ -60,8 +60,6 @@ def save(model, timings, iters=''):
     s = signal.signal(signal.SIGINT, signal.SIG_IGN)
     
     model.save(model.state['save_dir'] + '/' + model.state['run_id'] + '_model.npz')
-    # vals = dict([(model.W_emb.name, model.W_emb.get_value())])
-    # numpy.savez(model.state['save_dir'] + '/' + model.state['run_id'] + '_word_emb', **vals)
     cPickle.dump(model.state, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_state.pkl', 'w'))
     cPickle.dump(timings, open(model.state['save_dir'] + '/' +  model.state['run_id'] + '_timings.pkl', 'w'))
     signal.signal(signal.SIGINT, s)
@@ -96,7 +94,7 @@ def main(args):
     logger.debug("State:\n{}".format(pprint.pformat(state)))
     logger.debug("Timings:\n{}".format(pprint.pformat(timings)))
  
-    model = DiscriModel(state)
+    model = AttentionModel(state)
     rng = model.rng 
 
     if args.resume != "":
@@ -155,10 +153,13 @@ def main(args):
         
         # logger.debug("[TRAIN] - Got batch %d" % (batch['x'].shape[1]))
         
-        _abs = batch['Abs']
-        _nat = batch['Nat']
+        _nat = batch['NAT']
+        _nat_mask = batch['NAT_mask']
+        _abs = batch['ABS']
+        _abs_mask = batch['ABS_mask']
 
-        (c, acc, pred, y_flatten) = train_batch(_abs, _nat)
+        (c, acc) = train_batch(_nat, _nat_mask,
+                               _abs, _abs_mask)
         #print 'Pred:', pred
         #print 'y_flatten:', y_flatten
 
@@ -177,7 +178,8 @@ def main(args):
             h, m, s = ConvertTimedelta(this_time - start_time)
             logger.debug(".. %.2d:%.2d:%.2d %4d mb # %d bs %d cost = %.4f acc = %.4f" % (h, m, s,\
                                                                  state['time_stop'] - (time.time() - start_time)/60., \
-                                                                                         step, batch['Nat'].shape[1], float(c), float(acc)))
+                                                                                         step, batch['NAT'].shape[1], \
+                                                                                         float(c)/(_abs_mask==1).sum(), float(acc)))
         
         if valid_data is not None and step % state['valid_freq'] == 0 and step > 1:
             valid_data.start()
@@ -191,12 +193,15 @@ def main(args):
                 # Train finished
                 if not batch:
                     break
-                logger.debug("[VALID] - Got batch %d" % (batch['Nat'].shape[1]))
+                logger.debug("[VALID] - Got batch %d" % (batch['NAT'].shape[1]))
 
-                _abs = batch['Abs']
-                _nat = batch['Nat']
+                _abs = batch['ABS']
+                _abs_mask = batch['ABS_mask']
+                _nat = batch['NAT']
+                _nat_mask = batch['NAT_mask']
                 
-                (c, acc) = eval_batch(_abs, _nat)
+                (c, acc) = eval_batch(_nat, _nat_mask, \
+                                      _abs, _abs_mask)
                 
 
                 if numpy.isinf(c) or numpy.isnan(c):
@@ -209,7 +214,7 @@ def main(args):
             valid_acc = numpy.mean(vacc_list)
 
             logger.debug("[VALIDATION STEP]: %d" % step)
-            logger.debug("[VALIDATION COST]: %.4f" % (valid_cost))
+            logger.debug("[VALIDATION COST]: %.4f" % (1.0 * valid_cost/(_abs_mask==1).sum()))
             logger.debug("[VALIDATION ACC]: %.4f" % (valid_acc))
             
             logger.debug("[VALIDATION END]")
@@ -226,8 +231,6 @@ def main(args):
 
             # Reset train cost, train misclass and train done
             train_cost = 0
-
-            logger.debug("[VALIDATION COST]: %f" % valid_cost)
 
             # Plot histogram over validation costs
             try:
@@ -268,7 +271,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'train_discri_full_emb256_h512_valid20'
+    args.run_id = 'attention_emb125_h125'
     args.prototype = 'prototype_state'
-    args.resume = 'model/train_discri_full_emb256_h512_valid20_model'
+    # args.resume = 'model/'
     main(args)
