@@ -17,7 +17,7 @@ from model import *
 from utils import *
 
 from abstract_encoder import AbstractEncoder
-from natural_encoder import NaturalEncoder
+from natural_encoder2 import NaturalEncoder2
 
 import operator
 
@@ -39,7 +39,7 @@ class DiscriModel(Model):
         self.activation = eval(self.activation)
         self.params = []
         self.init_params()
-        self.natural_encoder = NaturalEncoder(state, self.rng, self.W_emb)
+        self.natural_encoder = NaturalEncoder2(state, self.rng, self.W_emb)
         self.params = self.params + self.natural_encoder.params
 
         self.natural_input = T.imatrix('natural_input')

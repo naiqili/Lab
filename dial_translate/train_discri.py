@@ -24,7 +24,6 @@ import matplotlib
 matplotlib.use('Agg')
 import pylab
 
-
 class Unbuffered:
     def __init__(self, stream):
         self.stream = stream
@@ -268,7 +267,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'train_discri_full_emb256_h512_valid20'
+    args.run_id = 'train_discri_full_emb256_h128x128_layer2'
     args.prototype = 'prototype_state'
-    #args.resume = 'model/GRU_overtrain_model'
+    #args.resume = 'model/train_discri_full_emb256_h512_valid20'
     main(args)
