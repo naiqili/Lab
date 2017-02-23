@@ -27,7 +27,7 @@ for (abstract, natural) in train_coded:
     informfood_train.append((_abs, natural))
 
 for (abstract, natural) in dev_coded:
-    abs_tmp = abstract[6:10]
+    abs_tmp = abstract[16:18]
     _abs = [1]
     for ind in abs_tmp:
         if ind2word[ind] != '<NULL>':
@@ -36,14 +36,14 @@ for (abstract, natural) in dev_coded:
     informfood_dev.append((_abs, natural))
 
 logger.debug('informfood_train')
-for (abstract, natural) in informfood_train[:5]:
+for (abstract, natural) in informfood_train[:50]:
     logger.debug(str(abstract))
     logger.debug(str(natural))
     logger.debug(str([ind2word[ind] for ind in abstract]))
     logger.debug(str([ind2word[ind] for ind in natural]))
 
 logger.debug('informfood_dev')
-for (abstract, natural) in informfood_dev[:5]:
+for (abstract, natural) in informfood_dev[:50]:
     logger.debug(str(abstract))
     logger.debug(str(natural))
     logger.debug(str([ind2word[ind] for ind in abstract]))

@@ -22,8 +22,8 @@ def prototype_state():
     # ----- SIZES ----
     state['prefix'] = 'model_'
     state['word_dim'] = 700
-    state['emb_dim'] = 125
-    state['h_dim'] = 125
+    state['emb_dim'] = 256
+    state['h_dim'] = 512
 
     
     # Threshold to clip the gradient

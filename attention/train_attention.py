@@ -66,6 +66,17 @@ def save(model, timings, iters=''):
     
     print("Model saved, took {}".format(time.time() - start))
 
+def load(model, filename):
+    print("Loading the model...")
+
+    # ignore keyboard interrupt while saving
+    start = time.time()
+    s = signal.signal(signal.SIGINT, signal.SIG_IGN)
+    model.load(filename)
+    signal.signal(signal.SIGINT, s)
+
+    print("Model loaded, took {}".format(time.time() - start))
+
 def main(args):     
     logger = logging.getLogger(__name__)
     logger.addHandler(logging.FileHandler('log/' + args.run_id))
@@ -167,7 +178,7 @@ def main(args):
             logger.warn("Got NaN cost .. skipping")
             continue
 
-        train_cost = c
+        train_cost = c/(_abs_mask==1).sum()
         timings["train_cost"].append(train_cost)
         timings["train_acc"].append(acc)
         
@@ -211,10 +222,11 @@ def main(args):
                 vacc_list.append(acc)
                 
             valid_cost = numpy.mean(vcost_list)
+            valid_cost = 1.0 * valid_cost/(_abs_mask==1).sum()
             valid_acc = numpy.mean(vacc_list)
 
             logger.debug("[VALIDATION STEP]: %d" % step)
-            logger.debug("[VALIDATION COST]: %.4f" % (1.0 * valid_cost/(_abs_mask==1).sum()))
+            logger.debug("[VALIDATION COST]: %.4f" % (valid_cost))
             logger.debug("[VALIDATION ACC]: %.4f" % (valid_acc))
             
             logger.debug("[VALIDATION END]")
@@ -271,7 +283,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'attention_emb125_h125'
+    args.run_id = 'attention_emb256_h512_v2'
     args.prototype = 'prototype_state'
-    #args.resume = 'model/attention_emb125_h125_model'
+    #args.resume = 'model/attention_emb125_h125'
     main(args)

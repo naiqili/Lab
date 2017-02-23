@@ -45,7 +45,7 @@ class AttentionModel(Model):
         self.ymask = T.matrix('y_mask')
 
         self.h_enc = self.encode(self.x_data, self.xmask)
-        [self.ot, self.pt, self.alpha] = self.decode(self.h_enc)
+        [self.ot, self.pt, self.alpha] = self.decode(self.h_enc, self.xmask)
 
         self.cost = self.build_cost(self.pt,
                                     self.y_data,
@@ -58,12 +58,14 @@ class AttentionModel(Model):
         self.P_enc = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.emb_dim, self.h_dim), name='P_enc'+self.name))
         self.H_dec = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='H_enc'+self.name))
         self.P_dec = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.emb_dim, self.h_dim), name='P_enc'+self.name))
-        self.W = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.emb_dim, self.h_dim), name='W_dec'+self.name))
+        self.W = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='W_dec'+self.name))
         self.U = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='U_dec'+self.name))
         self.O_h = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='O_h_dec'+self.name))
         self.O_z = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='O_z_dec'+self.name))
         self.out_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.word_dim), name='out_emb'+self.name))
         self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='b'+self.name))
+        self.encode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='encode_b'+self.name))
+        self.decode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='decode_b'+self.name))
 
     def approx_embedder(self, x):
         return self.W_emb[x]
@@ -74,32 +76,32 @@ class AttentionModel(Model):
         else:
             batch_size = self.bs
         emb_x = self.approx_embedder(x_data)
-        def encode_step(x_t, m_t, h_tm1):
-            m_t = m_t.dimshuffle(0, 'x')
+        def encode_step(x_t, h_tm1):
             h_t = self.active(T.dot(h_tm1, self.H_enc) + \
-                                  T.dot(x_t, self.P_enc))
-            h_t = m_t * h_t + (1 - m_t) * h_tm1
+                              T.dot(x_t, self.P_enc) + \
+                              self.encode_b)
             return h_t
         h_0 = T.alloc(np.float32(0), batch_size, self.h_dim)
         h_enc, _ = theano.scan(encode_step, \
-                               sequences=[emb_x, mask], \
+                               sequences=[emb_x], \
                                outputs_info=[h_0])
         return h_enc
 
-    def decode(self, h_enc):
+    def decode(self, h_enc, xmask):
         if self.test_mode:
             batch_size = 2
         else:
             batch_size = self.bs
         self.b = self.b.dimshuffle('x', 'x', 0)
-        def decode_step(x_tm1, h_tm1, h_enc, b):
+        def decode_step(x_tm1, h_tm1, h_enc, xmask, b):
             h_t = self.active(T.dot(h_tm1, self.H_dec) + \
-                                T.dot(x_tm1, self.P_dec))
+                              T.dot(x_tm1, self.P_dec) + \
+                              self.decode_b)
             tmp = T.dot(h_tm1, self.W).dimshuffle('x', 0, 1) + \
                   T.dot(h_enc, self.U)
             beta_t = T.sum(b * tmp, axis=2)
-            alpha_t = T.exp(beta_t) / T.sum(T.exp(beta_t), axis=0)
-            z_tmp = h_enc * alpha_t.dimshuffle(0, 1, 'x')
+            alpha_t = T.exp(beta_t) / T.sum(T.exp(beta_t) * xmask, axis=0)
+            z_tmp = h_enc * (alpha_t * xmask).dimshuffle(0, 1, 'x')
             z_t = T.sum(z_tmp, axis=0)
             g_t = T.dot(T.dot(h_t, self.O_h) + T.dot(z_t, self.O_z), \
                         self.out_emb)
@@ -119,9 +121,9 @@ class AttentionModel(Model):
 
         [x_t, p_t, o_t, hs, alpha], _ = theano.scan(decode_step, \
                                                outputs_info=[x_0, None, None, h_0, None], \
-                                         non_sequences=[h_enc, self.b], \
+                                         non_sequences=[h_enc, xmask, self.b], \
                                          n_steps=self.seq_len_out)
-        return [o_t, p_t, alpha]
+        return [p_t, p_t, alpha]
         
     def build_cost(self, ot, y_data, ymask):
         x_flatten = ot.dimshuffle(2,0,1)
