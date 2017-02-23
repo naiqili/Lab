@@ -22,19 +22,23 @@ def create_padded_batch(state, data_x_y):
     n = state['bs']
     
     X = numpy.zeros((seq_len_in, n), dtype='int32')
-    Y = numpy.zeros((seq_len_out, n), dtype='int32')
+    Y_in = numpy.zeros((seq_len_out, n), dtype='int32')
+    Y_out = numpy.zeros((seq_len_out, n), dtype='int32')
     Xmask = numpy.zeros((seq_len_in, n), dtype='float32')
     Ymask = numpy.zeros((seq_len_out, n), dtype='float32')
 
     for ind in range(len(data_x_y)):
         (_abs, _nat) = data_x_y[ind]
+        abs_len = len(_abs)
         X[:len(_nat), ind] = _nat[:len(_nat)]
         Xmask[:len(_nat), ind] = 1
-        Y[:len(_abs), ind] = _abs[:len(_abs)]
-        Ymask[:len(_abs), ind] = 1
+        Y_in[:abs_len-1, ind] = _abs[:abs_len-1]
+        Y_out[1:abs_len, ind] = _abs[1:abs_len]
+        Ymask[:abs_len-1, ind] = 1
     
     return {'NAT': X, 
-            'ABS': Y,
+            'ABS_in': Y_in,
+            'ABS_out': Y_out,
             'NAT_mask': Xmask,
             'ABS_mask': Ymask
            }

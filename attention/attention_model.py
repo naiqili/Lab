@@ -39,18 +39,23 @@ class AttentionModel(Model):
         self.init_params()
 
         self.x_data = T.imatrix('x_data')
-        self.y_data = T.imatrix('y_data')
+        self.abs_in = T.imatrix('abs_in')
+        self.abs_out = T.imatrix('abs_out')
 
         self.xmask = T.matrix('x_mask')
         self.ymask = T.matrix('y_mask')
 
         self.h_enc = self.encode(self.x_data, self.xmask)
-        [self.ot, self.pt, self.alpha] = self.decode(self.h_enc, self.xmask)
-
+        [self.pt, self.h_t, self.alpha] = self.decode()
+        
         self.cost = self.build_cost(self.pt,
-                                    self.y_data,
+                                    self.abs_out,
                                     self.ymask)
         self.updates = self.compute_updates(self.cost, self.params)
+
+        self.gen_h = theano.shared(value=np.zeros((2, self.h_dim)), name='gen_h')
+        self.gen_x = T.imatrix('gen_x')
+        [self.gen_pred, self.gen_alpha, self.gen_updates] = self.build_gen()
         
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.word_dim, self.emb_dim), name='W_emb'+self.name))
@@ -64,6 +69,7 @@ class AttentionModel(Model):
         self.O_z = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='O_z_dec'+self.name))
         self.out_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.word_dim), name='out_emb'+self.name))
         self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='b'+self.name))
+        self.b = self.b.dimshuffle('x', 'x', 0)
         self.encode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='encode_b'+self.name))
         self.decode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='decode_b'+self.name))
 
@@ -87,48 +93,71 @@ class AttentionModel(Model):
                                outputs_info=[h_0])
         return h_enc
 
-    def decode(self, h_enc, xmask):
-        if self.test_mode:
-            batch_size = 2
-        else:
-            batch_size = self.bs
-        self.b = self.b.dimshuffle('x', 'x', 0)
-        def decode_step(x_tm1, h_tm1, h_enc, xmask, b):
-            h_t = self.active(T.dot(h_tm1, self.H_dec) + \
-                              T.dot(x_tm1, self.P_dec) + \
-                              self.decode_b)
-            tmp = T.dot(h_tm1, self.W).dimshuffle('x', 0, 1) + \
-                  T.dot(h_enc, self.U)
-            beta_t = T.sum(b * tmp, axis=2)
-            alpha_t = T.exp(beta_t) / T.sum(T.exp(beta_t) * xmask, axis=0)
-            z_tmp = h_enc * (alpha_t * xmask).dimshuffle(0, 1, 'x')
-            z_t = T.sum(z_tmp, axis=0)
-            g_t = T.dot(T.dot(h_t, self.O_h) + T.dot(z_t, self.O_z), \
-                        self.out_emb)
-            p_t = SoftMax(g_t)
-            o_t = p_t.argmax(axis=1)
-            x_t = self.approx_embedder(o_t)
-            return [x_t, p_t, o_t, h_t, alpha_t]
-        x_0 = theano.shared(np.zeros((batch_size, self.emb_dim), \
-                                     dtype='float32'), \
-                            name='decode_x0')
+    def decode_step(self, abs_in_t, h_tm1, h_enc, xmask, b):
+        x_t = self.approx_embedder(abs_in_t)
+        h_t = self.active(T.dot(h_tm1, self.H_dec) + \
+                          T.dot(x_t, self.P_dec) + \
+                          self.decode_b)
+        tmp = T.dot(h_tm1, self.W).dimshuffle('x', 0, 1) + \
+              T.dot(h_enc, self.U)
+        beta_t = T.sum(b * tmp, axis=2)
+        alpha_t = T.exp(beta_t) / T.sum(T.exp(beta_t) * xmask, axis=0)
+        z_tmp = h_enc * (alpha_t * xmask).dimshuffle(0, 1, 'x')
+        z_t = T.sum(z_tmp, axis=0)
+        g_t = T.dot(T.dot(h_t, self.O_h) + T.dot(z_t, self.O_z), \
+                    self.out_emb)
+        p_t = SoftMax(g_t)
+        return [p_t, h_t, alpha_t]
+
+    def build_gen(self):
+        x_t = self.approx_embedder(self.gen_x)
+        h_tm1 = self.gen_h
+        h_enc = self.h_enc
+        xmask = self.xmask
+        b = self.b
+        h_t = self.active(T.dot(h_tm1, self.H_dec) + \
+                          T.dot(x_t, self.P_dec) + \
+                          self.decode_b)
+        tmp = T.dot(h_tm1, self.W).dimshuffle('x', 0, 1) + \
+              T.dot(h_enc, self.U)
+        beta_t = T.sum(b * tmp, axis=2)
+        alpha_t = T.exp(beta_t) / T.sum(T.exp(beta_t) * xmask, axis=0)
+        z_tmp = h_enc * (alpha_t * xmask).dimshuffle(0, 1, 'x')
+        z_t = T.sum(z_tmp, axis=0)
+        g_t = T.dot(T.dot(h_t, self.O_h) + T.dot(z_t, self.O_z), \
+                    self.out_emb)
+        p_t = SoftMax(g_t)
+        updates = [(self.gen_h, h_t)]
+        return [p_t, alpha_t, updates]
+
+    def gen_reset(self):
+        self.gen_h.set_value(np.asarray((2, self.h_dim), dtype='float32'))
+
+    def gen_next(self, abs_in, h_enc, xmask, b):
+        abs_in_emb = self.approx_embedder([abs_in, 0])
+        gen_fn = self.build_gen_function()
+        p_t = gen_fn(self.x_data, self.x_mask, self.gen_x)
+        return p_t
+        
+    def decode(self):
+        batch_size = self.bs
+        h_enc = self.h_enc
+        xmask = self.xmask
+
         h_0 = theano.shared(np.zeros((batch_size, self.h_dim), \
                                      dtype='float32'), \
                             name='decode_h0')
-        alpha_0 = theano.shared(np.zeros((self.seq_len_out, batch_size), \
-                                     dtype='float32'), \
-                            name='decode_alpha0')
-
-        [x_t, p_t, o_t, hs, alpha], _ = theano.scan(decode_step, \
-                                               outputs_info=[x_0, None, None, h_0, None], \
-                                         non_sequences=[h_enc, xmask, self.b], \
-                                         n_steps=self.seq_len_out)
-        return [p_t, p_t, alpha]
+            
+        [p_t, h_t, alpha], _ = theano.scan(self.decode_step, \
+                                          outputs_info=[None, h_0, None], \
+                                          non_sequences=[h_enc, xmask, self.b], \
+                                          sequences=[self.abs_in])
+        return [p_t, h_t, alpha]
         
-    def build_cost(self, ot, y_data, ymask):
+    def build_cost(self, ot, abs_out, ymask):
         x_flatten = ot.dimshuffle(2,0,1)
         x_flatten = x_flatten.flatten(2).dimshuffle(1, 0)
-        y_flatten = y_data.flatten()
+        y_flatten = abs_out.flatten()
 
         cost = x_flatten[T.arange(y_flatten.shape[0]), \
                          y_flatten]
@@ -144,7 +173,8 @@ class AttentionModel(Model):
             self.train_fn = \
                             theano.function(inputs=[self.x_data,
                                                     self.xmask,
-                                                    self.y_data,
+                                                    self.abs_in,
+                                                    self.abs_out,
                                                     self.ymask],
                                             outputs=[self.cost, \
                                                      self.acc],
@@ -157,10 +187,22 @@ class AttentionModel(Model):
             self.eval_fn = \
                            theano.function(inputs=[self.x_data,
                                                    self.xmask,
-                                                   self.y_data,
+                                                   self.abs_in,
+                                                   self.abs_out,
                                                    self.ymask],
                                            outputs=[self.cost, \
                                                     self.acc],
+                                           name="eval_fn")
+            return self.eval_fn
+
+    def build_gen_function(self):
+        if not hasattr(self, 'gen_fn'):
+            self.gen_fn = \
+                           theano.function(inputs=[self.x_data,
+                                                   self.xmask,
+                                                   self.gen_x],
+                                           outputs=[self.gen_pred, self.gen_alpha],
+                                           updates=self.gen_updates,
                                            name="eval_fn")
             return self.eval_fn
 

@@ -166,11 +166,12 @@ def main(args):
         
         _nat = batch['NAT']
         _nat_mask = batch['NAT_mask']
-        _abs = batch['ABS']
+        _abs_in = batch['ABS_in']
+        _abs_out = batch['ABS_out']
         _abs_mask = batch['ABS_mask']
 
         (c, acc) = train_batch(_nat, _nat_mask,
-                               _abs, _abs_mask)
+                               _abs_in, _abs_out, _abs_mask)
         #print 'Pred:', pred
         #print 'y_flatten:', y_flatten
 
@@ -206,13 +207,14 @@ def main(args):
                     break
                 logger.debug("[VALID] - Got batch %d" % (batch['NAT'].shape[1]))
 
-                _abs = batch['ABS']
+                _abs_in = batch['ABS_in']
+                _abs_out = batch['ABs_out']
                 _abs_mask = batch['ABS_mask']
                 _nat = batch['NAT']
                 _nat_mask = batch['NAT_mask']
                 
                 (c, acc) = eval_batch(_nat, _nat_mask, \
-                                      _abs, _abs_mask)
+                                      _abs_in, _abs_out, _abs_mask)
                 
 
                 if numpy.isinf(c) or numpy.isnan(c):
@@ -283,7 +285,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'attention_emb256_h512_v2'
+    args.run_id = 'attention_emb256_h512_v3'
     args.prototype = 'prototype_state'
     #args.resume = 'model/attention_emb125_h125'
     main(args)
