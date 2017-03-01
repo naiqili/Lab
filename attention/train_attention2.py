@@ -3,7 +3,7 @@
 
 from data_iterator import *
 from state import *
-from attention_model import *
+from attention_model2 import *
 from utils import *
 
 import time
@@ -105,7 +105,7 @@ def main(args):
     logger.debug("State:\n{}".format(pprint.pformat(state)))
     logger.debug("Timings:\n{}".format(pprint.pformat(timings)))
  
-    model = AttentionModel(state)
+    model = AttentionModel2(state)
     rng = model.rng 
 
     if args.resume != "":
@@ -294,7 +294,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'attention_emb256_h512_v4'
+    args.run_id = 'attention2_emb256_h256_v2'
     args.prototype = 'prototype_state'
-    args.resume = 'model/attention_emb256_h512_v4'
+    #args.resume = 'model/attention2_emb256_h256'
     main(args)

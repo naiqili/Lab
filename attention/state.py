@@ -23,7 +23,7 @@ def prototype_state():
     state['prefix'] = 'model_'
     state['word_dim'] = 700
     state['emb_dim'] = 256
-    state['h_dim'] = 512
+    state['h_dim'] = 256
 
     
     # Threshold to clip the gradient
@@ -31,7 +31,7 @@ def prototype_state():
     state['lr'] = 0.0001
 
     # Early stopping configuration
-    state['patience'] = 5
+    state['patience'] = 100
     state['cost_threshold'] = 1.003
 
      

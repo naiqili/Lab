@@ -33,7 +33,7 @@ def create_padded_batch(state, data_x_y):
         X[:len(_nat), ind] = _nat[:len(_nat)]
         Xmask[:len(_nat), ind] = 1
         Y_in[:abs_len-1, ind] = _abs[:abs_len-1]
-        Y_out[1:abs_len, ind] = _abs[1:abs_len]
+        Y_out[:abs_len-1, ind] = _abs[1:abs_len]
         Ymask[:abs_len-1, ind] = 1
     
     return {'NAT': X, 

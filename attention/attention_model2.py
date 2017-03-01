@@ -26,7 +26,7 @@ def add_to_params(params, new_param):
     params.append(new_param)
     return new_param
     
-class AttentionModel(Model):
+class AttentionModel2(Model):
     def __init__(self, state, test_mode=False):
         Model.__init__(self)
         self.rng = numpy.random.RandomState(state['seed'])
@@ -45,7 +45,9 @@ class AttentionModel(Model):
         self.xmask = T.matrix('x_mask')
         self.ymask = T.matrix('y_mask')
 
-        self.h_enc = self.encode(self.x_data, self.xmask)
+        self.h_enc_basic = self.encode(self.x_data, self.xmask)
+        self.h_enc_emb = self.approx_embedder(self.x_data)
+        self.h_enc = T.concatenate([self.h_enc_basic, self.h_enc_emb], axis=2)
         [self.pt, self.ot, self.h_t, self.alpha] = self.decode()
         
         self.cost = self.build_cost(self.pt,
@@ -55,18 +57,18 @@ class AttentionModel(Model):
 
         self.gen_h = theano.shared(value=np.zeros((2, self.h_dim), dtype='float32'), name='gen_h')
         self.gen_x = T.ivector('gen_x')
-        [self.gen_pred, self.gen_alpha, self.gen_updates] = self.build_gen()
+        [self.gen_pred, self.gen_ot, self.gen_alpha, self.gen_updates] = self.build_gen()
         
     def init_params(self):
         self.W_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.word_dim, self.emb_dim), name='W_emb'+self.name))
         self.H_enc = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='H_enc'+self.name))
         self.P_enc = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.emb_dim, self.h_dim), name='P_enc'+self.name))
-        self.H_dec = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='H_enc'+self.name))
-        self.P_dec = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.emb_dim, self.h_dim), name='P_enc'+self.name))
+        self.H_dec = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='H_dec'+self.name))
+        self.P_dec = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.emb_dim, self.h_dim), name='P_dec'+self.name))
         self.W = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='W_dec'+self.name))
-        self.U = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='U_dec'+self.name))
+        self.U = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, (self.h_dim + self.emb_dim), self.h_dim), name='U_dec'+self.name))
         self.O_h = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='O_h_dec'+self.name))
-        self.O_z = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='O_z_dec'+self.name))
+        self.O_z = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, (self.h_dim + self.emb_dim), self.h_dim), name='O_z_dec'+self.name))
         self.out_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.word_dim), name='out_emb'+self.name))
         self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='b'+self.name))
         self.b = self.b.dimshuffle('x', 'x', 0)
@@ -128,8 +130,9 @@ class AttentionModel(Model):
         g_t = T.dot(T.dot(h_t, self.O_h) + T.dot(z_t, self.O_z), \
                     self.out_emb)
         p_t = SoftMax(g_t)
+        o_t = p_t.argmax(axis=1)
         updates = [(self.gen_h, h_t)]
-        return [p_t, alpha_t, updates]
+        return [p_t, o_t, alpha_t, updates]
 
     def gen_reset(self):
         self.gen_h.set_value(np.zeros((2, self.h_dim), dtype='float32'))
@@ -202,7 +205,7 @@ class AttentionModel(Model):
                            theano.function(inputs=[self.x_data,
                                                    self.xmask,
                                                    self.gen_x],
-                                           outputs=[self.gen_pred, self.gen_alpha],
+                                           outputs=[self.gen_pred, self.gen_ot, self.gen_alpha],
                                            updates=self.gen_updates,
                                            name="gen_fn")
         return self.gen_fn
