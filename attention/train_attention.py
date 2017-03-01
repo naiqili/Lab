@@ -164,11 +164,11 @@ def main(args):
         
         # logger.debug("[TRAIN] - Got batch %d" % (batch['x'].shape[1]))
         
-        _nat = batch['NAT']
-        _nat_mask = batch['NAT_mask']
-        _abs_in = batch['ABS_in']
-        _abs_out = batch['ABS_out']
-        _abs_mask = batch['ABS_mask']
+        #_nat = batch['NAT']
+        #_nat_mask = batch['NAT_mask']
+        #_abs_in = batch['ABS_in']
+        #_abs_out = batch['ABS_out']
+        #_abs_mask = batch['ABS_mask']
 
         (c, acc) = train_batch(_nat, _nat_mask,
                                _abs_in, _abs_out, _abs_mask)
@@ -208,7 +208,7 @@ def main(args):
                 logger.debug("[VALID] - Got batch %d" % (batch['NAT'].shape[1]))
 
                 _abs_in = batch['ABS_in']
-                _abs_out = batch['ABs_out']
+                _abs_out = batch['ABS_out']
                 _abs_mask = batch['ABS_mask']
                 _nat = batch['NAT']
                 _nat_mask = batch['NAT_mask']
