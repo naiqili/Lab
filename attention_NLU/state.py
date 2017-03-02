@@ -3,8 +3,8 @@ from collections import OrderedDict
 def title_state():
     state = {}
 
-    state['train_file'] = 'tmp/train_data.pkl'
-    state['valid_file'] = 'tmp/dev_data.pkl'
+    state['train_file'] = 'data/train_data.pkl'
+    state['valid_file'] = 'data/dev_data.pkl'
 
     # Random seed
     state['seed'] = 1234
@@ -13,7 +13,7 @@ def title_state():
     state['eos_sym'] = 0	# end of system action
     state['fill_sym'] = -1
 
-    state['seq_len_in'] = 50
+    state['seq_len_in'] = 100
     state['title_seq_len_out'] = 15
     state['who_seq_len_out'] = 15
     state['loc_seq_len_out'] = 15
@@ -33,7 +33,7 @@ def title_state():
     state['lr'] = 0.0001
 
     # Early stopping configuration
-    state['patience'] = 100
+    state['patience'] = 20
     state['cost_threshold'] = 1.003
 
      
@@ -41,7 +41,7 @@ def title_state():
     # Choose optimization algorithm
     state['updater'] = 'adam'  
     # Batch size
-    state['bs'] = 500
+    state['bs'] = 1000
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    

@@ -185,7 +185,7 @@ def main(args):
             logger.warn("Got NaN cost .. skipping")
             continue
 
-        train_cost = c/(_abs_mask==1).sum()
+        train_cost = c/(titlemask==1).sum()
         timings["train_cost"].append(train_cost)
         timings["train_acc"].append(acc)
         
@@ -196,8 +196,8 @@ def main(args):
             h, m, s = ConvertTimedelta(this_time - start_time)
             logger.debug(".. %.2d:%.2d:%.2d %4d mb # %d bs %d cost = %.4f acc = %.4f" % (h, m, s,\
                                                                  state['time_stop'] - (time.time() - start_time)/60., \
-                                                                                         step, batch['NAT'].shape[1], \
-                                                                                         float(c)/(_abs_mask==1).sum(), float(acc)))
+                                                                                         step, batch['X'].shape[1], \
+                                                                                         float(c)/(titlemask==1).sum(), float(acc)))
         
         if valid_data is not None and step % state['valid_freq'] == 0 and step > 1:
             valid_data.start()
@@ -211,7 +211,7 @@ def main(args):
                 # Train finished
                 if not batch:
                     break
-                logger.debug("[VALID] - Got batch %d" % (batch['NAT'].shape[1]))
+                logger.debug("[VALID] - Got batch %d" % (batch['X'].shape[1]))
 
                 X = batch['X']
                 Xmask = batch['Xmask']
@@ -236,7 +236,7 @@ def main(args):
                 vacc_list.append(acc)
                 
             valid_cost = numpy.mean(vcost_list)
-            valid_cost = 1.0 * valid_cost/(_abs_mask==1).sum()
+            valid_cost = 1.0 * valid_cost/(titlemask==1).sum()
             valid_acc = numpy.mean(vacc_list)
 
             logger.debug("[VALIDATION STEP]: %d" % step)

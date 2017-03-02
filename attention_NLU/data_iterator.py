@@ -18,9 +18,11 @@ import datetime
 logger = logging.getLogger(__name__)
 
 def create_padded_batch(state, data_x_y):
-    (ind2word, word2ind, ontology_bool, ontology_time, ontology_str) = cPickle.load(open('tmp/dict.pkl'))
+    (ind2word, word2ind, ontology_bool, ontology_time, ontology_str) = cPickle.load(open('data/dict.pkl'))
     seq_len_in = state['seq_len_in']
-    seq_len_out = state['title_seq_len_out']
+    title_seq_len_out = state['title_seq_len_out']
+    who_seq_len_out = state['who_seq_len_out']
+    loc_seq_len_out = state['loc_seq_len_out']
     n = state['bs']
     
     X = numpy.zeros((seq_len_in, n), dtype='int32')
@@ -34,37 +36,43 @@ def create_padded_batch(state, data_x_y):
     who_out = numpy.zeros((who_seq_len_out, n), dtype='int32')
     whomask = numpy.zeros((who_seq_len_out, n), dtype='float32')
     
-    loc_in = numpy.zeros((loc_seq_len_out, n), dtype='int32')
-    loc_out = numpy.zeros((loc_seq_len_out, n), dtype='int32')
-    locmask = numpy.zeros((loc_seq_len_out, n), dtype='float32')
+    where_in = numpy.zeros((loc_seq_len_out, n), dtype='int32')
+    where_out = numpy.zeros((loc_seq_len_out, n), dtype='int32')
+    wheremask = numpy.zeros((loc_seq_len_out, n), dtype='float32')
     
-    whenst_hour = numpy.zeros((n, 24), dtype='int32')
-    whenst_min = numpy.zeros((n, 4), dtype='int32')
-    whened_hour = numpy.zeros((n, 24), dtype='int32')
-    whened_min = numpy.zeros((n, 4), dtype='int32')
-    dur_hour = numpy.zeros((n, 24), dtype='int32')
-    dur_min = numpy.zeros((n, 4), dtype='int32')
+    whenst_hour = numpy.zeros((n, 25), dtype='int32')
+    whenst_min = numpy.zeros((n, 5), dtype='int32')
+    whened_hour = numpy.zeros((n, 25), dtype='int32')
+    whened_min = numpy.zeros((n, 5), dtype='int32')
+    dur_hour = numpy.zeros((n, 25), dtype='int32')
+    dur_min = numpy.zeros((n, 5), dtype='int32')
     
     bool_Y = numpy.zeros((n, len(ontology_bool), 2), dtype='int32')
     
     for ind in range(len(data_x_y)):
         data = data_x_y[ind]
         
-        cur_data = [1] + [word2ind[w] for w in data['text']] + [0]
+        cur_data = [1] + [word2ind[w] for w in data['text'].split()] + [0]
         X[:len(cur_data), ind] = cur_data[:len(cur_data)]
         Xmask[:len(cur_data), ind] = 1
-        
-        cur_data = [1] + [word2ind[w] for w in data['user_inform_title']] + [0]
+
+        cur_data = [1] + [word2ind[w] for w in data['user_inform_what'].split()] + [0]
         title_in[:len(cur_data)-1, ind] = cur_data[:len(cur_data)-1]
         title_out[:len(cur_data)-1, ind] = cur_data[1:len(cur_data)]
         titlemask[:len(cur_data)-1, ind] = 1
-        
-        cur_data = [1] + [word2ind[w] for w in data['user_inform_who']] + [0]
+
+        #print data['user_inform_who']
+        if data['user_inform_who'] == '<NO>':
+            cur_data = [1, word2ind['<NO>'], 0]
+        elif isinstance(data['user_inform_who'], list):
+            cur_data = [1] + [word2ind[w] for w in data['user_inform_who']] + [0]
+        else:
+            cur_data = [1] + [word2ind[w] for w in data['user_inform_who'].split()] + [0]
         who_in[:len(cur_data)-1, ind] = cur_data[:len(cur_data)-1]
         who_out[:len(cur_data)-1, ind] = cur_data[1:len(cur_data)]
         whomask[:len(cur_data)-1, ind] = 1
         
-        cur_data = [1] + [word2ind[w] for w in data['user_inform_where']] + [0]
+        cur_data = [1] + [word2ind[w] for w in data['user_inform_where'].split()] + [0]
         where_in[:len(cur_data)-1, ind] = cur_data[:len(cur_data)-1]
         where_out[:len(cur_data)-1, ind] = cur_data[1:len(cur_data)]
         wheremask[:len(cur_data)-1, ind] = 1
