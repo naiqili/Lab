@@ -1,0 +1,64 @@
+#Math
+* $m$ is about the encoded sentence.
+* $t$ is about the decoded sentence.
+
+$$h_t = \tanh(H h_{t-1} + P E_{w_{t-1}})$$
+$$\beta_{tm} = b^\top \tanh(Wh_{t-1} + Uh_m)$$
+$$\alpha_{tm} = \frac{\exp(\beta_{tm})}{\sum_{i=0}^M \exp(\beta_{ti})}$$
+$$z_t = \sum_{i=0}^M \alpha_{ti} h_i$$
+$$g(h_t, z_t, v_j) = O_{v_j}^\top(O_h h_t + O_z z_t)$$
+$$p(w_t = v_j) = \frac{\exp g(h_t, z_t, v_j)}{\sum_i \exp g(h_t, z_t, v_i)}$$
+
+#Attention2
+
+$$h_t = \tanh(H h_{t-1} + P E_{w_{t-1}})$$
+$$\beta_{tm} = b^\top \tanh(Wh_{t-1} + Ur_m)$$
+$$\alpha_{tm} = \frac{\exp(\beta_{tm})}{\sum_{i=0}^M \exp(\beta_{ti})}$$
+$$z_t = \sum_{i=0}^M \alpha_{ti} r_i$$
+$$g(h_t, z_t, v_j) = O_{v_j}^\top(O_h h_t + O_z z_t)$$
+$$p(w_t = v_j) = \frac{\exp g(h_t, z_t, v_j)}{\sum_i \exp g(h_t, z_t, v_i)}$$
+$$r_m = [h_m^\top, E_{w_m}^\top]^\top$$
+
+# Code
+
+x_data: seq_len_in x bs
+
+y_data: seq_len_out x bs
+
+x_emb = word_emb[x_data]: seq_len_in x bs x emb_dim
+
+
+* Encoder part is simple:  
+  Encode step:  
+  x_t: bs x emb_dim  
+  h_tm1: bs x h_dim  
+  h_enc_t = tanh(dot(h_tm1, H_enc) + dot(x_t, P_enc)): bs x h_dim  
+  # H: h_dim x h_dim  
+  # P: emb_dim x h_dim
+* Decoder part:  
+  Decode step:  
+  inputs:  
+  h_enc: seq_len_in x bs x hdim, # nonsequence  
+  x_tm1: bs x emb_dim  
+  h_tm1: bs x h_dim  
+  h_t = tanh(dot(h_tm1, H_dec) + dot(x_tm1, P_dec)): bs x h_dim  
+  out_emb: h_dim x word_dim  
+  # U: h_dim x h_dim  
+  # dot(h_enc, U): seq_len_in x bs x h_dim ?  
+  # W: h_dim x h_dim  
+  # dot(h_tm1, W): bs x h_dim  
+  # dot(h_tm1, W) + dot(h_enc, U): seq_len_in x bs x h_dim ? broadcast 0  
+  # b: h_dim  
+  beta_t = dot(b, dot(h_tm1, W) + dot(h_enc, U)): seq_len_in x bs ??   
+  alpha_t = exp(beta_t) / sum(exp(beta_t), axis=0): seq_len_in x bs  
+  h_enc * alpha_t: seq_len_in x bs x h_dim ??  
+  z_t = sum(h_enc * alpha_t, axis=0): bs x h_dim  
+  # O_h: h_dim x h_dim  
+  # O_z: h_dim x h_dim  
+  # dot(h_t, O_h) + dot(z_t, O_z): bs x h_dim  
+  g_t = (dot(h_t, O_h) + dot(z_t, O_z)) * out_emb: bs x word_dim
+  p_t = softmax(g_t): bs x word_dim
+  
+  
+  
+  

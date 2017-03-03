@@ -26,14 +26,14 @@ def add_to_params(params, new_param):
     params.append(new_param)
     return new_param
     
-class TitleModel(Model):
+class WhoModel(Model):
     def __init__(self, state, test_mode=False):
         Model.__init__(self)
         self.rng = numpy.random.RandomState(state['seed'])
         self.state = state
         self.__dict__.update(state)
         self.test_mode = test_mode
-        self.name = 'TitleModel'
+        self.name = 'WhoModel'
         self.active = eval(self.active)
         self.params = []
         self.init_params()

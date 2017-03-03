@@ -26,14 +26,14 @@ def add_to_params(params, new_param):
     params.append(new_param)
     return new_param
     
-class TitleModel(Model):
+class WhenstHourModel(Model):
     def __init__(self, state, test_mode=False):
         Model.__init__(self)
         self.rng = numpy.random.RandomState(state['seed'])
         self.state = state
         self.__dict__.update(state)
         self.test_mode = test_mode
-        self.name = 'TitleModel'
+        self.name = 'WhenstHourModel'
         self.active = eval(self.active)
         self.params = []
         self.init_params()
@@ -69,7 +69,7 @@ class TitleModel(Model):
         self.U = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, (self.h_dim + self.emb_dim), self.h_dim), name='U_dec'+self.name))
         self.O_h = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='O_h_dec'+self.name))
         self.O_z = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, (self.h_dim + self.emb_dim), self.h_dim), name='O_z_dec'+self.name))
-        self.out_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.word_dim), name='out_emb'+self.name))
+        self.out_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.out_dim), name='out_emb'+self.name))
         self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='b'+self.name))
         self.b = self.b.dimshuffle('x', 'x', 0)
         self.encode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='encode_b'+self.name))

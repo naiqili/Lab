@@ -26,14 +26,14 @@ def add_to_params(params, new_param):
     params.append(new_param)
     return new_param
     
-class AttentionModel2(Model):
+class WhereModel(Model):
     def __init__(self, state, test_mode=False):
         Model.__init__(self)
         self.rng = numpy.random.RandomState(state['seed'])
         self.state = state
         self.__dict__.update(state)
         self.test_mode = test_mode
-        self.name = 'AttentionModel'
+        self.name = 'WhereModel'
         self.active = eval(self.active)
         self.params = []
         self.init_params()
@@ -124,7 +124,8 @@ class AttentionModel2(Model):
         tmp = T.dot(h_tm1, self.W).dimshuffle('x', 0, 1) + \
               T.dot(h_enc, self.U)
         beta_t = T.sum(b * tmp, axis=2)
-        alpha_t = T.exp(beta_t) * xmask / T.sum(T.exp(beta_t) * xmask, axis=0)
+        beta_t2 = beta_t - T.max(beta_t)
+        alpha_t = T.exp(beta_t2) * xmask / T.sum(T.exp(beta_t2) * xmask, axis=0)
         z_tmp = h_enc * (alpha_t).dimshuffle(0, 1, 'x')
         z_t = T.sum(z_tmp, axis=0)
         g_t = T.dot(T.dot(h_t, self.O_h) + T.dot(z_t, self.O_z), \
