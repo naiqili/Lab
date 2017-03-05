@@ -55,7 +55,7 @@ class TitleModel(Model):
                                     self.ymask)
         self.updates = self.compute_updates(self.cost, self.params)
 
-        self.gen_h = theano.shared(value=np.zeros((2, self.h_dim), dtype='float64'), name='gen_h')
+        self.gen_h = theano.shared(value=np.zeros((2, self.h_dim), dtype='float32'), name='gen_h')
         self.gen_x = T.ivector('gen_x')
         [self.gen_pred, self.gen_ot, self.gen_alpha, self.gen_updates] = self.build_gen()
         
@@ -70,10 +70,10 @@ class TitleModel(Model):
         self.O_h = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.h_dim), name='O_h_dec'+self.name))
         self.O_z = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, (self.h_dim + self.emb_dim), self.h_dim), name='O_z_dec'+self.name))
         self.out_emb = add_to_params(self.params, theano.shared(value=NormalInit(self.rng, self.h_dim, self.word_dim), name='out_emb'+self.name))
-        self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float64'), name='b'+self.name))
+        self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='b'+self.name))
         self.b = self.b.dimshuffle('x', 'x', 0)
-        self.encode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float64'), name='encode_b'+self.name))
-        self.decode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float64'), name='decode_b'+self.name))
+        self.encode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='encode_b'+self.name))
+        self.decode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='decode_b'+self.name))
 
     def approx_embedder(self, x):
         return self.W_emb[x]
@@ -89,7 +89,7 @@ class TitleModel(Model):
                               T.dot(x_t, self.P_enc) + \
                               self.encode_b)
             return h_t
-        h_0 = T.alloc(np.float64(0), batch_size, self.h_dim)
+        h_0 = T.alloc(np.float32(0), batch_size, self.h_dim)
         h_enc, _ = theano.scan(encode_step, \
                                sequences=[emb_x], \
                                outputs_info=[h_0])
@@ -136,7 +136,7 @@ class TitleModel(Model):
         return [p_t, o_t, alpha_t, updates]
 
     def gen_reset(self):
-        self.gen_h.set_value(np.zeros((2, self.h_dim), dtype='float64'))
+        self.gen_h.set_value(np.zeros((2, self.h_dim), dtype='float32'))
 
     def gen_next(self, abs_in, h_enc, xmask, b):
         abs_in_emb = self.approx_embedder([abs_in, 0])
@@ -150,7 +150,7 @@ class TitleModel(Model):
         xmask = self.xmask
 
         h_0 = theano.shared(np.zeros((batch_size, self.h_dim), \
-                                     dtype='float64'), \
+                                     dtype='float32'), \
                             name='decode_h0')
             
         [p_t, o_t, h_t, alpha], _ = theano.scan(self.decode_step, \
@@ -218,15 +218,15 @@ class TitleModel(Model):
         grads = OrderedDict(zip(params, grads))
 
         # Clip stuff
-        c = numpy.float64(self.cutoff)
+        c = numpy.float32(self.cutoff)
         clip_grads = []
         
         norm_gs = T.sqrt(sum(T.sum(g ** 2) for p, g in grads.items()))
-        normalization = T.switch(T.ge(norm_gs, c), c / norm_gs, np.float64(1.))
+        normalization = T.switch(T.ge(norm_gs, c), c / norm_gs, np.float32(1.))
         notfinite = T.or_(T.isnan(norm_gs), T.isinf(norm_gs))
          
         for p, g in grads.items():
-            clip_grads.append((p, T.switch(notfinite, numpy.float64(.1) * p, g * normalization)))
+            clip_grads.append((p, T.switch(notfinite, numpy.float32(.1) * p, g * normalization)))
         
         grads = OrderedDict(clip_grads)
 

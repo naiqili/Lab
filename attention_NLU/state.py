@@ -23,7 +23,7 @@ def title_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 1163
+    state['word_dim'] = 3211
     state['emb_dim'] = 256
     state['h_dim'] = 256
 
@@ -89,7 +89,7 @@ def where_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 1163
+    state['word_dim'] = 3211
     state['emb_dim'] = 128
     state['h_dim'] = 128
 
@@ -154,7 +154,7 @@ def who_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 1163
+    state['word_dim'] = 3211
     state['emb_dim'] = 128
     state['h_dim'] = 128
 
@@ -221,7 +221,7 @@ def whenst_hour_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 1163
+    state['word_dim'] = 3211
     state['emb_dim'] = 128
     state['h_dim'] = 128
 

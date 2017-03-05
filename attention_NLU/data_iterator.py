@@ -26,19 +26,19 @@ def create_padded_batch(state, data_x_y):
     n = state['bs']
     
     X = numpy.zeros((seq_len_in, n), dtype='int32')
-    Xmask = numpy.zeros((seq_len_in, n), dtype='float64')
+    Xmask = numpy.zeros((seq_len_in, n), dtype='float32')
     
     title_in = numpy.zeros((title_seq_len_out, n), dtype='int32')
     title_out = numpy.zeros((title_seq_len_out, n), dtype='int32')
-    titlemask = numpy.zeros((title_seq_len_out, n), dtype='float64')
+    titlemask = numpy.zeros((title_seq_len_out, n), dtype='float32')
     
     who_in = numpy.zeros((who_seq_len_out, n), dtype='int32')
     who_out = numpy.zeros((who_seq_len_out, n), dtype='int32')
-    whomask = numpy.zeros((who_seq_len_out, n), dtype='float64')
+    whomask = numpy.zeros((who_seq_len_out, n), dtype='float32')
     
     where_in = numpy.zeros((loc_seq_len_out, n), dtype='int32')
     where_out = numpy.zeros((loc_seq_len_out, n), dtype='int32')
-    wheremask = numpy.zeros((loc_seq_len_out, n), dtype='float64')
+    wheremask = numpy.zeros((loc_seq_len_out, n), dtype='float32')
     
     whenst_hour = numpy.zeros((n, 25), dtype='int32')
     whenst_min = numpy.zeros((n, 5), dtype='int32')
