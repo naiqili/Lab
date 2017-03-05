@@ -39,7 +39,7 @@ def title_state():
      
     # ----- TRAINING METHOD -----
     # Choose optimization algorithm
-    state['updater'] = 'adam'  
+    state['updater'] = 'rmsprop'  
     # Batch size
     state['bs'] = 1000
     # Sort by length groups of  
