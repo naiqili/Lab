@@ -3,7 +3,7 @@
 
 from data_iterator import *
 from state import *
-from title_model import *
+from title_model32 import *
 from utils import *
 
 import time
@@ -300,7 +300,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'title_emb256_h256'
+    args.run_id = 'title_emb256_h256_f32'
     args.prototype = 'title_state'
     #args.resume = 'model/attention2_emb256_h256'
     main(args)
