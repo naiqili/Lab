@@ -296,11 +296,10 @@ def parse_args():
     return args
 
 if __name__ == "__main__":
-    # Models only run with float32
-    assert(theano.config.floatX == 'float32')
+    assert(theano.config.floatX == 'float64')
 
     args = parse_args()
-    args.run_id = 'title_emb256_h256'
+    args.run_id = 'title_emb256_h256_rmsprop_f64'
     args.prototype = 'title_state'
     #args.resume = 'model/attention2_emb256_h256'
     main(args)

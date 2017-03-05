@@ -34,7 +34,7 @@ def Adagrad(grads, lr):
         new_sum_squared_grad = sum_square_grad + T.sqr(grads[param])
 
         # Compute update
-        delta_x_t = (- lr / T.sqrt(numpy.float32(1e-5) + new_sum_squared_grad)) * grads[param]
+        delta_x_t = (- lr / T.sqrt(numpy.float64(1e-5) + new_sum_squared_grad)) * grads[param]
 
         # Apply update
         updates[sum_square_grad] = new_sum_squared_grad
