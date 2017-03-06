@@ -23,7 +23,7 @@ def title_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 2306
+    state['word_dim'] = 2390
     state['emb_dim'] = 256
     state['h_dim'] = 256
 
@@ -41,7 +41,7 @@ def title_state():
     # Choose optimization algorithm
     state['updater'] = 'rmsprop'  
     # Batch size
-    state['bs'] = 50
+    state['bs'] = 1000
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
@@ -89,9 +89,9 @@ def where_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 2306
-    state['emb_dim'] = 128
-    state['h_dim'] = 128
+    state['word_dim'] = 2390
+    state['emb_dim'] = 256
+    state['h_dim'] = 256
 
     
     # Threshold to clip the gradient
@@ -154,9 +154,9 @@ def who_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 2306
-    state['emb_dim'] = 128
-    state['h_dim'] = 128
+    state['word_dim'] = 2390
+    state['emb_dim'] = 256
+    state['h_dim'] = 256
 
     
     # Threshold to clip the gradient
@@ -221,9 +221,9 @@ def whenst_hour_state():
     
     # ----- SIZES ----
     state['prefix'] = 'title_'
-    state['word_dim'] = 2306
-    state['emb_dim'] = 128
-    state['h_dim'] = 128
+    state['word_dim'] = 2390
+    state['emb_dim'] = 256
+    state['h_dim'] = 256
     state['out_dim'] = 25
     
     # Threshold to clip the gradient
