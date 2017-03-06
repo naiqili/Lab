@@ -41,7 +41,7 @@ def title_state():
     # Choose optimization algorithm
     state['updater'] = 'rmsprop'  
     # Batch size
-    state['bs'] = 1000
+    state['bs'] = 20
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
@@ -54,7 +54,7 @@ def title_state():
     # Frequency of training error reports (in number of batches)
     state['train_freq'] = 1
     # Validation frequency
-    state['valid_freq'] = 50
+    state['valid_freq'] = 1000
     # Number of batches to process
     state['loop_iters'] = 3000000
     # Maximum number of minutes to run
@@ -239,7 +239,7 @@ def whenst_hour_state():
     # Choose optimization algorithm
     state['updater'] = 'adam'  
     # Batch size
-    state['bs'] = 1000
+    state['bs'] = 20
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    
@@ -252,7 +252,7 @@ def whenst_hour_state():
     # Frequency of training error reports (in number of batches)
     state['train_freq'] = 1
     # Validation frequency
-    state['valid_freq'] = 50
+    state['valid_freq'] = 3000
     # Number of batches to process
     state['loop_iters'] = 3000000
     # Maximum number of minutes to run
