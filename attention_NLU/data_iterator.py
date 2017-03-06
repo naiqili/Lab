@@ -40,12 +40,12 @@ def create_padded_batch(state, data_x_y):
     where_out = numpy.zeros((loc_seq_len_out, n), dtype='int32')
     wheremask = numpy.zeros((loc_seq_len_out, n), dtype='float32')
     
-    whenst_hour = numpy.zeros((n, 25), dtype='int32')
-    whenst_min = numpy.zeros((n, 5), dtype='int32')
-    whened_hour = numpy.zeros((n, 25), dtype='int32')
-    whened_min = numpy.zeros((n, 5), dtype='int32')
-    dur_hour = numpy.zeros((n, 25), dtype='int32')
-    dur_min = numpy.zeros((n, 5), dtype='int32')
+    whenst_hour = numpy.zeros((n, ), dtype='int32')
+    whenst_min = numpy.zeros((n, ), dtype='int32')
+    whened_hour = numpy.zeros((n, ), dtype='int32')
+    whened_min = numpy.zeros((n, ), dtype='int32')
+    dur_hour = numpy.zeros((n, ), dtype='int32')
+    dur_min = numpy.zeros((n, ), dtype='int32')
     
     bool_Y = numpy.zeros((n, len(ontology_bool), 2), dtype='int32')
     
@@ -77,14 +77,14 @@ def create_padded_batch(state, data_x_y):
         where_out[:len(cur_data)-1, ind] = cur_data[1:len(cur_data)]
         wheremask[:len(cur_data)-1, ind] = 1
         
-        whenst_hour[ind, data['user_inform_whenstart_hour']] = 1
-        whenst_min[ind, data['user_inform_whenstart_min']] = 1
+        whenst_hour[ind] = data['user_inform_whenstart_hour']
+        whenst_min[ind] = data['user_inform_whenstart_min']
         
-        whened_hour[ind, data['user_inform_whened_hour']] = 1
-        whened_min[ind, data['user_inform_whened_min']] = 1
+        whened_hour[ind] = data['user_inform_whened_hour']
+        whened_min[ind] = data['user_inform_whened_min']
     
-        dur_hour[ind, data['user_inform_duration_hour']] = 1
-        dur_min[ind, data['user_inform_duration_min']] = 1
+        dur_hour[ind] = data['user_inform_duration_hour']
+        dur_min[ind] = data['user_inform_duration_min']
         
         for (ont_i, ont) in enumerate(ontology_bool):
             if data[ont] == '<YES>':
