@@ -41,7 +41,7 @@ def title_state():
     # Choose optimization algorithm
     state['updater'] = 'rmsprop'  
     # Batch size
-    state['bs'] = 1500
+    state['bs'] = 50
     # Sort by length groups of  
     state['sort_k_batches'] = 1
    

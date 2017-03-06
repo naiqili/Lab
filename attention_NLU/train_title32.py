@@ -302,5 +302,5 @@ if __name__ == "__main__":
     args = parse_args()
     args.run_id = 'title_emb256_h256_f32_tok10'
     args.prototype = 'title_state'
-    args.resume = 'model/attention2_emb256_h256_f32'
+    args.resume = 'model/title_emb256_h256_f32'
     main(args)
