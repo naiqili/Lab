@@ -166,18 +166,9 @@ def main(args):
         
         X = batch['X']
         Xmask = batch['Xmask']
-        who_in = batch['who_in']
-        who_out = batch['who_out']
-        whomask = batch['whomask']
+        whenst_hour = batch['whenst_hour']
 
-        #print "NAT", _nat
-        #print "NAT_mask", _nat_mask
-        #print "ABS_in", _abs_in
-        #print "ABS_out", _abs_out
-        #print "ABS_mask", _abs_mask
-
-        (c, acc) = train_batch(X, Xmask,
-                               who_in, who_out, whomask)
+        (c, acc) = train_batch(X, Xmask, whenst_hour)
         #print 'Pred:', pred
         #print 'y_flatten:', y_flatten
 
@@ -185,7 +176,7 @@ def main(args):
             logger.warn("Got NaN cost .. skipping")
             continue
 
-        train_cost = c/(whomask==1).sum()
+        train_cost = c
         timings["train_cost"].append(train_cost)
         timings["train_acc"].append(acc)
         
@@ -197,7 +188,7 @@ def main(args):
             logger.debug(".. %.2d:%.2d:%.2d %4d mb # %d bs %d cost = %.4f acc = %.4f" % (h, m, s,\
                                                                  state['time_stop'] - (time.time() - start_time)/60., \
                                                                                          step, batch['X'].shape[1], \
-                                                                                         float(c)/(whomask==1).sum(), float(acc)))
+                                                                                         float(c), float(acc)))
         
         if valid_data is not None and step % state['valid_freq'] == 0 and step > 1:
             valid_data.start()
@@ -215,18 +206,9 @@ def main(args):
 
                 X = batch['X']
                 Xmask = batch['Xmask']
-                who_in = batch['who_in']
-                who_out = batch['who_out']
-                whomask = batch['whomask']
-
-                #print "NAT", _nat
-                #print "NAT_mask", _nat_mask
-                #print "ABS_in", _abs_in
-                #print "ABS_out", _abs_out
-                #print "ABS_mask", _abs_mask
-
-                (c, acc) = eval_batch(X, Xmask,
-                                       who_in, who_out, whomask)
+                whenst_hour = batch['whenst_hour']
+                
+                (c, acc) = eval_batch(X, Xmask, whenst_hour)
                 
 
                 if numpy.isinf(c) or numpy.isnan(c):
@@ -236,7 +218,7 @@ def main(args):
                 vacc_list.append(acc)
                 
             valid_cost = numpy.mean(vcost_list)
-            valid_cost = 1.0 * valid_cost/(whomask==1).sum()
+            valid_cost = 1.0 * valid_cost
             valid_acc = numpy.mean(vacc_list)
 
             logger.debug("[VALIDATION STEP]: %d" % step)
@@ -300,7 +282,7 @@ if __name__ == "__main__":
     assert(theano.config.floatX == 'float32')
 
     args = parse_args()
-    args.run_id = 'who_emb128_h128'
-    args.prototype = 'who_state'
-    #args.resume = 'model/attention2_emb256_h256'
+    args.run_id = 'whenst_hour_emb256_h256_f32'
+    args.prototype = 'whenst_hour_state'
+    args.resume = 'model/title_emb256_h256_f32'
     main(args)

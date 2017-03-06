@@ -224,7 +224,7 @@ def whenst_hour_state():
     state['word_dim'] = 2306
     state['emb_dim'] = 128
     state['h_dim'] = 128
-
+    state['out_dim'] = 25
     
     # Threshold to clip the gradient
     state['cutoff'] = 1.
