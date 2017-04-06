@@ -1,0 +1,19 @@
+egrep 'play football' ./reddit-comments-2015.csv
+
+I (\w+\s)+regularly
+used to (\w+\s)+regularly
+don't (\w+\s)+often enough
+I plan on starting to
+I (\w\s)+for [(a month)|(a week)]
+
+egrep 'need to (\w+\s){2,6}' ./reddit-comments-2015.csv
+egrep '(\w+\s){2,6}with my friends' ./reddit-comments-2015.csv
+egrep 'pay to (\w+\s){2,6}' ./reddit-comments-2015.csv
+egrep 'deciding to (\w+\s){2,6}with' ./reddit-comments-2015.csv
+egrep 'decide to (\w+\s){2,6}with' ./reddit-comments-2015.csv
+egrep "we'd (\w+\s){2,6}with" ./reddit-comments-2015.csv
+egrep "(\w+\s){2,6}once a week" ./reddit-comments-2015.csv
+egrep "(\w+\s){2,6}once a month" ./reddit-comments-2015.csv
+egrep "(\w+\s){2,6}every week" ./reddit-comments-2015.csv
+egrep "(\w+\s){2,6}every month" ./reddit-comments-2015.csv
+
