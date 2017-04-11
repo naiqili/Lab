@@ -22,7 +22,8 @@ with open(movie_lines_path) as f:
         line = line.strip()
         try:
             line_id, _, _, _, text = line.split(' +++$+++ ')
-            line_data[line_id] = ner_clean(text)
+            #line_data[line_id] = ner_clean(text)
+            line_data[line_id] = text
         except:
             pass
 

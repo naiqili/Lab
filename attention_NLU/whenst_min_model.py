@@ -62,6 +62,7 @@ class WhenstMinModel(Model):
         self.b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='b'+self.name))
         self.b = self.b.dimshuffle('x', 'x', 0)
         self.encode_b = add_to_params(self.params, theano.shared(value=np.zeros((self.h_dim,), dtype='float32'), name='encode_b'+self.name))
+        self.reg_term = T.sum(self.H_enc**2) + T.sum(self.P_enc**2) + T.sum(self.U**2) + T.sum(self.O_z**2) + T.sum(self.b**2) + T.sum(self.encode_b**2)
 
     def approx_embedder(self, x):
         return self.W_emb[x]
@@ -103,13 +104,14 @@ class WhenstMinModel(Model):
         return [p_t, o_t, alpha]
         
     def build_cost(self, ot, abs_out):
+        lamb = 0.01
         x_flatten = ot
         y_flatten = abs_out
 
         cost = x_flatten[T.arange(y_flatten.shape[0]), \
                          y_flatten]
         neg_log_cost_sum = T.sum(-T.log(cost))
-        cost_res = neg_log_cost_sum / self.bs
+        cost_res = neg_log_cost_sum / self.bs + lamb * self.reg_term
 
         self.pred = x_flatten.argmax(axis=1)
         self.acc = 1.0 * T.sum(T.eq(self.pred, y_flatten)) / self.bs
