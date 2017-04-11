@@ -26,8 +26,11 @@ def build_graph(x, y, mask, vocab_size=59562, emb_size=200, cell_size=200, lr_ra
 
     predictions = tf.nn.softmax(logits)
 
-    total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_reshaped) * mask_reshaped)
+    total_loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_reshaped) * mask_reshaped) / \
+                 tf.reduce_sum(mask_reshaped)
     train_step = tf.train.AdamOptimizer(lr_rate).minimize(total_loss)
+    tf.summary.scalar('total_loss', total_loss)
+    summary = tf.summary.merge_all()
 
     return {
         'x': x,
@@ -38,19 +41,22 @@ def build_graph(x, y, mask, vocab_size=59562, emb_size=200, cell_size=200, lr_ra
         'total_loss': total_loss,
         'train_step': train_step,
         'preds': predictions,
-        'saver': tf.train.Saver()
+        'saver': tf.train.Saver(),
+        'summary': summary
         }
 
-def train_network(g, epoch_num=5000, save_path='./model/basicrnn.mdl'):
+def train_network(g, max_step=5000, save_path='./model/basicrnn.mdl'):
     with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
+        train_writer = tf.summary.FileWriter('./log/train.tflog')
+        tf.global_variables_initializer().run()
 
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord)
         
-        for _epoch in range(epoch_num):
-            cur_loss, cur_state, _ = sess.run([g['total_loss'], g['final_state'], g['train_step']])
+        for _step in range(max_step):
+            summary, cur_loss, cur_state, _ = sess.run([g['summary'], g['total_loss'], g['final_state'], g['train_step']])
             print cur_loss
+            train_writer.add_summary(summary, _step)
 
         g['saver'].save(sess, save_path)
 
