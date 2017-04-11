@@ -15,10 +15,11 @@ def ner_clean(sent):
     tok_sent = nltk.word_tokenize(sent)
     tag_sent = nltk.pos_tag(tok_sent)
     chunk_sent = nltk.ne_chunk(tag_sent)
-    print chunk_sent
-    print
+    #print chunk_sent
+    #print
     dfs_clean(chunk_sent)
-    print [leaf[0] for leaf in chunk_sent.leaves()]
+    #print [leaf[0] for leaf in chunk_sent.leaves()]
+    return ' '.join([leaf[0] for leaf in chunk_sent.leaves()])
 
 if __name__ == '__main__':
     ner_clean('I am going to KFC with Xiaojie and Amy at 3 p.m.')
