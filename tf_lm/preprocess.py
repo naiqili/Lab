@@ -12,9 +12,9 @@ movie_lines_path = './_data/movie_lines.txt'
 convers_path = './_data/movie_conversations.txt'
 
 cnt_movie = 614
-cnt_train = 484
-cnt_dev = 484 + 65
-cnt_test = 484 + 65 + 65
+cnt_train = 5
+cnt_dev = 5
+cnt_test = 5
 
 line_data = {}
 with open(movie_lines_path) as f:
@@ -128,7 +128,7 @@ for sent1, sent2 in test_triples:
     except:
         pass
 
-cPickle.dump((word2ind, ind2word), open('./tmp/dict.pkl', 'w'))
-cPickle.dump(traindata, open('./tmp/traindata.pkl', 'w'))
-cPickle.dump(devdata, open('./tmp/devdata.pkl', 'w'))
-cPickle.dump(testdata, open('./tmp/testdata.pkl', 'w'))
+cPickle.dump((word2ind, ind2word), open('./tmp/toy_dict.pkl', 'w'))
+cPickle.dump(traindata, open('./tmp/toy_traindata.pkl', 'w'))
+cPickle.dump(devdata, open('./tmp/toy_devdata.pkl', 'w'))
+cPickle.dump(testdata, open('./tmp/toy_testdata.pkl', 'w'))

@@ -1,7 +1,7 @@
 import tensorflow as tf
 from reader import *
 
-def build_graph(x, y, mask, vocab_size=59562, emb_size=200, cell_size=200, lr_rate=0.01, cell_type='GRU', batch_size=50):
+def build_graph(x, y, mask, vocab_size=3670, emb_size=200, cell_size=200, lr_rate=0.01, cell_type='GRU', batch_size=50):
 #    x = tf.placeholder(tf.int32, [batch_size, num_steps], name='input_holder')
 #    y = tf.placeholder(tf.int32, [batch_size, num_steps], name='output_holder')
 
