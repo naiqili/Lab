@@ -2,10 +2,15 @@ import cPickle
 import numpy as np
 import tensorflow as tf
 
-def get_raw_data(num_steps=700):
-    train_data = cPickle.load(open('./tmp/toy_traindata.pkl'))[:2000]
-    dev_data = cPickle.load(open('./tmp/toy_devdata.pkl'))
-    test_data = cPickle.load(open('./tmp/toy_testdata.pkl'))
+def get_raw_data(data_src, num_steps=705):
+    if data_src == 'toy':
+        train_data = cPickle.load(open('./tmp/toy_traindata.pkl'))
+        dev_data = cPickle.load(open('./tmp/toy_devdata.pkl'))
+        test_data = cPickle.load(open('./tmp/toy_testdata.pkl'))
+    elif data_src == 'real':
+        train_data = cPickle.load(open('./tmp/traindata.pkl'))
+        dev_data = cPickle.load(open('./tmp/devdata.pkl'))
+        test_data = cPickle.load(open('./tmp/testdata.pkl'))
     (word2ind, ind2word) = cPickle.load(open('./tmp/dict.pkl'))
     train_data = [sent1 + sent2 for (sent1, sent2) in train_data]
     dev_data = [sent1 + sent2 for (sent1, sent2) in dev_data]
