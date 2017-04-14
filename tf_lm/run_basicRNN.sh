@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0 python train.py --cell_type='basicRNN' --model_path='./model/basicRNN/' --log_path='./log/basicRNN/' --vocab_size=52716 --data='real' --batch_size=500 --train_freq=10 --dev_freq=100

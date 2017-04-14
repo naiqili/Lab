@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=0 python train_basicrnn.py
+CUDA_VISIBLE_DEVICES=0 python train.py

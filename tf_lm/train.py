@@ -10,17 +10,18 @@ flags.DEFINE_integer("cell_size", 100, "Cell size")
 flags.DEFINE_integer("batch_size", 100, "Batch size")
 flags.DEFINE_integer("train_freq", 10, "Training report frequency")
 flags.DEFINE_integer("dev_freq", 20, "Developing report frequency")
-flags.DEFINE_integer("max_step", 10000, "Max training step")
+flags.DEFINE_integer("max_step", 5000, "Max training step")
 flags.DEFINE_string("cell_type", 'GRU', "Cell type")
+flags.DEFINE_string("rnn_type", 'dynamic', "Cell type")
 flags.DEFINE_string("optimizer", 'Adam', "Optimizer")
 flags.DEFINE_string("data", 'toy', "Data to be used (toy/real)")
-flags.DEFINE_string("model_path", './model/test.ckpt', "Path to save the model")
-flags.DEFINE_string("log_path", './log/test.log/', "Path to save the log")
+flags.DEFINE_string("model_path", './model/', "Path to save the model")
+flags.DEFINE_string("log_path", './log/', "Path to save the log")
 flags.DEFINE_float("lr_rate", 0.01, "Learning rate")
 
 FLAGS = flags.FLAGS
 
-def build_graph(x, y, mask, vocab_size=3670, emb_size=200, cell_size=200, lr_rate=0.01, cell_type='GRU', optimizer='Adam', batch_size=50, is_training=True):
+def build_graph(x, y, mask, vocab_size=3670, emb_size=200, cell_size=200, lr_rate=0.01, cell_type='GRU', rnn_type='dynamic', optimizer='Adam', batch_size=50, is_training=True):
 #    x = tf.placeholder(tf.int32, [batch_size, num_steps], name='input_holder')
 #    y = tf.placeholder(tf.int32, [batch_size, num_steps], name='output_holder')
 
@@ -29,9 +30,14 @@ def build_graph(x, y, mask, vocab_size=3670, emb_size=200, cell_size=200, lr_rat
 
     if cell_type == 'GRU':
         cell = tf.contrib.rnn.GRUCell(cell_size)
+    elif cell_type == 'basicRNN':
+        cell = tf.contrib.rnn.BasicRNNCell(cell_size)
 
     init_state = cell.zero_state(batch_size, tf.float32)
-    rnn_outputs, final_state = tf.nn.dynamic_rnn(cell, rnn_inputs, initial_state = init_state)
+    if rnn_type == 'dynamic':
+        rnn_outputs, final_state = tf.nn.dynamic_rnn(cell, rnn_inputs, initial_state = init_state)
+    #elif rnn_type == 'bi_dynamic': # need sequence_length
+    #    rnn_outputs, final_state = tf.nn.dynamic_rnn(cell, cell, rnn_inputs, initial_state = init_state)
 
     with tf.variable_scope('logits'):
         W = tf.get_variable('w', [cell_size, vocab_size])
@@ -70,10 +76,11 @@ def build_graph(x, y, mask, vocab_size=3670, emb_size=200, cell_size=200, lr_rat
         'summary': summary
         }
 
-def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/test.ckpt', log_path='./log/test.log'):
+def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/', log_path='./log/'):
     valid_mean = tf.placeholder(tf.float32, [])
     valid_summary_op = tf.summary.scalar("total_valid_loss", valid_mean)
 
+    best_valid_loss = 10000000
     with tf.Session() as sess:
         train_writer = tf.summary.FileWriter(log_path+'train/', sess.graph)
         valid_writer = tf.summary.FileWriter(log_path+'valid/', sess.graph)
@@ -87,7 +94,7 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/te
             if (_step+1) % FLAGS.train_freq == 0:
                 print 'Training loss:', cur_loss
                 train_writer.add_summary(summary, _step)
-                g['saver'].save(sess, model_path, global_step=_step)
+                g['saver'].save(sess, model_path+'train', global_step=_step)
 
             dev_losses = []
             if (_step+1) % FLAGS.dev_freq == 0:
@@ -98,6 +105,10 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/te
                 print 'valid mean loss:', m_loss
                 valid_sum = sess.run(valid_summary_op, feed_dict={valid_mean: m_loss})
                 valid_writer.add_summary(valid_sum, _step)
+                if m_loss < best_valid_loss:
+                    best_valid_loss = m_loss
+                    g['saver'].save(sess, model_path+'best')
+                    
 
 if __name__=='__main__':
     raw_data = get_raw_data(FLAGS.data)
@@ -110,6 +121,7 @@ if __name__=='__main__':
                         cell_size=FLAGS.cell_size, \
                         lr_rate=FLAGS.lr_rate, \
                         cell_type=FLAGS.cell_type, \
+                        rnn_type=FLAGS.rnn_type, \
                         optimizer=FLAGS.optimizer, \
                         batch_size=FLAGS.batch_size, \
                         is_training=True)
@@ -121,6 +133,7 @@ if __name__=='__main__':
                         cell_size=FLAGS.cell_size, \
                         lr_rate=FLAGS.lr_rate, \
                         cell_type=FLAGS.cell_type, \
+                        rnn_type=FLAGS.rnn_type, \
                         optimizer=FLAGS.optimizer, \
                         batch_size=FLAGS.batch_size, \
                         is_training=False)
