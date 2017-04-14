@@ -4,7 +4,7 @@ import cPickle
 from ner_clean import ner_clean
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.FileHandler('log/proprocess.log'))
+logger.addHandler(logging.FileHandler('log/preprocess.log'))
 logging.basicConfig(level = logging.DEBUG, format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
 
 meta_path = './_data/movie_titles_metadata.txt'
@@ -12,8 +12,8 @@ movie_lines_path = './_data/movie_lines.txt'
 convers_path = './_data/movie_conversations.txt'
 
 cnt_movie = 614
-cnt_train = 5
-cnt_dev = 5
+cnt_train = 3
+cnt_dev = 4
 cnt_test = 5
 
 line_data = {}
@@ -128,7 +128,7 @@ for sent1, sent2 in test_triples:
     except:
         pass
 
-cPickle.dump((word2ind, ind2word), open('./tmp/toy_dict.pkl', 'w'))
+#cPickle.dump((word2ind, ind2word), open('./tmp/dict.pkl', 'w'))
 cPickle.dump(traindata, open('./tmp/toy_traindata.pkl', 'w'))
 cPickle.dump(devdata, open('./tmp/toy_devdata.pkl', 'w'))
 cPickle.dump(testdata, open('./tmp/toy_testdata.pkl', 'w'))

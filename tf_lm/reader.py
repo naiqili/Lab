@@ -31,12 +31,15 @@ def get_raw_data(data_src, num_steps=705):
         test_mat[i, 0:len(test_data[i])] = test_data[i][0:len(test_data[i])]
 
     return {'train_data': train_mat,
+            'train_len': train_len,
             'dev_data': dev_mat,
+            'dev_len': dev_len,
             'test_data': test_mat,
+            'test_len': test_len,
             'word2ind': word2ind,
             'ind2word': ind2word}
 
-def get_producer(raw_data, batch_size, num_steps=700-1):
+def get_producer(raw_data, batch_size, num_steps=705-1):
     with tf.name_scope("Producer"):
         data_len = len(raw_data)
         raw_data = tf.convert_to_tensor(raw_data, name="raw_data", dtype=tf.int32)
@@ -45,6 +48,7 @@ def get_producer(raw_data, batch_size, num_steps=700-1):
         slice_x, slice_y = tf.train.slice_input_producer(
             [raw_x, raw_y],
             shuffle=True)
+            #num_epochs=num_epochs)
         batch_x, batch_y = tf.train.batch(
             [slice_x, slice_y],
             batch_size=batch_size)
