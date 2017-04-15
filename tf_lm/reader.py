@@ -2,7 +2,7 @@ import cPickle
 import numpy as np
 import tensorflow as tf
 
-def get_raw_data(data_src, num_steps=705):
+def get_raw_data(data_src, num_steps=710):
     if data_src == 'toy':
         train_data = cPickle.load(open('./tmp/toy_traindata.pkl'))
         dev_data = cPickle.load(open('./tmp/toy_devdata.pkl'))
@@ -39,7 +39,7 @@ def get_raw_data(data_src, num_steps=705):
             'word2ind': word2ind,
             'ind2word': ind2word}
 
-def get_producer(raw_data, batch_size, num_steps=705-1):
+def get_producer(raw_data, batch_size, num_steps=710-1):
     with tf.name_scope("Producer"):
         data_len = len(raw_data)
         raw_data = tf.convert_to_tensor(raw_data, name="raw_data", dtype=tf.int32)

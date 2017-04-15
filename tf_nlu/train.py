@@ -4,7 +4,7 @@ from reader import *
 
 flags = tf.flags
 
-flags.DEFINE_integer("vocab_size", 1917, "Vocab size (real: 52716, toy: 3669)")
+flags.DEFINE_integer("vocab_size", 1917, "Vocab size")
 flags.DEFINE_integer("emb_size", 300, "Embedding size")
 flags.DEFINE_integer("cell_size", 100, "Cell size")
 flags.DEFINE_integer("batch_size", 100, "Batch size")
@@ -15,7 +15,7 @@ flags.DEFINE_string("cell_type", 'GRU', "Cell type")
 flags.DEFINE_string("rnn_type", 'bi_dynamic', "Cell type")
 flags.DEFINE_string("optimizer", 'Adam', "Optimizer")
 flags.DEFINE_string("datafile", './_data/7000/nlu_data.pkl', "Data file (.pkl)")
-flags.DEFINE_string("dictfile", './tmp/dict.pkl', "Dict file (.pkl)")
+flags.DEFINE_string("dictfile", './tmp/dict7000.pkl', "Dict file (.pkl)")
 flags.DEFINE_string("train_target", 'title', "What to train (title/location/data/whenst/whened/invitee)")
 flags.DEFINE_string("modeldir", './model/', "Path to save the model")
 flags.DEFINE_string("logdir", './log/', "Path to save the log")
@@ -23,7 +23,7 @@ flags.DEFINE_float("lr_rate", 0.01, "Learning rate")
 
 FLAGS = flags.FLAGS
 
-def build_graph(x, y, mask, vocab_size=, emb_size=300, cell_size=200, lr_rate=0.01, cell_type='GRU', rnn_type='dynamic', optimizer='Adam', batch_size=50, is_training=True):
+def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, cell_size=200, lr_rate=0.01, cell_type='GRU', rnn_type='dynamic', optimizer='Adam', batch_size=50, is_training=True):
     embeddings = tf.get_variable('embedding_mat', [vocab_size, emb_size])
     rnn_inputs = tf.nn.embedding_lookup(embeddings, x)
 
@@ -32,7 +32,7 @@ def build_graph(x, y, mask, vocab_size=, emb_size=300, cell_size=200, lr_rate=0.
         cell_bw = tf.contrib.rnn.GRUCell(cell_size)
 
     if rnn_type == 'bi_dynamic':
-        rnn_outputs, final_state = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, rnn_inputs, sequence_length=data_len)
+        rnn_outputs, final_state = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, rnn_inputs, sequence_length=data_len, dtype=tf.float32)
 
     with tf.variable_scope('logits'):
         W = tf.get_variable('w', [cell_size*2, 2])
@@ -127,6 +127,6 @@ if __name__=='__main__':
     dev_batch_num = int(data['valid_size'] / FLAGS.batch_size)
     train_network(g, dev_g, dev_batch_num, \
                   max_step=FLAGS.max_step, \
-                  model_path=FLAGS.model_path, \
-                  log_path=FLAGS.log_path)
+                  model_path=FLAGS.modeldir, \
+                  log_path=FLAGS.logdir)
                   
