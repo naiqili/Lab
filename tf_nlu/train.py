@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 from reader import *
+import logging
+
 
 flags = tf.flags
 
@@ -19,9 +21,15 @@ flags.DEFINE_string("dictfile", './tmp/dict7000.pkl', "Dict file (.pkl)")
 flags.DEFINE_string("train_target", 'title', "What to train (title/location/data/whenst/whened/invitee)")
 flags.DEFINE_string("modeldir", './model/', "Path to save the model")
 flags.DEFINE_string("logdir", './log/', "Path to save the log")
+flags.DEFINE_string("model_name", 'test', "Model name")
 flags.DEFINE_float("lr_rate", 0.01, "Learning rate")
 
 FLAGS = flags.FLAGS
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.FileHandler(FLAGS.logdir+FLAGS.model_name))
+logging.basicConfig(level = logging.DEBUG,
+                    format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
 
 def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, cell_size=200, lr_rate=0.01, cell_type='GRU', rnn_type='dynamic', optimizer='Adam', batch_size=50, is_training=True):
     embeddings = tf.get_variable('embedding_mat', [vocab_size, emb_size])
@@ -46,9 +54,12 @@ def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, cell_size=2
     logits = tf.matmul(rnn_outputs, W) + b
 
     predictions = tf.nn.softmax(logits)
+    predictions = tf.argmax(prediction, axis=2)
 
     total_loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_reshaped) * mask_reshaped) / \
                  tf.reduce_sum(mask_reshaped)
+    acc = tf.reduce_sum(tf.to_float(tf.equal(predictions, y_reshaped))) / \
+          tf.reduce_sum(mask_reshaped)
     train_step = tf.train.AdamOptimizer(lr_rate).minimize(total_loss)
     train_loss_log = tf.summary.scalar('total_loss', total_loss)
     summary = tf.summary.merge([train_loss_log])
@@ -59,7 +70,8 @@ def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, cell_size=2
         'train_step': train_step,
         'preds': predictions,
         'saver': tf.train.Saver(),
-        'summary': summary
+        'summary': summary,
+        'acc': acc
         }
 
 def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/', log_path='./log/'):
@@ -76,19 +88,22 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/',
         threads = tf.train.start_queue_runners(coord=coord)
         
         for _step in range(max_step):
-            summary, cur_loss, cur_state, _ = sess.run([g['summary'], g['total_loss'], g['final_state'], g['train_step']])
+            summary, cur_loss, cur_acc, cur_state, _ = sess.run([g['summary'], g['total_loss'], g['acc'], g['final_state'], g['train_step']])
             if (_step+1) % FLAGS.train_freq == 0:
-                print 'Training loss:', cur_loss
+                logger.debug('Training loss: %f, accuracy: %f' % (cur_loss, cur_acc))
                 train_writer.add_summary(summary, _step)
                 g['saver'].save(sess, model_path+'train', global_step=_step)
 
             dev_losses = []
+            dev_accs = []
             if (_step+1) % FLAGS.dev_freq == 0:
                 for _batch in range(dev_batch_num):
-                    cur_loss = sess.run([dev_g['total_loss']])
+                    cur_loss, cur_acc = sess.run([dev_g['total_loss'], dev_g['acc']])
                     dev_losses.append(cur_loss)
+                    dev_accs.append(cur_acc)
                 m_loss = np.mean(dev_losses)
-                print 'valid mean loss:', m_loss
+                m_acc = np.mean(dev_accs)
+                logger.debug('valid loss: %f, accuracy: %f' % (m_loss, m_acc))
                 valid_sum = sess.run(valid_summary_op, feed_dict={valid_mean: m_loss})
                 valid_writer.add_summary(valid_sum, _step)
                 if m_loss < best_valid_loss:
@@ -97,6 +112,8 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/',
                     
 
 if __name__=='__main__':
+    
+
     data = get_raw_data(FLAGS.datafile, FLAGS.dictfile)
     train_x, train_y, train_len, train_mask = get_producer(data['train_text'], data['train_'+FLAGS.train_target], data['train_text_len'], FLAGS.batch_size)
     valid_x, valid_y, valid_len, valid_mask = get_producer(data['valid_text'], data['valid_'+FLAGS.train_target], data['valid_text_len'], FLAGS.batch_size)
