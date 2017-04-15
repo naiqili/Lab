@@ -54,11 +54,11 @@ def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, cell_size=2
     logits = tf.matmul(rnn_outputs, W) + b
 
     predictions = tf.nn.softmax(logits)
-    predictions = tf.argmax(prediction, axis=2)
+    predictions = tf.to_int32(tf.argmax(predictions, axis=1))
 
     total_loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_reshaped) * mask_reshaped) / \
                  tf.reduce_sum(mask_reshaped)
-    acc = tf.reduce_sum(tf.to_float(tf.equal(predictions, y_reshaped))) / \
+    acc = tf.reduce_sum(tf.to_float(tf.equal(predictions, y_reshaped)) * mask_reshaped) / \
           tf.reduce_sum(mask_reshaped)
     train_step = tf.train.AdamOptimizer(lr_rate).minimize(total_loss)
     train_loss_log = tf.summary.scalar('total_loss', total_loss)
