@@ -4,10 +4,7 @@ import cPickle
 import random
 import pprint
 
-conf = getGrammarConfig()
-dg = DialogGenerator(conf)
 
-case = 8000
 
 def dur2str(h, m):
     res = ''
@@ -240,16 +237,20 @@ def process(str_list, act_list, state_list, dg):
             all_res.append(res)
     return all_res
 
-data = []
-for k in range(case):
-    #print("Test %d:" % k)
-    dg.genNew()
-    str_list = dg.getActsStr()
-    act_list = dg.getActsSeq()
-    state_list = dg.getStateSeq()
-    assert len(str_list) == len(act_list)
-    all_res = process(str_list, act_list, state_list, dg)
-    data = data + all_res
-print len(data)
-pprint.pprint(data[:50])
-cPickle.dump(data, open('./tmp/all_data3.pkl', 'w'))
+if __name__ == '__main__':
+    data = []
+    conf = getGrammarConfig()
+    dg = DialogGenerator(conf)
+    case = 8000
+    for k in range(case):
+        #print("Test %d:" % k)
+        dg.genNew()
+        str_list = dg.getActsStr()
+        act_list = dg.getActsSeq()
+        state_list = dg.getStateSeq()
+        assert len(str_list) == len(act_list)
+        all_res = process(str_list, act_list, state_list, dg)
+        data = data + all_res
+    print len(data)
+    pprint.pprint(data[:50])
+    cPickle.dump(data, open('./tmp/all_data3.pkl', 'w'))
