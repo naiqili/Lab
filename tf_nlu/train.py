@@ -69,6 +69,7 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/',
                 if m_loss < best_valid_loss:
                     best_valid_loss = m_loss
                     g['saver'].save(sess, model_path+'best')
+                    logger.debug('better model saved')
                     _patience = FLAGS.patience
                 else:
                     _patience = _patience-1
