@@ -13,6 +13,7 @@ flags.DEFINE_integer("batch_size", 100, "Batch size")
 flags.DEFINE_integer("train_freq", 10, "Training report frequency")
 flags.DEFINE_integer("dev_freq", 20, "Developing report frequency")
 flags.DEFINE_integer("max_step", 5000, "Max training step")
+flags.DEFINE_integer("patience", 5, "Patience")
 flags.DEFINE_string("cell_type", 'GRU', "Cell type")
 flags.DEFINE_string("rnn_type", 'bi_dynamic', "Cell type")
 flags.DEFINE_string("optimizer", 'Adam', "Optimizer")
@@ -44,7 +45,8 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/',
 
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord)
-        
+
+        _patience = FLAGS.patience
         for _step in range(max_step):
             summary, cur_loss, cur_acc, cur_state, _ = sess.run([g['summary'], g['total_loss'], g['acc'], g['final_state'], g['train_step']])
             if (_step+1) % FLAGS.train_freq == 0:
@@ -67,6 +69,11 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/',
                 if m_loss < best_valid_loss:
                     best_valid_loss = m_loss
                     g['saver'].save(sess, model_path+'best')
+                    _patience = FLAGS.patience
+                else:
+                    _patience = _patience-1
+                    if _patience == 0:
+                        break
                     
 
 if __name__=='__main__':
@@ -103,3 +110,4 @@ if __name__=='__main__':
                   model_path=FLAGS.modeldir, \
                   log_path=FLAGS.logdir)
                   
+    logger.debug("ALL DONE")
