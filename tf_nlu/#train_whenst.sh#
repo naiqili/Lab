@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0 python train.py --train_target='whenst' --modeldir='./model/whenst/' --logdir='./log/whenst/' --model_name='whenst'
