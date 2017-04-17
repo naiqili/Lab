@@ -2,6 +2,13 @@ import cPickle
 import numpy as np
 import tensorflow as tf
 
+def _word2ind(w, word2ind):
+    if w in word2ind:
+        return word2ind
+    else:
+        print 'out of vocab (replace with <unk>):', w
+        return word2ind["<unk>"]
+
 def get_raw_data(datafile, dictfile, train_size=5000, valid_size=1000, test_size=1000, num_steps=60):
     all_data = cPickle.load(open(datafile))
     train_data = all_data[:train_size]
@@ -31,7 +38,7 @@ def get_raw_data(datafile, dictfile, train_size=5000, valid_size=1000, test_size
         text = train_data[i]['tok_text']
         text_len = len(text)
         train_text_len[i] = text_len
-        train_text[i][:text_len] = [word2ind[w] for w in text]
+        train_text[i][:text_len] = [_word2ind(w, word2ind) for w in text]
         train_title[i][:text_len] = train_data[i]['tok_title']
         train_location[i][:text_len] = train_data[i]['tok_location']
         train_day[i][:text_len] = train_data[i]['tok_day']
@@ -42,7 +49,7 @@ def get_raw_data(datafile, dictfile, train_size=5000, valid_size=1000, test_size
         text = valid_data[i]['tok_text']
         text_len = len(text)
         valid_text_len[i] = text_len
-        valid_text[i][:text_len] = [word2ind[w] for w in text]
+        valid_text[i][:text_len] = [_word2ind(w, word2ind) for w in text]
         valid_title[i][:text_len] = valid_data[i]['tok_title']
         valid_location[i][:text_len] = valid_data[i]['tok_location']
         valid_day[i][:text_len] = valid_data[i]['tok_day']

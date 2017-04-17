@@ -6,7 +6,7 @@ from model import build_graph
 
 flags = tf.flags
 
-flags.DEFINE_integer("vocab_size", 1917, "Vocab size")
+flags.DEFINE_integer("vocab_size", 50000, "Vocab size")
 flags.DEFINE_integer("emb_size", 300, "Embedding size")
 flags.DEFINE_integer("cell_size", 100, "Cell size")
 flags.DEFINE_integer("batch_size", 100, "Batch size")
@@ -18,12 +18,15 @@ flags.DEFINE_string("cell_type", 'GRU', "Cell type")
 flags.DEFINE_string("rnn_type", 'bi_dynamic', "Cell type")
 flags.DEFINE_string("optimizer", 'Adam', "Optimizer")
 flags.DEFINE_string("datafile", './_data/7000/nlu_data.pkl', "Data file (.pkl)")
-flags.DEFINE_string("dictfile", './tmp/dict7000.pkl', "Dict file (.pkl)")
+flags.DEFINE_string("dictfile", './tmp/dict.pkl', "Dict file (.pkl)")
 flags.DEFINE_string("train_target", 'title', "What to train (title/location/data/whenst/whened/invitee)")
 flags.DEFINE_string("modeldir", './model/', "Path to save the model")
 flags.DEFINE_string("logdir", './log/', "Path to save the log")
 flags.DEFINE_string("model_name", 'test', "Model name")
+flags.DEFINE_string("emb_file", './tmp/embedding.pkl', "Model name")
 flags.DEFINE_float("lr_rate", 0.01, "Learning rate")
+flags.DEFINE_float("input_keep_prob", 0.5, "Dropout probability of input")
+flags.DEFINE_float("output_keep_prob", 0.5, "Dropout probability of output")
 
 FLAGS = flags.FLAGS
 
@@ -85,24 +88,30 @@ if __name__=='__main__':
         g = build_graph(train_x, train_y, train_len, train_mask, \
                         vocab_size=FLAGS.vocab_size, \
                         emb_size=FLAGS.emb_size, \
+                        emb_file=FLAGS.emb_file, \
                         cell_size=FLAGS.cell_size, \
                         lr_rate=FLAGS.lr_rate, \
                         cell_type=FLAGS.cell_type, \
                         rnn_type=FLAGS.rnn_type, \
                         optimizer=FLAGS.optimizer, \
                         batch_size=FLAGS.batch_size, \
+                        input_keep_prob=FLAGS.input_keep_prob, \
+                        output_keep_prob=FLAGS.output_keep_prob, \
                         is_training=True)
 
     with tf.variable_scope("Model", reuse=True) as scope:
         dev_g = build_graph(valid_x, valid_y, valid_len, valid_mask, \
                         vocab_size=FLAGS.vocab_size, \
                         emb_size=FLAGS.emb_size, \
+                        emb_file=FLAGS.emb_file, \
                         cell_size=FLAGS.cell_size, \
                         lr_rate=FLAGS.lr_rate, \
                         cell_type=FLAGS.cell_type, \
                         rnn_type=FLAGS.rnn_type, \
                         optimizer=FLAGS.optimizer, \
                         batch_size=FLAGS.batch_size, \
+                        input_keep_prob=FLAGS.input_keep_prob, \
+                        output_keep_prob=FLAGS.output_keep_prob, \
                         is_training=False)
 
     dev_batch_num = int(data['valid_size'] / FLAGS.batch_size)

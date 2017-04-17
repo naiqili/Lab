@@ -1,13 +1,21 @@
 import tensorflow as tf
 import numpy as np
 
-def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, cell_size=200, lr_rate=0.01, cell_type='GRU', rnn_type='dynamic', optimizer='Adam', batch_size=50, is_training=True):
-    embeddings = tf.get_variable('embedding_mat', [vocab_size, emb_size])
+def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, emb_file='./tmp/embedding.pkl', cell_size=200, lr_rate=0.01, cell_type='GRU', rnn_type='dynamic', input_keep_prob=0.5, output_keep_prob=0.5, optimizer='Adam', batch_size=50, is_training=True):
+    emb_mat = cPickle.load(open(emb_file))
+    embeddings = tf.get_variable('embedding_mat', [vocab_size, emb_size], trainable=False, initializer=tf.constant_initializer(emb_mat))
+    
     rnn_inputs = tf.nn.embedding_lookup(embeddings, x)
 
     if cell_type == 'GRU':
         cell_fw = tf.contrib.rnn.GRUCell(cell_size)
+        cell_fw = tf.contrib.rnn.DropoutWrapper(cell_fw, \
+            input_keep_prob=input_keep_prob, \
+            output_keep_prob=output_keep_prob)
         cell_bw = tf.contrib.rnn.GRUCell(cell_size)
+        cell_bw = tf.contrib.rnn.DropoutWrapper(cell_bw, \
+            input_keep_prob=input_keep_prob, \
+            output_keep_prob=output_keep_prob)
 
     if rnn_type == 'bi_dynamic':
         rnn_outputs, final_state = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, rnn_inputs, sequence_length=data_len, dtype=tf.float32)
