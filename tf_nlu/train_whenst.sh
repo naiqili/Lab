@@ -1,1 +1,3 @@
-CUDA_VISIBLE_DEVICES=0 python train.py --train_target='title' --modeldir='./model/title/' --logdir='./log/title/' --model_name='title'
+mkdir -p ./model/whenst/
+mkdir -p ./log/whenst/
+CUDA_VISIBLE_DEVICES=0 python train.py --train_target='whenst' --modeldir='./model/whenst/' --logdir='./log/whenst/' --model_name='whenst'
