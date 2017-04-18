@@ -28,35 +28,35 @@ def time2str(h, m):
              'eighteen','nineteen','twenty','twenty one','twenty two','twenty three','twenty four']
     trans_m = {0:'WRONG', 15:'fifteen', 30:'thirty', 45:'forty five'}
     if m == 0:
-        s = trans[h] + ' oclock'
+        s = trans[h] + " o'clock"
         res.append(s)
         if h <= 12:
-            s = trans[h] + ' am'
+            s = trans[h] + ' a.m.'
             res.append(s)
-            s = trans[h] + ' oclock in the morning'
+            s = trans[h] + " o'clock in the morning"
             res.append(s)
         if h in [12, 13, 14]:
-            s = trans[h] + ' oclock at noon'
+            s = trans[h] + " o'clock at noon"
             res.append(s)
         if h > 12 and h <= 18:
-            s = trans[h%12] + ' pm'
+            s = trans[h%12] + ' p.m.'
             res.append(s)
-            s = trans[h%12] + ' oclock in the afternoon'
+            s = trans[h%12] + " o'clock in the afternoon"
             res.append(s)
         if h > 18:
-            s = trans[h%12] + ' pm'
+            s = trans[h%12] + " p.m."
             res.append(s)
-            s = trans[h%12] + ' oclock in the evening'
+            s = trans[h%12] + " o'clock in the evening"
             res.append(s)
-            s = trans[h%12] + ' oclock at night'
+            s = trans[h%12] + " o'clock at night"
             res.append(s)
     elif m == 15:
         s = trans[h] + ' ' + trans_m[m]
         res.append(s)
         if h <= 12:
-            s = trans[h] + ' ' + trans_m[m] + ' am'
+            s = trans[h] + ' ' + trans_m[m] + ' a.m.'
             res.append(s)
-            s = 'a quarter past ' + trans[h] + ' am'
+            s = 'a quarter past ' + trans[h] + ' a.m.'
             res.append(s)
             s = trans[h] + ' ' + trans_m[m] + ' in the morning'
             res.append(s)
@@ -68,18 +68,18 @@ def time2str(h, m):
             s = 'a quarter past ' + trans[h] +  ' at noon'
             res.append(s)
         if h > 12 and h <= 18:
-            s = trans[h%12] + ' ' + trans_m[m] + ' pm'
+            s = trans[h%12] + ' ' + trans_m[m] + ' p.m.'
             res.append(s)
-            s = 'a quarter past ' + trans[h%12] + ' pm'
+            s = 'a quarter past ' + trans[h%12] + ' p.m.'
             res.append(s)
             s = trans[h%12] + ' ' + trans_m[m] + ' in the afternoon'
             res.append(s)
             s = 'a quarter past ' + trans[h%12] + ' in the afternoon'
             res.append(s)
         if h > 18:
-            s = trans[h%12] + ' ' + trans_m[m] + ' pm'
+            s = trans[h%12] + ' ' + trans_m[m] + ' p.m.'
             res.append(s)
-            s = 'a quarter past ' + trans[h%12] + ' pm'
+            s = 'a quarter past ' + trans[h%12] + ' p.m.'
             res.append(s)
             s = trans[h%12] + ' ' + trans_m[m] + ' in the evening'
             res.append(s)
@@ -93,9 +93,9 @@ def time2str(h, m):
         s = trans[h] + ' ' + trans_m[m]
         res.append(s)
         if h <= 12:
-            s = trans[h] + ' ' + trans_m[m] + ' am'
+            s = trans[h] + ' ' + trans_m[m] + ' a.m.'
             res.append(s)
-            s = 'half past ' + trans[h] + ' am'
+            s = 'half past ' + trans[h] + ' a.m.'
             res.append(s)
             s = trans[h] + ' ' + trans_m[m] + ' in the morning'
             res.append(s)
@@ -107,18 +107,18 @@ def time2str(h, m):
             s = 'half past ' + trans[h] +  ' at noon'
             res.append(s)
         if h > 12 and h <= 18:
-            s = trans[h%12] + ' ' + trans_m[m] + ' pm'
+            s = trans[h%12] + ' ' + trans_m[m] + ' p.m.'
             res.append(s)
-            s = 'half past ' + trans[h%12] + ' pm'
+            s = 'half past ' + trans[h%12] + ' p.m.'
             res.append(s)
             s = trans[h%12] + ' ' + trans_m[m] + ' in the afternoon'
             res.append(s)
             s = 'half past ' + trans[h%12] + ' in the afternoon'
             res.append(s)
         if h > 18:
-            s = trans[h%12] + ' ' + trans_m[m] + ' pm'
+            s = trans[h%12] + ' ' + trans_m[m] + ' p.m.'
             res.append(s)
-            s = 'half past ' + trans[h%12] + ' pm'
+            s = 'half past ' + trans[h%12] + ' p.m.'
             res.append(s)
             s = trans[h%12] + ' ' + trans_m[m] + ' in the evening'
             res.append(s)
@@ -132,9 +132,9 @@ def time2str(h, m):
         s = trans[h] + ' ' + trans_m[m]
         res.append(s)
         if h <= 12:
-            s = trans[h] + ' ' + trans_m[m] + ' am'
+            s = trans[h] + ' ' + trans_m[m] + ' a.m.'
             res.append(s)
-            s = 'a quarter to ' + trans[h+1] + ' am'
+            s = 'a quarter to ' + trans[h+1] + ' a.m.'
             res.append(s)
             s = trans[h] + ' ' + trans_m[m] + ' in the morning'
             res.append(s)
@@ -146,18 +146,18 @@ def time2str(h, m):
             s = 'a quarter to ' + trans[h+1] +  ' at noon'
             res.append(s)
         if h > 12 and h <= 18:
-            s = trans[h%12] + ' ' + trans_m[m] + ' pm'
+            s = trans[h%12] + ' ' + trans_m[m] + ' p.m.'
             res.append(s)
-            s = 'a quarter to ' + trans[(h+1)%12] + ' pm'
+            s = 'a quarter to ' + trans[(h+1)%12] + ' p.m.'
             res.append(s)
             s = trans[h%12] + ' ' + trans_m[m] + ' in the afternoon'
             res.append(s)
             s = 'a quarter to ' + trans[(h+1)%12] + ' in the afternoon'
             res.append(s)
         if h > 18:
-            s = trans[h%12] + ' ' + trans_m[m] + ' pm'
+            s = trans[h%12] + ' ' + trans_m[m] + ' p.m.'
             res.append(s)
-            s = 'a quarter to ' + trans[(h+1)%12] + ' pm'
+            s = 'a quarter to ' + trans[(h+1)%12] + ' p.m.'
             res.append(s)
             s = trans[h%12] + ' ' + trans_m[m] + ' in the evening'
             res.append(s)

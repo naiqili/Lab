@@ -18,8 +18,8 @@ def randomDay():
     flag = random_select([(True, 0.5), (False, 0.5)])
     if flag:
         lst1 = ["this", "next"]
-        lst2 = ["Monday", "Tuesday", "Wednesday", "Thursday", \
-            "Friday", "Saturday", "Sunday"]
+        lst2 = ["monday", "tuesday", "wednesday", "thursday", \
+            "friday", "saturday", "sunday"]
     else:
         lst1 = ['january', 'february', 'march', 'april', 'may', 'june', 'july', \
                    'agaust', 'september', 'october', 'november', 'december']
@@ -80,7 +80,12 @@ for n in range(N):
     day = randomDay()
     # print event_title, name_lst, st_h, st_m, dur_h, dur_m, ed_h, ed_m, location, day, time2str(st_h, st_m*15)
     text = ' '.join(sent).lower()
-    words = text.split()
+    words = []
+    for w in text.split():
+        if w[0] == "<":
+            words.append(w)
+        else:
+            words = words + nltk.word_tokenize(w)
     res_text = []
     
     res_title = []
@@ -102,14 +107,14 @@ for n in range(N):
     for w in words:
         if w == '<what>':
             plain_title = event_title.lower()
-            for ww in event_title.lower().split():
+            for ww in nltk.word_tokenize(event_title.lower()):
                 res_text.append(ww)
                 for lst in [res_title, res_invitee, res_location, res_day, res_whenst, res_whened, res_dur]:
                     lst.append(0)
                 res_title[-1] = 1
         elif w == '<where>':
             plain_location = location.lower()
-            for ww in location.lower().split():
+            for ww in nltk.word_tokenize(location.lower()):
                 res_text.append(ww)
                 for lst in [res_title, res_invitee, res_location, res_day, res_whenst, res_whened, res_dur]:
                     lst.append(0)
