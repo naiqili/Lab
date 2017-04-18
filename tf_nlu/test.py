@@ -4,16 +4,17 @@ from model import build_graph
 import cPickle
 from reader import get_raw_data
 import random
+from reader import _word2ind
 
 flags = tf.flags
-flags.DEFINE_integer("vocab_size", 1917, "Vocab size")
+flags.DEFINE_integer("vocab_size", 50000, "Vocab size")
 flags.DEFINE_integer("emb_size", 300, "Embedding size")
 flags.DEFINE_integer("cell_size", 100, "Cell size")
 flags.DEFINE_integer("N", 5, "Number of test cases")
 flags.DEFINE_string("cell_type", 'GRU', "Cell type")
 flags.DEFINE_string("rnn_type", 'bi_dynamic', "Cell type")
 flags.DEFINE_string("datafile", './_data/7000/nlu_data.pkl', "Data file (.pkl)")
-flags.DEFINE_string("dictfile", './tmp/dict7000.pkl', "Dict file (.pkl)")
+flags.DEFINE_string("dictfile", './tmp/dict.pkl', "Dict file (.pkl)")
 flags.DEFINE_string("modelfile", 'None', "model file")
 flags.DEFINE_string("target", 'title', "What to test (title/location/data/whenst/whened/invitee)")
 FLAGS = flags.FLAGS
@@ -52,7 +53,7 @@ with tf.Session() as sess:
         len_mat = np.zeros((1,), dtype=np.int32)
 
         for i, w in enumerate(tok_text):
-            x_mat[0][i] = word2ind[w]
+            x_mat[0][i] = _word2ind(w, word2ind)
         y_mat[0][:_len] = tok_y[:]
         len_mat[0] = _len
 

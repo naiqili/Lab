@@ -41,6 +41,7 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/',
     valid_summary_op = tf.summary.scalar("total_valid_loss", valid_mean)
 
     best_valid_loss = 10000000
+    best_saver = tf.train.Saver(max_to_keep=1)
     with tf.Session() as sess:
         train_writer = tf.summary.FileWriter(log_path+'train/', sess.graph)
         valid_writer = tf.summary.FileWriter(log_path+'valid/', sess.graph)
@@ -71,13 +72,15 @@ def train_network(g, dev_g, dev_batch_num, max_step=5000, model_path='./model/',
                 valid_writer.add_summary(valid_sum, _step)
                 if m_loss < best_valid_loss:
                     best_valid_loss = m_loss
-                    g['saver'].save(sess, model_path+'best')
+                    best_saver.save(sess, model_path+'best')
                     logger.debug('better model saved')
                     _patience = FLAGS.patience
                 else:
                     _patience = _patience-1
                     if _patience == 0:
                         break
+        coord.request_stop()
+        coord.join(threads)
                     
 
 if __name__=='__main__':
