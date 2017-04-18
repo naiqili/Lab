@@ -1,4 +1,5 @@
 import tensorflow as tf
+import cPickle
 import numpy as np
 
 def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, emb_file='./tmp/embedding.pkl', cell_size=200, lr_rate=0.01, cell_type='GRU', rnn_type='dynamic', input_keep_prob=0.5, output_keep_prob=0.5, optimizer='Adam', batch_size=50, is_training=True):

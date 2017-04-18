@@ -4,7 +4,7 @@ import tensorflow as tf
 
 def _word2ind(w, word2ind):
     if w in word2ind:
-        return word2ind
+        return word2ind[w]
     else:
         print 'out of vocab (replace with <unk>):', w
         return word2ind["<unk>"]
