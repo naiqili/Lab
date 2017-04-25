@@ -22,7 +22,7 @@ FLAGS = flags.FLAGS
 all_data = cPickle.load(open(FLAGS.datafile))
 (word2ind, ind2word) = cPickle.load(open(FLAGS.dictfile))
 
-with tf.variable_scope("Model"):
+with tf.variable_scope("Model_"+FLAGS.target):
     tf_x = tf.placeholder(tf.int32, shape=(1, 60), name='x')
     tf_y = tf.placeholder(tf.int32, shape=(1, 60), name='y')
     tf_len = tf.placeholder(tf.int32, shape=(1), name='len')

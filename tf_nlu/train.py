@@ -87,7 +87,7 @@ if __name__=='__main__':
     data = get_raw_data(FLAGS.datafile, FLAGS.dictfile)
     train_x, train_y, train_len, train_mask = get_producer(data['train_text'], data['train_'+FLAGS.train_target], data['train_text_len'], FLAGS.batch_size)
     valid_x, valid_y, valid_len, valid_mask = get_producer(data['valid_text'], data['valid_'+FLAGS.train_target], data['valid_text_len'], FLAGS.batch_size)
-    with tf.variable_scope("Model", reuse=None) as scope:
+    with tf.variable_scope("Model_"+FLAGS.model_name, reuse=None) as scope:
         g = build_graph(train_x, train_y, train_len, train_mask, \
                         vocab_size=FLAGS.vocab_size, \
                         emb_size=FLAGS.emb_size, \
@@ -102,7 +102,7 @@ if __name__=='__main__':
                         output_keep_prob=FLAGS.output_keep_prob, \
                         is_training=True)
 
-    with tf.variable_scope("Model", reuse=True) as scope:
+    with tf.variable_scope("Model_"+FLAGS.model_name, reuse=True) as scope:
         dev_g = build_graph(valid_x, valid_y, valid_len, valid_mask, \
                         vocab_size=FLAGS.vocab_size, \
                         emb_size=FLAGS.emb_size, \

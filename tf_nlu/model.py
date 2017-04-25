@@ -41,7 +41,8 @@ def build_graph(x, y, data_len, mask, vocab_size=1917, emb_size=300, emb_file='.
           tf.reduce_sum(mask_reshaped)
     train_step = tf.train.AdamOptimizer(lr_rate).minimize(total_loss)
     train_loss_log = tf.summary.scalar('total_loss', total_loss)
-    summary = tf.summary.merge([train_loss_log])
+    train_acc_log = tf.summary.scalar('accuracy', acc)
+    summary = tf.summary.merge([train_loss_log, train_acc_log])
 
     return {
         'final_state': final_state,

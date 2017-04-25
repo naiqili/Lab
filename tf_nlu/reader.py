@@ -6,7 +6,7 @@ def _word2ind(w, word2ind):
     if w in word2ind:
         return word2ind[w]
     else:
-        print 'out of vocab (replace with <unk>):', w
+        #print 'out of vocab (replace with <unk>):', w
         return word2ind["<unk>"]
 
 def get_raw_data(datafile, dictfile, train_size=5000, valid_size=1000, test_size=1000, num_steps=60):
