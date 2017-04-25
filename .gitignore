@@ -1,4 +1,4 @@
-1;3409;0c# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -96,3 +96,4 @@ ENV/
 model/
 tmp/
 log/
+parser/
