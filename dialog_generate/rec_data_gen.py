@@ -6,18 +6,18 @@ from build_data1 import dur2str, time2str
 from pprint import pprint
 
 ontology_file = './ontology_itime3.json'
-wv_file = '/mnt/hgfs/share/data/LM/glove.42B.300d.txt'
-wv_cnt = 20000
+#wv_file = '/mnt/hgfs/share/data/LM/glove.42B.300d.txt'
+#wv_cnt = 20000
 
 output_file = './tmp/recursive/rec_data.pkl'
 output_plain = './tmp/recursive/raw.txt'
 
-wv_dict = []
-with open(wv_file) as f:
-    for _ in range(wv_cnt):
-        l = f.readline()
-        wv_dict.append(l.split()[0])
-print "word vec loaded:", wv_dict[:20]
+#wv_dict = []
+#with open(wv_file) as f:
+#    for _ in range(wv_cnt):
+#        l = f.readline()
+#        wv_dict.append(l.split()[0])
+#print "word vec loaded:", wv_dict[:20]
 
 all_data = []
 
@@ -205,8 +205,5 @@ with open(output_plain, 'w') as f:
     for d in all_data:
         lst = []
         for tok in d['tok_text']:
-            if tok in wv_dict:
-                lst.append(tok)
-            else:
-                lst.append('<unk>')
+            lst.append(tok)
         f.write("%s\n" % ' '.join(lst))
