@@ -59,11 +59,9 @@ def loop_body(node_tensors, i):
   i = tf.add(i, 1)
   return node_tensors, i
   
-def backward_loop_body(node_tensors, i, input_len, last_forward):
+def backward_loop_body(node_tensors, i):
   def fn1(node_tensors):
-    parent_tensor = tf.cond(tf.equal(i, input_len),
-                          lambda: last_forward,
-                          lambda: node_tensors.read(i))
+    parent_tensor = node_tensors.read(i)
     left_child = tf.gather(left_children, i)
     right_child = tf.gather(right_children, i)
     left_tensor, right_tensor = decompose_children(parent_tensor)
@@ -75,12 +73,12 @@ def backward_loop_body(node_tensors, i, input_len, last_forward):
           lambda: fn1(node_tensors), \
           lambda: node_tensors)
   i = i - 1
-  return node_tensors, i, input_len, last_forward
+  return node_tensors, i
 
 input_len = tf.squeeze(tf.shape(is_leaf))
 loop_cond = lambda node_tensors, i: \
         tf.less(i, input_len)
-backward_loop_cond  = lambda node_tensors, i, len_1, last_forward: \
+backward_loop_cond  = lambda node_tensors, i: \
         tf.greater_equal(i, 0)
 
 forward_tensors, _ = tf.while_loop(loop_cond, loop_body, [forward_tensors, 0],
@@ -92,8 +90,9 @@ tf.global_variables_initializer().run()
 print sess.run(forward_tensors.concat())
               
 last_forward = forward_tensors.read(input_len-1)
-print sess.run(last_forward)
-backward_tensors, _, _, _ = tf.while_loop(backward_loop_cond, backward_loop_body, [backward_tensors, input_len-1, input_len-1, last_forward],
+
+backward_tensors = backward_tensors.write(input_len-1, last_forward)
+backward_tensors, _, = tf.while_loop(backward_loop_cond, backward_loop_body, [backward_tensors, input_len-1],
                                      parallel_iterations=1)
                                      
 
