@@ -7,12 +7,13 @@ word2ind = {}
 ind2word = {}
 
 all_words = []
+wv_base = 50002
 with open(tag_path) as f:
     f.readline()
     for line in f:
         all_words.append(line.strip())
     for (i, w) in enumerate(all_words):
-        word2ind[w] = i
-        ind2word[i] = w
+        word2ind[w] = i+wv_base
+        ind2word[i+wv_base] = w
 
 cPickle.dump((word2ind, ind2word), open(tag_dict_path, 'w'))
