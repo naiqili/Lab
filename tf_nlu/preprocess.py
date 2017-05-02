@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.FileHandler('log/preprocess.log'))
 logging.basicConfig(level = logging.DEBUG, format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
 
-#wordvec_file = '/mnt/hgfs/share/data/LM/glove.42B.300d.zip'
-wordvec_file = '/home/naiqi/data/LM/glove.42B.300d.zip'
+wordvec_file = '/mnt/hgfs/share/data/LM/glove.42B.300d.zip'
+#wordvec_file = '/home/naiqi/data/LM/glove.42B.300d.zip'
 unk_file = './_data/unk_file'
 vocab_size = 50000
 

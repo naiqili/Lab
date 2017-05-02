@@ -25,6 +25,7 @@ with open(tree_input_path) as f_in, \
         t = Tree.fromstring(line)
         n_tags = dfs_tag(t)
         all_tags.update(n_tags)
-    f_out.write("%d\n" % len(all_tags))
+    f_out.write("%d\n" % (len(all_tags)+1))
+    f_out.write("LEAF\n")
     for tag in all_tags:
         f_out.write("%s\n" % tag)
