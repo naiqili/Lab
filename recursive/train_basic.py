@@ -142,7 +142,6 @@ def train():
                 logger.debug("Training loss: %f" % train_loss)
 
             if _step % FLAGS.valid_freq == 0:
-                print _step
                 valid_losses = []
                 metrics = 0, 0, 0, 0
                 for i in xrange(FLAGS.valid_size):
@@ -151,9 +150,6 @@ def train():
                     valid_loss = np.mean(valid_loss)
                     valid_losses.append(valid_loss)
                     logger.debug("Validation loss %f" % valid_loss)
-                    print valid_pred
-                    print target_v
-                    print is_leaf_v
                     new_metrics = get_metrics(valid_pred, target_v, is_leaf_v)
                     metrics = map(lambda (x,y): x+y, zip(metrics, new_metrics))
                 _00, _01, _10, _11 = metrics
