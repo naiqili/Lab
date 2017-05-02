@@ -44,7 +44,7 @@ logging.basicConfig(level = logging.DEBUG,
                     format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
 
 def report_figure(valid_history, train_history):
-    (loss, acc, precision, recall, f1) = zip(*history)
+    (loss, acc, precision, recall, f1) = zip(*valid_history)
     try:
         pylab.figure()
         pylab.title("Loss")
