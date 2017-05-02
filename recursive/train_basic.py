@@ -42,9 +42,14 @@ logger.addHandler(logging.FileHandler(FLAGS.logdir+FLAGS.target))
 logging.basicConfig(level = logging.DEBUG,
                     format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
 
-def report_figure(history):
+def report_figure(valid_history, train_history):
     (loss, acc, precision, recall, f1) = zip(*history)
     try:
+        pylab.figure()
+        pylab.title("Loss")
+        pylab.plot(train_history)
+        pylab.savefig(FLAGS.fig_path + 'train_loss.png')
+        pylab.close()
         pylab.figure()
         pylab.title("Loss")
         pylab.plot(loss)
@@ -131,6 +136,7 @@ def train():
     _patience = FLAGS.patience
     best_valid_loss = 10000000
     valid_history = []
+    train_history = []
 
     with tf.Session() as sess:
         tf.global_variables_initializer().run()
@@ -144,6 +150,7 @@ def train():
             train_op = train_md.train_op
             train_loss, _ = sess.run([loss_ts, train_op])
             train_loss = np.mean(train_loss)
+            train_history.append(train_loss)
             if _step % FLAGS.train_freq == 0:
                 logger.debug("Training loss: %f" % train_loss)
 
