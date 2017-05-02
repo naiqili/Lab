@@ -91,4 +91,5 @@ class BasicModel():
         self.pred = tf.squeeze(tf.argmax(logits, 1))
         self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
                         logits=logits, labels=label_ts)
-        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        if self.is_training:
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
