@@ -8,8 +8,8 @@ valid_size = 1000
 
 tree_input_path = '_data/compact_tree.txt'
 
-train_path = '_data/train.record'
-valid_path = '_data/valid.record'
+train_path = 'tmp/train.record'
+valid_path = 'tmp/valid.record'
 
 wv_dict_path = '../tf_nlu/tmp/dict.pkl'
 pos_dict_path = 'tmp/pos_dict.pkl'
