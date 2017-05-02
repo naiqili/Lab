@@ -174,7 +174,7 @@ def train():
                 logger.debug('  mean loss: %f' % mean_loss)
                 logger.debug('  acc: %f, precision: %f, recall: %f, f1: %f' % (acc, precision, recall, f1))
                 valid_history.append((mean_loss, acc, precision, recall, f1))
-                report_figure(valid_history)
+                report_figure(valid_history, train_history)
                 logger.debug('Figure saved')
 
                 if mean_loss < best_valid_loss:
