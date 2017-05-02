@@ -1,11 +1,17 @@
+import matplotlib
+
 import tensorflow as tf
 import numpy as np
 import logging
 import cPickle
-import os, shutil, random, pylab
+import os, shutil, random
 
 from basic_model import BasicModel
 from tfrecord_reader import get_data
+
+matplotlib.use('Agg')
+
+import pylab
 
 flags = tf.flags
 
@@ -141,7 +147,7 @@ def train():
             if _step % FLAGS.train_freq == 0:
                 logger.debug("Training loss: %f" % train_loss)
 
-            if _step % FLAGS.valid_freq == 0:
+            if _step != 0 and _step % FLAGS.valid_freq == 0:
                 valid_losses = []
                 metrics = 0, 0, 0, 0
                 for i in xrange(FLAGS.valid_size):
