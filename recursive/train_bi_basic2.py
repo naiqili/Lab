@@ -177,7 +177,7 @@ def train():
                     new_metrics = get_metrics(valid_pred, target_v, is_leaf_v)
                     metrics = map(lambda (x,y): x+y, zip(metrics, new_metrics))
                 _00, _01, _10, _11 = metrics
-                acc, precision, recall, f1 = collect_metrics(_00, _01, _10, 11)
+                acc, precision, recall, f1 = collect_metrics(_00, _01, _10, _11)
                 mean_loss = np.mean(valid_losses)
                 logger.debug('Validation finish')
                 logger.debug('  mean loss: %f' % mean_loss)
