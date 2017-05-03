@@ -145,5 +145,7 @@ class BiBasicModel():
         self.pred = tf.squeeze(tf.argmax(logits, 1))
         self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
                         logits=logits, labels=label_ts)
+        self.mean_loss = tf.reduce_mean(self.loss)
+        self.loss_summary = tf.summary.scalar('Loss', self.mean_loss)
         if self.is_training:
-            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.mean_loss)

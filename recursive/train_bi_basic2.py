@@ -33,8 +33,10 @@ flags.DEFINE_string("valid_record", '_data/valid.record', "valid record file")
 flags.DEFINE_string("fig_path", './log/fig/', "Path to save the figure")
 flags.DEFINE_string("bestmodel_dir", './model/best/', "Path to save the best model")
 flags.DEFINE_string("logdir", './log/', "Path to save the log")
+flags.DEFINE_string("summary_dir", './summary/', "Path to save the summary")
 flags.DEFINE_string("wv_emb_file", '../tf_nlu/tmp/embedding.pkl', "word vec embedding file")
 flags.DEFINE_float("lr", 0.01, "Learning rate")
+flags.DEFINE_boolean("load_model", False, "Whether load the best model")
 
 FLAGS = flags.FLAGS
 
@@ -90,7 +92,7 @@ def get_metrics(pred, target, is_leaf, only_leaf=True):
             v01 += 1
         if pred[i] == 1 and target[i] == 0:
             v10 += 1
-        if pred[i] == 0 and target[i] == 0:
+        if pred[i] == 1 and target[i] == 1:
             v11 += 1
     return v00, v01, v10, v11
 
@@ -141,30 +143,37 @@ def train():
     train_history = []
 
     with tf.Session() as sess:
-        tf.global_variables_initializer().run()
+        if FLAGS.load_model:
+            tf.train.Saver().restore(sess, FLAGS.bestmodel_dir)
+        else:
+            tf.global_variables_initializer().run()
+
+        train_writer = tf.summary.FileWriter(FLAGS.summary_dir + 'train')
+        valid_writer = tf.summary.FileWriter(FLAGS.summary_dir + 'valid')
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord)
 
         for _step in xrange(FLAGS.max_step):
             if _patience == 0:
                 break
-            loss_ts = train_md.loss
+            loss_ts = train_md.mean_loss
+            train_summary = train_md.loss_summary
             train_op = train_md.train_op
-            train_loss, _ = sess.run([loss_ts, train_op])
-            train_loss = np.mean(train_loss)
+            train_loss, train_summary, _ = sess.run([loss_ts, train_summary, train_op])
             train_history.append(train_loss)
             if _step % FLAGS.train_freq == 0:
                 logger.debug("Training loss: %f" % train_loss)
+                train_writer.add_summary(train_summary, _step)
 
             if _step != 0 and _step % FLAGS.valid_freq == 0:
                 valid_losses = []
                 metrics = 0, 0, 0, 0
                 for i in xrange(FLAGS.valid_size):
-                    valid_loss, valid_pred, target_v, is_leaf_v = \
-                        sess.run([valid_md.loss, valid_md.pred, target_vts, is_leaf_vts])
-                    valid_loss = np.mean(valid_loss)
+                    valid_loss, valid_summary, valid_pred, target_v, is_leaf_v = \
+                        sess.run([valid_md.mean_loss, valid_md.loss_summary, valid_md.pred, target_vts, is_leaf_vts])
                     valid_losses.append(valid_loss)
                     logger.debug("Validation loss %f" % valid_loss)
+                    valid_writer.add_summary(valid_summary, _step)
                     new_metrics = get_metrics(valid_pred, target_v, is_leaf_v)
                     metrics = map(lambda (x,y): x+y, zip(metrics, new_metrics))
                 _00, _01, _10, _11 = metrics
