@@ -16,6 +16,8 @@ $$c = i \odot u + f_{left} \odot c_{left} + f_{right} \odot c_{right}$$
 
 $$h = o \odot \tanh(c)$$
 
+$x$ is word embedding.
+
 ## Backward
 
 $$i_{lr} = \sigma(W^i_{lr} emb_{lr} + W^i_p h_{parent} + b^i)$$
@@ -31,3 +33,7 @@ $$c_{lr} = i_{lr} \odot u_{lr} + f_{lr} \odot c_{parent}$$
 $$h_{lr} = o_{lr} \odot \tanh c_{lr}$$
 
 $$lr \in \{left, right\}$$
+
+$emb$ is the embedding computed in the forward phrase.
+
+$h_{parent} = [h_{forward} h_{backward}]$
