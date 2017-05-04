@@ -83,7 +83,8 @@ def report_figure(valid_history, train_history):
 
 def prop_op(pred, target, is_leaf, prop, left, right):
     i = len(pred)-1
-    res = pred[:]
+    res = pred.copy()
+
     while i >= 0:
         if not is_leaf[i]:
             if prop == 'AND':
@@ -96,11 +97,13 @@ def prop_op(pred, target, is_leaf, prop, left, right):
     return res
 
 def get_metrics(pred, target, is_leaf, only_leaf=True, prop=None, left=None, right=None):
+    
     if prop == None:
         _pred = pred
     else:
         _pred = prop_op(pred, target, is_leaf, prop, left, right)
     v00, v01, v10, v11 = 0, 0, 0, 0
+
     for i in range(len(is_leaf)):
         if only_leaf and is_leaf[i] == 0:
             continue
@@ -187,7 +190,7 @@ def train():
                 logger.debug("Start validation")
                 valid_losses = []
                 metrics = 0, 0, 0, 0
-                a_metrics = 0, 0, 0, 0
+                #a_metrics = 0, 0, 0, 0
                 o_metrics = 0, 0, 0, 0
                 for i in xrange(FLAGS.valid_size):
                     valid_loss, valid_summary, valid_pred, target_v, is_leaf_v, left_v, right_v = \
@@ -197,25 +200,23 @@ def train():
                     valid_writer.add_summary(valid_summary, _step)
                     new_metrics = get_metrics(valid_pred, target_v, is_leaf_v)
                     metrics = map(lambda (x,y): x+y, zip(metrics, new_metrics))
-                    a_new_metrics = get_metrics(valid_pred, target_v, is_leaf_v, prop='AND', left=left_v, right=right_v)
-                    a_metrics = map(lambda (x,y): x+y, zip(a_metrics, a_new_metrics))
+                    #a_new_metrics = get_metrics(valid_pred, target_v, is_leaf_v, prop='AND', left=left_v, right=right_v)
+                    #a_metrics = map(lambda (x,y): x+y, zip(a_metrics, a_new_metrics))
                     o_new_metrics = get_metrics(valid_pred, target_v, is_leaf_v, prop='OR', left=left_v, right=right_v)
                     o_metrics = map(lambda (x,y): x+y, zip(o_metrics, o_new_metrics))
                     
                 _00, _01, _10, _11 = metrics
-                a_00, a_01, a_10, a_11 = a_metrics
+                #a_00, a_01, a_10, a_11 = a_metrics
                 o_00, o_01, o_10, o_11 = o_metrics
-                print metrics
-                print a_metrics
-                print o_metrics
+
                 acc, precision, recall, f1 = collect_metrics(_00, _01, _10, _11)
-                a_acc, a_precision, a_recall, a_f1 = collect_metrics(a_00, a_01, a_10, a_11)
+                #a_acc, a_precision, a_recall, a_f1 = collect_metrics(a_00, a_01, a_10, a_11)
                 o_acc, o_precision, o_recall, o_f1 = collect_metrics(o_00, o_01, o_10, o_11)
                 mean_loss = np.mean(valid_losses)
                 logger.debug('Validation: finish')
                 logger.debug('Step: %d Validation: mean loss: %f' % (_step, mean_loss))
                 logger.debug('Validation: prop:None  acc: %f, precision: %f, recall: %f, f1: %f' % (acc, precision, recall, f1))
-                logger.debug('Validation: prop:AND  acc: %f, precision: %f, recall: %f, f1: %f' % (a_acc, a_precision, a_recall, a_f1))
+                #logger.debug('Validation: prop:AND  acc: %f, precision: %f, recall: %f, f1: %f' % (a_acc, a_precision, a_recall, a_f1))
                 logger.debug('Validation: prop:OR  acc: %f, precision: %f, recall: %f, f1: %f' % (o_acc, o_precision, o_recall, o_f1))
                 valid_history.append((mean_loss, acc, precision, recall, f1))
                 report_figure(valid_history, train_history)
