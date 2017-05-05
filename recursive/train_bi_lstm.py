@@ -36,7 +36,10 @@ flags.DEFINE_string("logdir", './log/', "Path to save the log")
 flags.DEFINE_string("summary_dir", './summary/', "Path to save the summary")
 flags.DEFINE_string("wv_emb_file", '../tf_nlu/tmp/embedding.pkl', "word vec embedding file")
 flags.DEFINE_float("lr", 0.01, "Learning rate")
+flags.DEFINE_float("fw_dropout_rate", 0.3, "Forward dropout rate")
+flags.DEFINE_float("bw_dropout_rate", 0.3, "Backward dropout rate")
 flags.DEFINE_boolean("load_model", False, "Whether load the best model")
+flags.DEFINE_boolean("use_dropout", False, "Whether use dropout")
 
 FLAGS = flags.FLAGS
 
@@ -144,7 +147,10 @@ def train():
                    'fw_cell_size': FLAGS.fw_cell_size, \
                    'bw_cell_size': FLAGS.bw_cell_size, \
                    'lr': FLAGS.lr, \
-                   'wv_emb_file': FLAGS.wv_emb_file}
+                   'wv_emb_file': FLAGS.wv_emb_file, \
+                   'use_dropout': FLAGS.use_dropout, \
+                   'fw_dropout_rate': FLAGS.fw_dropout_rate, \
+                   'bw_dropout_rate': FLAGS.bw_dropout_rate}
 
     train_md = BiLSTMModel(config_dict)
     train_md.is_training = True
