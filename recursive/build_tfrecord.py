@@ -10,6 +10,7 @@ tree_input_path = '_data/compact_tree.txt'
 
 train_path = 'tmp/train.record'
 valid_path = 'tmp/valid.record'
+test_path = 'tmp/test.record'
 
 wv_dict_path = '../tf_nlu/tmp/dict.pkl'
 pos_dict_path = 'tmp/pos_dict.pkl'
@@ -69,7 +70,7 @@ with open(tree_input_path) as f:
         elif cnt == train_size:
             writer = tf.python_io.TFRecordWriter(valid_path)
         elif cnt == train_size + valid_size:
-            break
+            writer = tf.python_io.TFRecordWriter(test_path)
         nltk_t = Tree.fromstring(line)
         tf_t = TFTree(nltk_t)
         #tf_t.set_label('title')
