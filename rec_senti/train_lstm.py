@@ -1,0 +1,156 @@
+import matplotlib
+
+import tensorflow as tf
+import numpy as np
+import logging
+import cPickle
+import os, shutil, random
+
+from lstm_model import LSTMModel
+from tfrecord_reader import get_data
+
+matplotlib.use('Agg')
+
+import pylab
+
+flags = tf.flags
+
+flags.DEFINE_integer("wv_vocab_size", 50002, "Vocab size")
+flags.DEFINE_integer("embed_size", 300, "Embedding size")
+flags.DEFINE_integer("class_size", 3, "3 for binary; 5 for fine grained")
+flags.DEFINE_integer("fw_cell_size", 50, "Composition cell size")
+flags.DEFINE_integer("train_freq", 10, "Training report frequency")
+flags.DEFINE_integer("valid_freq", 100, "Validation report frequency")
+flags.DEFINE_integer("valid_size", 1000, "Size of validation data")
+flags.DEFINE_integer("max_step", 10000, "Max training step")
+flags.DEFINE_integer("patience", 5, "Patience")
+flags.DEFINE_string("wv_dict", '../tf_nlu/tmp/dict.pkl', "word vec dict file")
+flags.DEFINE_string("train_record", '_data/train.record', "training record file")
+flags.DEFINE_string("valid_record", '_data/valid.record', "valid record file")
+flags.DEFINE_string("fig_path", './log/fig/', "Path to save the figure")
+flags.DEFINE_string("bestmodel_dir", './model/best/', "Path to save the best model")
+flags.DEFINE_string("logdir", './log/', "Path to save the log")
+flags.DEFINE_string("summary_dir", './summary/', "Path to save the summary")
+flags.DEFINE_string("wv_emb_file", '../tf_nlu/tmp/embedding.pkl', "word vec embedding file")
+flags.DEFINE_float("lr", 0.01, "Learning rate")
+flags.DEFINE_float("L2_lambda", 0.0001, "Lambda of L2 loss")
+flags.DEFINE_boolean("load_model", False, "Whether load the best model")
+
+FLAGS = flags.FLAGS
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level = logging.DEBUG,
+                    format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
+logger.addHandler(logging.FileHandler(FLAGS.logdir+'log.txt'))
+
+def report_figure(valid_history, train_history):
+    (loss, acc) = zip(*valid_history)
+    try:
+        pylab.figure()
+        pylab.title("Loss")
+        pylab.plot(train_history)
+        pylab.savefig(FLAGS.fig_path + 'train_loss.png')
+        pylab.close()
+        pylab.figure()
+        pylab.title("Loss")
+        pylab.plot(loss)
+        pylab.savefig(FLAGS.fig_path + 'loss.png')
+        pylab.close()
+
+        pylab.figure()
+        pylab.title("Accuracy")
+        pylab.plot(acc)
+        pylab.savefig(FLAGS.fig_path + 'acc.png')
+        pylab.close()
+        pylab.figure()
+
+    except:
+        pass
+
+def train():
+    (wv_word2ind, wv_ind2word) = cPickle.load(open(FLAGS.wv_dict))
+
+    config_dict = {'wv_vocab_size': FLAGS.wv_vocab_size, \
+                   'embed_size': FLAGS.embed_size, \
+                   'fw_cell_size': FLAGS.fw_cell_size, \
+                   'lr': FLAGS.lr, \
+                   'L2_lambda': FLAGS.L2_lambda, \
+                   'wv_emb_file': FLAGS.wv_emb_file, \
+                   'class_size': FLAGS.class_size
+                   }
+
+    train_md = LSTMModel(config_dict)
+    train_md.is_training = True
+    train_md.add_variables()
+    valid_md = LSTMModel(config_dict)
+    valid_md.is_training = False
+
+    l_tts, wv_tts, left_tts, right_tts, target_tts, is_leaf_tts = get_data(filename=FLAGS.train_record)
+    train_md.build_model(left_tts, right_tts, wv_tts, target_tts, is_leaf_tts, l_tts)
+
+    l_vts, wv_vts, left_vts, right_vts, target_vts, is_leaf_vts = get_data(filename=FLAGS.valid_record)
+    valid_md.build_model(left_vts, right_vts, wv_vts, target_vts, is_leaf_vts, l_vts)
+    
+    _patience = FLAGS.patience
+    best_valid_loss = 10000000
+    valid_history = []
+    train_history = []
+
+    with tf.Session() as sess:
+        if FLAGS.load_model:
+            tf.train.Saver().restore(sess, FLAGS.bestmodel_dir)
+        else:
+            tf.global_variables_initializer().run()
+
+        coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(coord=coord)
+
+        for _step in xrange(FLAGS.max_step):
+            if _patience == 0:
+                break
+            loss_ts = train_md.mean_loss
+            train_op = train_md.train_op
+            train_loss, _ = sess.run([loss_ts, train_op])
+            train_history.append(train_loss)
+            if _step % FLAGS.train_freq == 0:
+                logger.debug("Step: %d Training: Loss: %f" % (_step, train_loss))
+
+            if _step != 0 and _step % FLAGS.valid_freq == 0:
+                logger.debug("Start validation")
+                valid_losses = []
+                metrics = np.zeros((FLAGS.class_size, FLAGS.class_size))
+
+                for i in xrange(FLAGS.valid_size):
+                    valid_loss, valid_pred, target_v = \
+                        sess.run([valid_md.mean_loss, valid_md.pred, target_vts])
+                    valid_losses.append(valid_loss)
+                    root_pred = valid_pred[-1]
+                    root_target = target_v[-1]
+                    metrics[root_pred, root_target] += 1
+                    #logger.debug("Validation loss %f" % valid_loss)
+
+                mean_loss = np.mean(valid_losses)
+                logger.debug('Validation: finish')
+                
+                logger.debug('Metrics:\n %s' % str(metrics))
+                acc = 1.0 * np.trace(metrics) / np.sum(metrics)
+                logger.debug('Step: %d Validation: mean loss: %f, accuracy: %f' % (_step, mean_loss, acc))
+
+                valid_history.append([mean_loss, acc])
+                report_figure(valid_history, train_history)
+                logger.debug('Figure saved')
+
+                if mean_loss < best_valid_loss:
+                    best_valid_loss = mean_loss
+                    _patience = FLAGS.patience
+                    saver = tf.train.Saver()
+                    saver.save(sess, FLAGS.bestmodel_dir)
+                    logger.debug('Better model saved')
+                else:                    
+                    _patience -= 1
+                    logger.debug('Not improved. Patience: %d' % _patience)
+        coord.request_stop()
+        coord.join(threads)
+    
+if __name__=='__main__':
+    train()
