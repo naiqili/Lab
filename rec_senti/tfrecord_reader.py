@@ -40,13 +40,14 @@ if __name__=='__main__':
         tf.global_variables_initializer().run()
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord)
-        for _step in range(20):
-            print _step
+        for _step in range(4000):
+            #print _step
             _l, _wv, _left, _right, _label, _is_leaf = sess.run([l, wv, left, right, label, is_leaf])
-            print _left
-            print _is_leaf
-            #print _target
-            print
+            #print _left
+            #print _is_leaf
+            if _label[-1] == 2:
+                print _label
+                print
 
         coord.request_stop()
         coord.join(threads)

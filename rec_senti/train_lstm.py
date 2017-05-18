@@ -45,25 +45,18 @@ logger.addHandler(logging.FileHandler(FLAGS.logdir+'log.txt'))
 
 def report_figure(valid_history, train_history):
     (loss, acc) = zip(*valid_history)
+    train_x, train_y = zip(*train_history)
+    valid_x, valid_y = zip(*loss)
+    valid_acc_x, valid_acc_y = zip(*acc)
     try:
         pylab.figure()
-        pylab.title("Loss")
-        pylab.plot(train_history)
-        pylab.savefig(FLAGS.fig_path + 'train_loss.png')
+        pylab.title("Loss & Accuracy")
+        pylab.plot(train_x, train_y, 'r', label='train loss')
+        pylab.plot(valid_x, valid_y, 'b', label='valid loss')
+        pylab.plot(valid_acc_x, valid_acc_y, 'g', label='valid accuracy')
+        pylab.legend()
+        pylab.savefig(FLAGS.fig_path + 'figure.png')
         pylab.close()
-        pylab.figure()
-        pylab.title("Loss")
-        pylab.plot(loss)
-        pylab.savefig(FLAGS.fig_path + 'loss.png')
-        pylab.close()
-
-        pylab.figure()
-        pylab.title("Accuracy")
-        pylab.plot(acc)
-        pylab.savefig(FLAGS.fig_path + 'acc.png')
-        pylab.close()
-        pylab.figure()
-
     except:
         pass
 
@@ -92,7 +85,8 @@ def train():
     valid_md.build_model(left_vts, right_vts, wv_vts, target_vts, is_leaf_vts, l_vts)
     
     _patience = FLAGS.patience
-    best_valid_loss = 10000000
+    best_valid_loss = 10000000.0
+    best_valid_acc = 0.0
     valid_history = []
     train_history = []
 
@@ -105,13 +99,15 @@ def train():
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord)
 
+        batch_train_history = []
         for _step in xrange(FLAGS.max_step):
             if _patience == 0:
                 break
             loss_ts = train_md.mean_loss
             train_op = train_md.train_op
             train_loss, _ = sess.run([loss_ts, train_op])
-            train_history.append(train_loss)
+            batch_train_history.append(train_loss)
+            
             if _step % FLAGS.train_freq == 0:
                 logger.debug("Step: %d Training: Loss: %f" % (_step, train_loss))
 
@@ -135,13 +131,18 @@ def train():
                 logger.debug('Metrics:\n %s' % str(metrics))
                 acc = 1.0 * np.trace(metrics) / np.sum(metrics)
                 logger.debug('Step: %d Validation: mean loss: %f, accuracy: %f' % (_step, mean_loss, acc))
+                logger.debug('Step: %d Training batch loss: %f' % (_step, 
 
-                valid_history.append([mean_loss, acc])
+                valid_history.append([[_step, mean_loss], [_step, acc]])
+                batch_train_loss = np.mean(batch_train_history)
+                batch_train_history = []
+                train_history.append([_step, batch_train_loss])
                 report_figure(valid_history, train_history)
                 logger.debug('Figure saved')
 
                 if mean_loss < best_valid_loss:
                     best_valid_loss = mean_loss
+                    best_valid_acc = acc
                     _patience = FLAGS.patience
                     saver = tf.train.Saver()
                     saver.save(sess, FLAGS.bestmodel_dir)
@@ -149,6 +150,7 @@ def train():
                 else:                    
                     _patience -= 1
                     logger.debug('Not improved. Patience: %d' % _patience)
+                logger.debug('Best loss: %f, Best accuracy: %f' % (best_valid_loss, best_valid_acc))
         coord.request_stop()
         coord.join(threads)
     

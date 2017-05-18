@@ -9,7 +9,8 @@ class LSTMModel():
     def add_variables(self):
         with tf.variable_scope('Embeddings'):
             wv_emb = tf.get_variable('wv_embed',
-                                     [self.wv_vocab_size, self.embed_size])
+                                     [self.wv_vocab_size, self.embed_size], \
+                                     initializer=tf.constant_initializer(self.emb_mat))
             pos_emb = tf.get_variable('unk_embed',
                 [1, self.embed_size])
         with tf.variable_scope('Forward'):
