@@ -131,10 +131,10 @@ def train():
                 logger.debug('Metrics:\n %s' % str(metrics))
                 acc = 1.0 * np.trace(metrics) / np.sum(metrics)
                 logger.debug('Step: %d Validation: mean loss: %f, accuracy: %f' % (_step, mean_loss, acc))
-                logger.debug('Step: %d Training batch loss: %f' % (_step, 
 
                 valid_history.append([[_step, mean_loss], [_step, acc]])
                 batch_train_loss = np.mean(batch_train_history)
+                logger.debug('Step: %d Training batch loss: %f' % (_step, batch_train_loss))
                 batch_train_history = []
                 train_history.append([_step, batch_train_loss])
                 report_figure(valid_history, train_history)
