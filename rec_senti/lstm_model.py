@@ -9,11 +9,12 @@ class LSTMModel():
     def add_variables(self):
         with tf.variable_scope('Embeddings'):
             wv_emb = tf.get_variable('wv_embed',
-                                     [self.wv_vocab_size, self.embed_size], \
-                                     trainable=False)
+                                     [self.wv_vocab_size, self.embed_size])
             pos_emb = tf.get_variable('unk_embed',
                 [1, self.embed_size])
         with tf.variable_scope('Forward'):
+            tf.get_variable('W_i_mid',
+                [self.embed_size, self.fw_cell_size])
             tf.get_variable('W_i_left',
                 [self.fw_cell_size, self.fw_cell_size])
             tf.get_variable('W_i_right',
@@ -21,6 +22,8 @@ class LSTMModel():
             tf.get_variable('b_i',
                 [1, self.fw_cell_size])
 
+            tf.get_variable('W_f_mid',
+                [self.embed_size, self.fw_cell_size])
             tf.get_variable('W_f_left_left',
                 [self.fw_cell_size, self.fw_cell_size])
             tf.get_variable('W_f_left_right',
@@ -32,6 +35,8 @@ class LSTMModel():
             tf.get_variable('b_f',
                 [1, self.fw_cell_size])
 
+            tf.get_variable('W_o_mid',
+                [self.embed_size, self.fw_cell_size])
             tf.get_variable('W_o_left',
                 [self.fw_cell_size, self.fw_cell_size])
             tf.get_variable('W_o_right',
@@ -39,6 +44,8 @@ class LSTMModel():
             tf.get_variable('b_o',
                 [1, self.fw_cell_size])
 
+            tf.get_variable('W_u_mid',
+                [self.embed_size, self.fw_cell_size])
             tf.get_variable('W_u_left',
                 [self.fw_cell_size, self.fw_cell_size])
             tf.get_variable('W_u_right',
@@ -60,38 +67,47 @@ class LSTMModel():
         with tf.device('/cpu:0'):
             return tf.expand_dims(tf.gather(embeddings, word_index), 0)
 
-    def combine_children(self, left_c, left_h, right_c, right_h):
+    def combine_children(self, x_mid, left_c, left_h, right_c, right_h):
         with tf.variable_scope('Forward', reuse=True):
+            W_i_mid = tf.get_variable('W_i_mid')
             W_i_left = tf.get_variable('W_i_left')
             W_i_right = tf.get_variable('W_i_right')
             b_i = tf.get_variable('b_i')
 
+            W_f_mid = tf.get_variable('W_f_mid')
             W_f_left_left = tf.get_variable('W_f_left_left')
             W_f_left_right = tf.get_variable('W_f_left_right')
             W_f_right_left = tf.get_variable('W_f_right_left')
             W_f_right_right = tf.get_variable('W_f_right_right')
             b_f = tf.get_variable('b_f')
 
+            W_o_mid = tf.get_variable('W_o_mid')
             W_o_left = tf.get_variable('W_o_left')
             W_o_right = tf.get_variable('W_o_right')
             b_o = tf.get_variable('b_o')
 
+            W_u_mid = tf.get_variable('W_u_mid')
             W_u_left = tf.get_variable('W_u_left')
             W_u_right = tf.get_variable('W_u_right')
             b_u = tf.get_variable('b_u')
-        _i = tf.sigmoid(tf.matmul(left_h, W_i_left) + \
+        _i = tf.sigmoid(tf.matmul(x_mid, W_i_mid) + \
+                        tf.matmul(left_h, W_i_left) + \
                         tf.matmul(right_h, W_i_right) + \
                         b_i)
-        _f_left = tf.sigmoid(tf.matmul(left_h, W_f_left_left) + \
+        _f_left = tf.sigmoid(tf.matmul(x_mid, W_f_mid) + \
+                             tf.matmul(left_h, W_f_left_left) + \
                              tf.matmul(right_h, W_f_left_right) + \
                              b_f)
-        _f_right = tf.sigmoid(tf.matmul(right_h, W_f_right_left) + \
+        _f_right = tf.sigmoid(tf.matmul(x_mid, W_f_mid) + \
+                              tf.matmul(right_h, W_f_right_left) + \
                               tf.matmul(right_h, W_f_right_right) + \
                               b_f)
-        _o = tf.sigmoid(tf.matmul(left_h, W_o_left) + \
+        _o = tf.sigmoid(tf.matmul(x_mid, W_o_mid) + \
+                        tf.matmul(left_h, W_o_left) + \
                         tf.matmul(right_h, W_o_right) + \
                         b_o)
-        _u = tf.tanh(tf.matmul(left_h, W_u_left) + \
+        _u = tf.tanh(tf.matmul(x_mid, W_u_mid) + \
+                     tf.matmul(left_h, W_u_left) + \
                      tf.matmul(right_h, W_u_right) + \
                      b_u)
         _c = _i * _u + _f_left * left_c + _f_right * right_c
@@ -111,12 +127,17 @@ class LSTMModel():
         def forward_loop_body(fw_cs, fw_hs, i):
             node_is_leaf = tf.gather(is_leaf_ts, i)
             node_word_index = tf.gather(wv_ts, i)
+            x_mid = tf.cond(
+                tf.equal(node_is_leaf, 1),
+                lambda: self.embed_word(node_word_index),
+                lambda: tf.zeros([1, self.embed_size])
+            )
             left_id, right_id = (tf.gather(left_ts, i), tf.gather(right_ts, i))
             left_c, left_h, right_c, right_h = tf.cond(
                 tf.equal(node_is_leaf, 1),
                 lambda: (tf.zeros([1, self.fw_cell_size]), tf.zeros([1, self.fw_cell_size]), tf.zeros([1, self.fw_cell_size]), tf.zeros([1, self.fw_cell_size])),
                 lambda: (fw_cs.read(left_id), fw_hs.read(left_id), fw_cs.read(right_id), fw_hs.read(right_id)))
-            new_c, new_h = self.combine_children(left_c, left_h, right_c, right_h)
+            new_c, new_h = self.combine_children(x_mid, left_c, left_h, right_c, right_h)
     
             fw_cs = fw_cs.write(i, new_c)
             fw_hs = fw_hs.write(i, new_h)
@@ -129,7 +150,6 @@ class LSTMModel():
         fw_cs, fw_hs, _ = tf.while_loop(forward_loop_cond, forward_loop_body, [fw_cs, fw_hs, 0], parallel_iterations=1)
         self.fw_cs = fw_cs.concat()
         self.fw_hs = fw_hs.concat()
-        self.root_fw_hs = fw_hs.read(tf.squeeze(len_ts)-1)
         return (fw_cs, fw_hs)
 
     def build_cost(self, fw_hs, label_ts):
