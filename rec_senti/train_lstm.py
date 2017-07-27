@@ -34,7 +34,15 @@ flags.DEFINE_string("summary_dir", './summary/', "Path to save the summary")
 flags.DEFINE_string("wv_emb_file", '../tf_nlu/tmp/embedding.pkl', "word vec embedding file")
 flags.DEFINE_float("lr", 0.01, "Learning rate")
 flags.DEFINE_float("L2_lambda", 0.0001, "Lambda of L2 loss")
+flags.DEFINE_float("embed_keep_prob", 0.95, "Keep prob of embedding dropout")
+flags.DEFINE_float("weight_keep_prob", 0.5, "Keep prob of weight dropout")
+flags.DEFINE_float("fw_hs_keep_prob", 0.5, "Keep prob of fw_hs dropout")
+flags.DEFINE_float("fw_cs_keep_prob", 0.5, "Keep prob of fw_cs dropout")
 flags.DEFINE_boolean("load_model", False, "Whether load the best model")
+flags.DEFINE_boolean("drop_embed", False, "Whether drop embeddings")
+flags.DEFINE_boolean("drop_weight", False, "Whether drop weights")
+flags.DEFINE_boolean("drop_fw_hs", False, "Whether drop forward h atates")
+flags.DEFINE_boolean("drop_fw_cs", False, "Whether drop forward c atates")
 
 FLAGS = flags.FLAGS
 
@@ -54,7 +62,7 @@ def report_figure(valid_history, train_history):
         pylab.plot(train_x, train_y, 'r', label='train loss')
         pylab.plot(valid_x, valid_y, 'b', label='valid loss')
         pylab.plot(valid_acc_x, valid_acc_y, 'g', label='valid accuracy')
-        pylab.legend()
+        #pylab.legend()
         pylab.savefig(FLAGS.fig_path + 'figure.png')
         pylab.close()
     except:
@@ -69,16 +77,25 @@ def train():
                    'lr': FLAGS.lr, \
                    'L2_lambda': FLAGS.L2_lambda, \
                    'wv_emb_file': FLAGS.wv_emb_file, \
-                   'class_size': FLAGS.class_size
+                   'class_size': FLAGS.class_size, \
+                   'drop_embed': FLAGS.drop_embed, \
+                   'embed_keep_prob': FLAGS.embed_keep_prob, \
+                   'drop_weight': FLAGS.drop_weight, \
+                   'weight_keep_prob': FLAGS.weight_keep_prob, \
+                   'drop_fw_hs': FLAGS.drop_fw_hs, \
+                   'fw_hs_keep_prob': FLAGS.fw_hs_keep_prob, \
+                   'drop_fw_cs': FLAGS.drop_fw_cs, \
+                   'fw_cs_keep_prob': FLAGS.fw_cs_keep_prob
                    }
 
     train_md = LSTMModel(config_dict)
     train_md.is_training = True
-    train_md.add_variables()
+    train_md.add_variables(reuse=False)
     valid_md = LSTMModel(config_dict)
     valid_md.is_training = False
+    valid_md.add_variables(reuse=True)
 
-    l_tts, wv_tts, left_tts, right_tts, target_tts, is_leaf_tts = get_data(filename=FLAGS.train_record)
+    l_tts, wv_tts, left_tts, right_tts, target_tts, is_leaf_tts = get_data(filename=FLAGS.train_record, shuffle=True)
     train_md.build_model(left_tts, right_tts, wv_tts, target_tts, is_leaf_tts, l_tts)
 
     l_vts, wv_vts, left_vts, right_vts, target_vts, is_leaf_vts = get_data(filename=FLAGS.valid_record)
@@ -142,7 +159,6 @@ def train():
 
                 if mean_loss < best_valid_loss:
                     best_valid_loss = mean_loss
-                    best_valid_acc = acc
                     _patience = FLAGS.patience
                     saver = tf.train.Saver()
                     saver.save(sess, FLAGS.bestmodel_dir)
@@ -150,6 +166,8 @@ def train():
                 else:                    
                     _patience -= 1
                     logger.debug('Not improved. Patience: %d' % _patience)
+                if acc > best_valid_acc:
+                    best_valid_acc = acc
                 logger.debug('Best loss: %f, Best accuracy: %f' % (best_valid_loss, best_valid_acc))
         coord.request_stop()
         coord.join(threads)

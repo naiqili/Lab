@@ -8,7 +8,7 @@ valid_tree_path = '../assignment3/trees/dev.txt'
 test_tree_path = '../assignment3/trees/test.txt'
 
 #wv_path = '/mnt/hgfs/share/data/LM/glove.42B.300d.zip'
-wv_path = '/home/naiqi/data/LM/glove.42B.300d.zip'
+wv_path = '../../data/glove.42B.300d.zip'
 wv_filename = 'glove.42B.300d.txt'
 wv_size = 300
 

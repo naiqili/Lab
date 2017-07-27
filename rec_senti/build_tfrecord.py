@@ -3,15 +3,22 @@ from nltk.tree import Tree
 import cPickle
 import tensorflow as tf
 
+bin_flag = True
+
 dict_path = "_data/dict.pkl"
 
 train_tree_path = "../assignment3/trees/train.txt"
 valid_tree_path = "../assignment3/trees/dev.txt"
 test_tree_path = "../assignment3/trees/test.txt"
 
-train_record_path = "_data/finegrained_train.record"
-valid_record_path = "_data/finegrained_valid.record"
-test_record_path = "_data/finegrained_test.record"
+if bin_flag:
+    train_record_path = "_data/binary_train.record"
+    valid_record_path = "_data/binary_valid.record"
+    test_record_path = "_data/binary_test.record"
+else:
+    train_record_path = "_data/finegrained_train.record"
+    valid_record_path = "_data/finegrained_valid.record"
+    test_record_path = "_data/finegrained_test.record"
 
 (wv_word2ind, wv_ind2word) = cPickle.load(open(dict_path))
 
@@ -25,7 +32,7 @@ def build_record(input_path, output_path):
         tf_t.to_code_tree(wv_word2ind)
         tf_t.add_id()
         #print tf_t
-        all_lst = tf_t.to_list(binary=False)
+        all_lst = tf_t.to_list(binary=bin_flag)
         if all_lst == None: # Neutral
             continue
         id_lst, wv_lst, left_lst, right_lst, label_lst, is_leaf_lst = all_lst
