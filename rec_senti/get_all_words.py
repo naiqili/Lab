@@ -2,14 +2,17 @@ from nltk import Tree
 import cPickle
 from zipfile import ZipFile
 import numpy as np
+from collections import defaultdict
 
 train_tree_path = '../assignment3/trees/train.txt'
 valid_tree_path = '../assignment3/trees/dev.txt'
 test_tree_path = '../assignment3/trees/test.txt'
 
 #wv_path = '/mnt/hgfs/share/data/LM/glove.42B.300d.zip'
-wv_path = '../../data/glove.42B.300d.zip'
-wv_filename = 'glove.42B.300d.txt'
+#wv_path = '../../data/glove.42B.300d.zip'
+#wv_filename = 'glove.42B.300d.txt'
+wv_path = '../../data/glove.840B.300d.zip'
+wv_filename = 'glove.840B.300d.txt'
 wv_size = 300
 
 output_path = 'tmp/words.txt'
@@ -33,9 +36,12 @@ def get_words(path):
     return res
 
 all_words = set()
-all_words.update(get_words(train_tree_path))
-all_words.update(get_words(valid_tree_path))
-all_words.update(get_words(test_tree_path))
+train_words = get_words(train_tree_path)
+valid_words = get_words(valid_tree_path)
+test_words = get_words(test_tree_path)
+all_words.update(train_words)
+all_words.update(valid_words)
+all_words.update(test_words)
 
 found_words = set()
 word2embed = {}
@@ -48,7 +54,8 @@ with ZipFile(wv_path) as zf:
                 print cnt
             line = line.strip().split()
             w = line[0]
-            if w in all_words:
+            w = w.lower()
+            if w in all_words and w not in found_words:
                 found_words.add(w)
                 vec = map(float, line[1:])
                 word2embed[w] = vec
@@ -69,7 +76,14 @@ unfound_words = all_words.difference(found_words)
 print "Found word size:", len(found_words)
 print "Unfound word size:", len(unfound_words)
 
+uf_train, uf_valid, uf_test = defaultdict(int), defaultdict(int), defaultdict(int)
+
+for w_set, uf_dict in [(train_words, uf_train), (valid_words, uf_valid), (test_words, uf_test)]:
+    for w in w_set:
+        if w in unfound_words:
+            uf_dict[w] += 1
+
 for w in unfound_words:
-    print w,
+    print w, uf_train[w], uf_valid[w], uf_test[w]
 
 cPickle.dump((found_words, unfound_words), open(word_info_path, 'w'))

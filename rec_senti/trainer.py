@@ -5,12 +5,18 @@ import numpy as np
 import logging
 import cPickle
 import os, shutil, random
+from os import path
 
 from tfrecord_reader import get_data
+
+from lstm_model import LSTMModel
+from bi_lstm_model import BiLSTMModel
+from lstm_attn_model import LSTMAttnModel
 
 matplotlib.use('Agg')
 
 import pylab
+import pprint
 
 class Trainer():
     def __init__(self, FLAGS, model, config_dict):
@@ -19,7 +25,7 @@ class Trainer():
         logging.basicConfig(level = logging.DEBUG,
                             format = "%(asctime)s: %(name)s: %(levelname)s: %(message)s")
         self.logger.addHandler(logging.FileHandler(FLAGS.logdir+'log.txt'))
-        #(wv_word2ind, wv_ind2word) = cPickle.load(open(FLAGS.wv_dict))
+        self.logger.debug(pprint.pformat(config_dict))
         
         train_md = model(config_dict)
         train_md.is_training = True
@@ -38,8 +44,19 @@ class Trainer():
         self.valid_md = valid_md
 
         self._patience = FLAGS.patience
-        self.best_valid_loss = 10000000.0
-        self.best_valid_acc = 0.0
+        self.batch_train_history = []
+        
+        if FLAGS.load_model:
+            self.train_history, self.valid_history, self.best_valid_loss, self.best_valid_root_acc_with_loss, self.best_valid_overall_acc_with_loss, self.best_valid_root_acc, self.best_valid_overall_acc, self.init_step = cPickle.load(open(path.join(self.FLAGS.bestmodel_dir, 'stat.pkl')))
+        else:
+            self.best_valid_loss = 10000000.0
+            self.best_valid_overall_acc_with_loss = 0.0
+            self.best_valid_root_acc_with_loss = 0.0
+            self.best_valid_overall_acc = 0.0
+            self.best_valid_root_acc = 0.0
+            self.valid_history = []
+            self.train_history = []    
+            self.init_step = -1
         
     def report_figure(self, valid_history, train_history):
         (loss, acc) = zip(*valid_history)
@@ -57,6 +74,37 @@ class Trainer():
             pylab.close()
         except:
             pass
+        
+    def validate(self, sess, _step):
+        logger = self.logger
+        logger.debug("Start validation")
+        valid_losses = []
+        overall_metrics = np.zeros((self.FLAGS.class_size, self.FLAGS.class_size), dtype=np.int32)
+        root_metrics = np.zeros((self.FLAGS.class_size, self.FLAGS.class_size), dtype=np.int32)
+
+        for i in xrange(self.FLAGS.valid_size):
+            valid_loss, valid_pred, target_v = \
+                sess.run([self.valid_md.mean_loss, self.valid_md.pred, self.valid_md.ground_truth])
+            valid_losses.append(valid_loss)
+            root_pred = valid_pred[-1]
+            root_target = target_v[-1]
+            root_metrics[root_pred, root_target] += 1
+            for k in range(len(valid_pred)):
+                overall_metrics[valid_pred[k], target_v[k]] += 1
+            #logger.debug("Validation loss %f" % valid_loss)
+
+        mean_loss = np.mean(valid_losses)
+        logger.debug('Validation: finish')
+
+        logger.debug('Root Metrics:\n %s' % str(root_metrics))
+        logger.debug('Overall Metrics:\n %s' % str(overall_metrics))
+        root_acc = 1.0 * np.trace(root_metrics) / np.sum(root_metrics)
+        overall_acc = 1.0 * np.trace(overall_metrics) / np.sum(overall_metrics)
+        logger.debug('Step: %d Validation: mean loss: %f, root_acc: %f, overall_acc: %f' % (_step, mean_loss, root_acc, overall_acc))
+
+        self.valid_history.append([[_step, mean_loss], [_step, overall_acc]])
+        
+        return mean_loss, root_acc, overall_acc
 
     def run(self):
         logger = self.logger
@@ -69,61 +117,45 @@ class Trainer():
             coord = tf.train.Coordinator()
             threads = tf.train.start_queue_runners(coord=coord)
 
-            batch_train_history = []
-            valid_history = []
-            train_history = []
-            for _step in xrange(self.FLAGS.max_step):
+            for _step in xrange(self.init_step+1, self.FLAGS.max_step):
                 if self._patience == 0:
                     break
                 loss_ts = self.train_md.mean_loss
                 train_op = self.train_md.train_op
                 train_loss, _ = sess.run([loss_ts, train_op])
-                batch_train_history.append(train_loss)
+                self.batch_train_history.append(train_loss)
 
                 if _step % self.FLAGS.train_freq == 0:
                     logger.debug("Step: %d Training: Loss: %f" % (_step, train_loss))
 
                 if _step != 0 and _step % self.FLAGS.valid_freq == 0:
-                    logger.debug("Start validation")
-                    valid_losses = []
-                    metrics = np.zeros((self.FLAGS.class_size, self.FLAGS.class_size))
-
-                    for i in xrange(self.FLAGS.valid_size):
-                        valid_loss, valid_pred, target_v = \
-                            sess.run([self.valid_md.mean_loss, self.valid_md.pred, self.valid_md.ground_truth])
-                        valid_losses.append(valid_loss)
-                        root_pred = valid_pred[-1]
-                        root_target = target_v[-1]
-                        metrics[root_pred, root_target] += 1
-                        #logger.debug("Validation loss %f" % valid_loss)
-
-                    mean_loss = np.mean(valid_losses)
-                    logger.debug('Validation: finish')
-
-                    logger.debug('Metrics:\n %s' % str(metrics))
-                    acc = 1.0 * np.trace(metrics) / np.sum(metrics)
-                    logger.debug('Step: %d Validation: mean loss: %f, accuracy: %f' % (_step, mean_loss, acc))
-
-                    valid_history.append([[_step, mean_loss], [_step, acc]])
-                    batch_train_loss = np.mean(batch_train_history)
+                    batch_train_loss = np.mean(self.batch_train_history)
                     logger.debug('Step: %d Training batch loss: %f' % (_step, batch_train_loss))
-                    batch_train_history = []
-                    train_history.append([_step, batch_train_loss])
-                    self.report_figure(valid_history, train_history)
+                    self.batch_train_history = []
+                    self.train_history.append([_step, batch_train_loss])
+                    
+                    mean_loss, root_acc, overall_acc = self.validate(sess, _step)
+                    self.report_figure(self.valid_history, self.train_history)
                     logger.debug('Figure saved')
-
                     if mean_loss < self.best_valid_loss:
                         self.best_valid_loss = mean_loss
-                        _patience = self.FLAGS.patience
-                        #saver = tf.train.Saver()
-                        #saver.save(sess, self.FLAGS.bestmodel_dir)
-                        logger.debug('Better model saved')
+                        self.best_valid_root_acc_with_loss = root_acc
+                        self.best_valid_overall_acc_with_loss = overall_acc
+                        self._patience = self.FLAGS.patience
+                        if self.FLAGS.save_model:
+                            saver = tf.train.Saver()
+                            saver.save(sess, self.FLAGS.bestmodel_dir)
+                            cPickle.dump([self.train_history, self.valid_history, self.best_valid_loss, self.best_valid_root_acc_with_loss, self.best_valid_overall_acc_with_loss, self.best_valid_root_acc, self.best_valid_overall_acc, _step], open(path.join(self.FLAGS.bestmodel_dir, 'stat.pkl'), 'w'))
+                        logger.debug('Better model')
                     else:                    
-                        _patience -= 1
-                        logger.debug('Not improved. Patience: %d' % _patience)
-                    if acc > self.best_valid_acc:
-                        self.best_valid_acc = acc
-                    logger.debug('Best loss: %f, Best accuracy: %f' % (self.best_valid_loss, self.best_valid_acc))
+                        self._patience -= 1
+                        logger.debug('Not improved. Patience: %d' % self._patience)
+                    if root_acc > self.best_valid_root_acc:
+                        self.best_valid_root_acc = root_acc
+                    if overall_acc > self.best_valid_overall_acc:
+                        self.best_valid_overall_acc = overall_acc
+                    logger.debug('Best loss: %f, root_acc: %f, overall_acc: %f' % (self.best_valid_loss, self.best_valid_root_acc_with_loss, self.best_valid_overall_acc_with_loss))
+                    logger.debug('Best root_acc: %f, Best overall_acc: %f' % (self.best_valid_root_acc, self.best_valid_overall_acc))
             coord.request_stop()
             coord.join(threads)
             
@@ -135,6 +167,7 @@ if __name__=='__main__':
     flags.DEFINE_integer("class_size", 3, "3 for binary; 5 for fine grained")
     flags.DEFINE_integer("fw_cell_size", 50, "Composition cell size")
     flags.DEFINE_integer("bw_cell_size", 50, "Decomposition cell size")
+    flags.DEFINE_integer("attn_size", 50, "Attention size")
     flags.DEFINE_integer("train_freq", 10, "Training report frequency")
     flags.DEFINE_integer("valid_freq", 100, "Validation report frequency")
     flags.DEFINE_integer("valid_size", 1000, "Size of validation data")
@@ -158,6 +191,7 @@ if __name__=='__main__':
     flags.DEFINE_float("bw_hs_keep_prob", 0.5, "Keep prob of bw_hs dropout")
     flags.DEFINE_float("bw_cs_keep_prob", 0.5, "Keep prob of bw_cs dropout")
     flags.DEFINE_boolean("load_model", False, "Whether load the best model")
+    flags.DEFINE_boolean("save_model", False, "Whether save the best model")
     flags.DEFINE_boolean("drop_embed", False, "Whether drop embeddings")
     flags.DEFINE_boolean("drop_weight", False, "Whether drop weights")
     flags.DEFINE_boolean("drop_fw_hs", False, "Whether drop forward h states")
@@ -171,6 +205,7 @@ if __name__=='__main__':
                    'embed_size': FLAGS.embed_size, \
                    'fw_cell_size': FLAGS.fw_cell_size, \
                    'bw_cell_size': FLAGS.bw_cell_size, \
+                   'attn_size': FLAGS.attn_size, \
                    'lr': FLAGS.lr, \
                    'L2_lambda': FLAGS.L2_lambda, \
                    'wv_emb_file': FLAGS.wv_emb_file, \
