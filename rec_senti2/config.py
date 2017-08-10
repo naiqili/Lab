@@ -1,0 +1,24 @@
+import os
+from os import path
+
+DATA_DIR = '../../data'
+
+GLOVE_ZIP_FILENAME = 'glove.840B.300d.zip'
+GLOVE_FILENAME = 'glove.840B.300d.txt'
+GLOVE_PATH = path.join(DATA_DIR, GLOVE_FILENAME)
+
+FILTER_GLOVE_FILENAME = 'filtered_glove.txt'
+FILTER_GLOVE_PATH = path.join(DATA_DIR, FILTER_GLOVE_FILENAME)
+
+EMBEDDING_MAT_FILENAME = 'embedding.pkl'
+EMBEDDING_MAT_PATH = path.join(DATA_DIR, EMBEDDING_MAT_FILENAME)
+
+WORD_IDX_FILENAME = 'word_idx.pkl'
+WORD_IDX_PATH = path.join(DATA_DIR, WORD_IDX_FILENAME)
+
+TRAIN_FILENAME = 'trees/train.txt'
+TRAIN_PATH = path.join(DATA_DIR, TRAIN_FILENAME)
+VALID_FILENAME = 'trees/dev.txt'
+VALID_PATH = path.join(DATA_DIR, VALID_FILENAME)
+TEST_FILENAME = 'trees/test.txt'
+TEST_PATH = path.join(DATA_DIR, TEST_FILENAME)

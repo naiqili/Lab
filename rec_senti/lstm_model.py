@@ -171,4 +171,10 @@ class LSTMModel():
         self.mean_loss = tf.reduce_mean(self.loss)
         self.loss_summary = tf.summary.scalar('Loss', self.mean_loss)
         if self.is_training:
-            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.mean_loss)
+            opt = tf.train.AdamOptimizer(self.lr)
+            grads_and_vars = opt.compute_gradients(self.mean_loss)
+            for i, (grad, var) in enumerate(grads_and_vars):
+                if var == self.wv_embed or var == self.unk_embed:
+                    grad = tf.scalar_mul(0.1, grad)
+                    grads_and_vars[i] = (grad, var)
+            self.train_op = opt.apply_gradients(grads_and_vars)

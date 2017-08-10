@@ -2,7 +2,8 @@ import cPickle
 from zipfile import ZipFile
 import numpy as np
 
-wv_path = '/mnt/hgfs/share/data/LM/glove.42B.300d.zip'
+wv_path = '../../data/glove.840B.300d.zip'
+wv_filename = 'glove.840B.300d.txt'
 dict_path = '_data/dict.pkl'
 
 output_path = 'tmp/embeddings.pkl'
@@ -15,7 +16,7 @@ embed_mat = np.random.rand(word_cnt+1, 300)
 all_words = set(word2ind.keys())
 
 with ZipFile(wv_path) as zf:
-    with zf.open('glove.42B.300d.txt') as f_wv:
+    with zf.open(wv_filename) as f_wv:
         for line in f_wv:
             line = line.strip().split()
             w = line[0]

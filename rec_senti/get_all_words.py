@@ -1,5 +1,5 @@
 from nltk import Tree
-import cPickle
+import cPickle, codecs
 from zipfile import ZipFile
 import numpy as np
 from collections import defaultdict
@@ -28,7 +28,7 @@ def dfs_get_words(t):
 
 def get_words(path):
     res = set()
-    with open(path) as f:
+    with codecs.open(path, encoding='utf-8') as f:
         for line in f:
             t = Tree.fromstring(line)
             words = dfs_get_words(t)
@@ -49,6 +49,7 @@ cnt = 0
 with ZipFile(wv_path) as zf:
     with zf.open(wv_filename) as f_wv:
         for line in f_wv:
+            line = codecs.decode(line, 'utf-8')
             cnt += 1
             if cnt % 5000 == 0:
                 print cnt
