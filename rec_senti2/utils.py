@@ -97,5 +97,14 @@ def data_prepare():
     filter_glove()
     load_embeddings()
     
+def print_senti_tree(s, id=1, indent=0):
+    label, trees = tokenize(s)
+    ss = ' ' * indent + 'id: %d, label: %s, tree_str: %s' % (id, label, s)
+    print(ss)
+    if len(trees) == 2:
+        print_senti_tree(trees[0], id*2, indent+4)
+        print_senti_tree(trees[1], id*2+1, indent+4)
+        
+    
 if __name__=='__main__':
     data_prepare()
