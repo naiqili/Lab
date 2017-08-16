@@ -1,9 +1,9 @@
 from tftree import TFTree, TFNode
 from nltk.tree import Tree
-import cPickle
+import cPickle, codecs
 import tensorflow as tf
 
-bin_flag = True
+bin_flag = False
 
 dict_path = "_data/dict.pkl"
 
@@ -23,42 +23,47 @@ else:
 (wv_word2ind, wv_ind2word) = cPickle.load(open(dict_path))
 
 def build_record(input_path, output_path):
-    f = open(input_path)
     writer = tf.python_io.TFRecordWriter(output_path)
     cnt = 0
-    for line in f:
-        nltk_t = Tree.fromstring(line)
-        tf_t = TFTree(nltk_t)
-        tf_t.to_code_tree(wv_word2ind)
-        tf_t.add_id()
-        #print tf_t
-        all_lst = tf_t.to_list(binary=bin_flag)
-        if all_lst == None: # Neutral
-            continue
-        id_lst, wv_lst, left_lst, right_lst, label_lst, is_leaf_lst = all_lst
+    with codecs.open(input_path, encoding='utf-8') as f:
+        for line in f:
+            line = line.strip().replace('\\', '')
+            nltk_t = Tree.fromstring(line)
+            tf_t = TFTree(nltk_t)
+            tf_t.to_code_tree(wv_word2ind)
+            tf_t.add_id()
+            #print tf_t
+            all_lst = tf_t.to_list(binary=bin_flag)
+            if all_lst == None: # Neutral
+                continue
+            tf_t.build_mask()
+            id_lst, wv_lst, left_lst, right_lst, label_lst, is_leaf_lst = all_lst
 
-        example = tf.train.Example(
-            features = tf.train.Features(
-                feature = {
-                    'len': tf.train.Feature(
-                        int64_list=tf.train.Int64List(value=[len(id_lst)])),
-                    'wv': tf.train.Feature(
-                        int64_list=tf.train.Int64List(value=wv_lst)),
-                    'left': tf.train.Feature(
-                        int64_list=tf.train.Int64List(value=left_lst)),
-                    'right': tf.train.Feature(
-                        int64_list=tf.train.Int64List(value=right_lst)),
-                    'label': tf.train.Feature(
-                        int64_list=tf.train.Int64List(value=label_lst)),
-                    'is_leaf': tf.train.Feature(
-                        int64_list=tf.train.Int64List(value=is_leaf_lst))
-                    }
+            example = tf.train.Example(
+                features = tf.train.Features(
+                    feature = {
+                        'len': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=[len(id_lst)])),
+                        'wv': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=wv_lst)),
+                        'left': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=left_lst)),
+                        'right': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=right_lst)),
+                        'label': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=label_lst)),
+                        'is_leaf': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=is_leaf_lst)),
+                        'false_mask': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=tf_t.false_mask.reshape([-1]))),
+                        'subtree_mask': tf.train.Feature(
+                            int64_list=tf.train.Int64List(value=tf_t.subtree_mask.reshape([-1])))
+                        }
+                    )
                 )
-            )
-        serialized = example.SerializeToString()
-        writer.write(serialized)
-        cnt += 1
-    f.close()
+            serialized = example.SerializeToString()
+            writer.write(serialized)
+            cnt += 1
     writer.close()
     return cnt
 

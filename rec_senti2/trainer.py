@@ -53,7 +53,8 @@ class Trainer():
         self.train_set = compiler.build_loom_inputs(self.train_trees)
         self.dev_feed_dict = compiler.build_feed_dict(self.valid_trees)
         
-        self._patience = FLAGS.patience        
+        self._patience = FLAGS.patience      
+        self._step = 0
         self.best_valid_acc = 0.0
         
     def report_figure(self, valid_history, train_history):
@@ -62,30 +63,60 @@ class Trainer():
     def train_step(self, batch):
         compiler = self.model.compiler
         train_feed_dict= {compiler.loom_input_tensor: batch, self.model.keep_prob_ph: self.FLAGS.keep_prob}
-        _, batch_loss = self.sess.run([self.model.train_op, self.model.loss], train_feed_dict)
+        _, batch_loss, summary = self.sess.run([self.model.train_op, self.model.loss, self.model.summary_op], train_feed_dict)
+        self.train_writer.add_summary(summary, self._step)
+        self.train_writer.flush()
+        self._step += 1
         return batch_loss
         
     def train_epoch(self, train_set):
-        return sum([self.train_step(batch) for batch in td.group_by_batches(train_set, self.FLAGS.batch_size)])    
+        total_loss = 0.0
+        logger = self.logger
+        for batch in td.group_by_batches(train_set, self.FLAGS.batch_size):
+            if self._patience == 0:
+                break
+            _loss = self.train_step(batch)
+            total_loss += _loss
+            if self._step % 100 == 0:
+                print(_loss)
+            if self._step % 800 == 0:
+                acc = self.validate()
+                if acc > self.best_valid_acc:
+                    self._patience = self.FLAGS.patience
+                    self.best_valid_acc = acc
+                    if self.FLAGS.save_model:
+                        saver = tf.train.Saver()
+                        saver.save(self.sess, self.FLAGS.bestmodel_dir)
+                    logger.debug('Better model')
+                else:                    
+                    self._patience -= 1
+                    logger.debug('Not improved. Patience: %d' % self._patience)
+        return total_loss / 800
         
-    def validate(self, epoch):
+    def validate(self):
         logger = self.logger
         logger.debug("Start validation")
         
-        valid_metrics = self.sess.run(self.model.metrics, self.dev_feed_dict)
+        valid_metrics, summary = self.sess.run([self.model.metrics, self.model.summary_op], self.dev_feed_dict)
+        self.valid_writer.add_summary(summary, self._step)
+        self.valid_writer.flush()
+        
         valid_loss = valid_metrics['all_loss']
         valid_acc = ['%s: %.4f' % (k, v * 100) for k, v in
                  sorted(valid_metrics.items()) if k.endswith('hits')]
         
         logger.debug('Validation: finish')
 
-        print('epoch:%4d, dev_loss_avg: %f, dev_accuracy:\n  [%s]'
-              % (epoch, valid_loss, ' '.join(valid_acc)))
+        logger.debug('step: %d, dev_loss_avg: %f, dev_accuracy:\n  [%s]'
+              % (self._step, valid_loss, ' '.join(valid_acc)))
         return valid_metrics['root_binary_hits']
 
     def run(self):
         logger = self.logger
-        with tf.Session() as sess:
+        with tf.Session() as sess:        
+            self.train_writer = tf.summary.FileWriter(self.FLAGS.log_dir + 'train/')
+            self.valid_writer = tf.summary.FileWriter(self.FLAGS.log_dir + 'valid/')
+            
             self.sess = sess
             if self.FLAGS.load_model:
                 tf.train.Saver().restore(sess, self.FLAGS.bestmodel_dir)
@@ -93,21 +124,10 @@ class Trainer():
                 tf.global_variables_initializer().run()
 
             for epoch, shuffled in enumerate(td.epochs(self.train_set, self.FLAGS.max_epochs), 1):
-                if self._patience = 0:
+                if self._patience == 0:
                     return self.best_valid_acc
                 train_loss = self.train_epoch(shuffled)
-                print('epoch:%4d, train_loss_avg: %f' % (epoch, train_loss))
-                acc = self.validate(epoch)
-                if acc > self.best_valid_acc:
-                    self._patience = self.FLAGS.patience
-                    self.best_valid_acc = acc
-                    if self.FLAGS.save_model:
-                        saver = tf.train.Saver()
-                        saver.save(sess, self.FLAGS.bestmodel_dir)
-                    logger.debug('Better model')
-                else:                    
-                    self._patience -= 1
-                    logger.debug('Not improved. Patience: %d' % self._patience)
+                logger.debug('epoch: %d, step: %d, train_loss_avg: %f' % (epoch, self._step, train_loss))
 
             
 if __name__=='__main__':

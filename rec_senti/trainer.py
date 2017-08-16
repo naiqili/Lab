@@ -66,8 +66,8 @@ class Trainer():
         try:
             pylab.figure()
             pylab.title("Loss & Accuracy")
-            pylab.plot(train_x, train_y, 'r', label='train loss')
-            pylab.plot(valid_x, valid_y, 'b', label='valid loss')
+            #pylab.plot(train_x, train_y, 'r', label='train loss')
+            #pylab.plot(valid_x, valid_y, 'b', label='valid loss')
             pylab.plot(valid_acc_x, valid_acc_y, 'g', label='valid accuracy')
             #pylab.legend()
             pylab.savefig(FLAGS.fig_path + 'figure.png')
@@ -84,7 +84,7 @@ class Trainer():
 
         for i in xrange(self.FLAGS.valid_size):
             valid_loss, valid_pred, target_v = \
-                sess.run([self.valid_md.mean_loss, self.valid_md.pred, self.valid_md.ground_truth])
+                sess.run([self.valid_md.sum_loss, self.valid_md.pred, self.valid_md.ground_truth])
             valid_losses.append(valid_loss)
             root_pred = valid_pred[-1]
             root_target = target_v[-1]
@@ -93,7 +93,8 @@ class Trainer():
                 overall_metrics[valid_pred[k], target_v[k]] += 1
             #logger.debug("Validation loss %f" % valid_loss)
 
-        mean_loss = np.mean(valid_losses)
+        sum_loss = sum(valid_losses)
+        mean_loss = sum_loss / self.FLAGS.valid_size
         logger.debug('Validation: finish')
 
         logger.debug('Root Metrics:\n %s' % str(root_metrics))
@@ -120,7 +121,7 @@ class Trainer():
             for _step in xrange(self.init_step+1, self.FLAGS.max_step):
                 if self._patience == 0:
                     break
-                loss_ts = self.train_md.mean_loss
+                loss_ts = self.train_md.sum_loss
                 train_op = self.train_md.train_op
                 train_loss, _ = sess.run([loss_ts, train_op])
                 self.batch_train_history.append(train_loss)
@@ -129,7 +130,7 @@ class Trainer():
                     logger.debug("Step: %d Training: Loss: %f" % (_step, train_loss))
 
                 if _step != 0 and _step % self.FLAGS.valid_freq == 0:
-                    batch_train_loss = np.mean(self.batch_train_history)
+                    batch_train_loss = sum(self.batch_train_history) / self.FLAGS.valid_freq
                     logger.debug('Step: %d Training batch loss: %f' % (_step, batch_train_loss))
                     self.batch_train_history = []
                     self.train_history.append([_step, batch_train_loss])

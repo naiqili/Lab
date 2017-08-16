@@ -52,14 +52,26 @@ class LSTMAttnModel():
         self.keep_prob_ph = tf.placeholder_with_default(1.0, [])
         
     def logits_and_state(self):
-        """Creates a block that goes from (root_id, tokens) to (logits, state) tuples."""
+        """Creates a block that goes from (node_id, tree) to (logits, state) tuples."""
         unknown_idx = len(self.word_idx)
         lookup_word = lambda word: self.word_idx.get(word, unknown_idx)
 
-        word2vec = (td.GetItem(0) >> td.InputTransform(lookup_word) >>
+        word2vec = (td.GetItem(1) >> 
+                    td.InputTransform(lambda x: lookup_word(tokenize(x)[1][0])) >>
                     td.Scalar('int32') >> self.word_embedding)
 
-        pair2vec = (self.embed_subtree(), self.embed_subtree())
+        pair2vec = td.Composition()
+        with pair2vec.scope():
+            node_id = pair2vec.input[0]
+            left_node_id = td.Function(lambda x: 2*x).reads(node_id)
+            right_node_id = td.Function(lambda x: 2*x+1).reads(node_id)
+            tree_s = pair2vec.input[1]
+            tok_res = td.InputTransform(tokenize).reads(tree_s)
+            left_tree_s = (td.GetItem(1) >> td.GetItem(0)).reads(tok_res)
+            right_tree_s = (td.GetItem(1) >> td.GetItem(1)).reads(tok_res)
+            left_ret = embed_subtree().reads(left_node_id, left_tree_s)
+            right_ret = embed_subtree().reads(right_node_id, right_tree_s)
+            pair2vec.output.reads(left_ret, right_ret)
 
         # Trees are binary, so the tree layer takes two states as its input_state.
         zero_state = td.Zeros((self.tree_lstm.state_size,) * 2)
@@ -69,56 +81,40 @@ class LSTMAttnModel():
         word_case = td.AllOf(word2vec, zero_state)
         pair_case = td.AllOf(zero_inp, pair2vec)
 
-        tree2vec = td.OneOf(len, [(1, word_case), (2, pair_case)])
+        tree2vec = td.OneOf(td.GetItem(1) >> td.InputTransform(lambda x: len(tokenize(x)[1])), [(1, word_case), (2, pair_case)])
 
-        return tree2vec >> self.tree_lstm >> (self.output_layer, td.Identity())
+        res = td.AllOf(td.GetItem(0), # node_id
+                  td.GetItem(1) >> td.InputTransform(lambda x: tokenize(x)[0]) >> td.Scalar('int32'),
+                  tree2vec >> tree_lstm >> (output_layer, td.Identity())
+                 )
+        return res
 
-
-    def tf_node_loss(self, logits, labels):
-        return tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
-
-    def tf_fine_grained_hits(self, logits, labels):
-        predictions = tf.cast(tf.argmax(logits, 1), tf.int32)
-        return tf.cast(tf.equal(predictions, labels), tf.float64)
-
-
-    def tf_binary_hits(self, logits, labels):
-        softmax = tf.nn.softmax(logits)
-        binary_predictions = (softmax[:, 3] + softmax[:, 4]) > (softmax[:, 0] + softmax[:, 1])
-        binary_labels = labels > 2
-        return tf.cast(tf.equal(binary_predictions, binary_labels), tf.float64)
-
-    def add_metrics(self, is_root, is_neutral):
+    def add_metrics(self):
         """A block that adds metrics for loss and hits; output is the LSTM state."""
-        c = td.Composition(
-            name='predict(is_root=%s, is_neutral=%s)' % (is_root, is_neutral))
+        c = td.Composition()
         with c.scope():
-            # destructure the input; (labels, (logits, state))
-            labels = c.input[0]
-            logits = td.GetItem(0).reads(c.input[1])
-            state = td.GetItem(1).reads(c.input[1])
+            # destructure the input; (id, label, (logits, state))
+            node_id = c.input[0]
+            label = c.input[1]
 
-            # calculate loss
-            loss = td.Function(self.tf_node_loss)
-            td.Metric('all_loss').reads(loss.reads(logits, labels))
-            if is_root: td.Metric('root_loss').reads(loss)
+            logits = td.GetItem(0).reads(c.input[2])
+            state = td.GetItem(1).reads(c.input[2])
 
-            # calculate fine-grained hits
-            hits = td.Function(self.tf_fine_grained_hits)
-            td.Metric('all_hits').reads(hits.reads(logits, labels))
-            if is_root: td.Metric('root_hits').reads(hits)
-
-            # calculate binary hits, if the label is not neutral
-            if not is_neutral:
-                binary_hits = td.Function(self.tf_binary_hits).reads(logits, labels)
-                td.Metric('all_binary_hits').reads(binary_hits)
-                if is_root: td.Metric('root_binary_hits').reads(binary_hits)
+            td.Metric('node_ids').reads(node_id)
+            td.Metric('logits').reads(logits)
+            td.Metric('labels').reads(label)
 
             # output the state, which will be read by our by parent's LSTM cell
             c.output.reads(state)
         return c
         
     def build_model(self):
+        self.build_recursive()
+        self.build_attn()
+        self.build_loss()
+        self.build_trainer()
+        
+    def build_recursive(self):
         self.tree_lstm = td.ScopedLayer(
           tf.contrib.rnn.DropoutWrapper(
               BinaryTreeLSTMCell(self.lstm_num_units, keep_prob=self.keep_prob_ph),
@@ -129,34 +125,13 @@ class LSTMAttnModel():
             *self.weight_matrix.shape, initializer=self.weight_matrix, name='word_embedding')        
         self.embed_subtree = embed_subtree = td.ForwardDeclaration(name='embed_subtree')
         
-        def embed_tree(logits_and_state, is_root):
-            """Creates a block that embeds trees; output is tree LSTM state."""
-            return td.InputTransform(tokenize) >> td.OneOf(
-                  key_fn=lambda pair: pair[0] == '2',  # label 2 means neutral
-                  case_blocks=(self.add_metrics(is_root, is_neutral=False),
-                            self.add_metrics(is_root, is_neutral=True)),
-                  pre_block=(td.Scalar('int32'), logits_and_state))
-        model = embed_tree(self.logits_and_state(), is_root=True)
-        embed_subtree.resolve_to(embed_tree(self.logits_and_state(), is_root=False))
+        def embed_tree(logits_and_state):
+            """Creates a block that embeds (node_id, trees); output is tree LSTM state."""
+            return logits_and_state >> add_metrics()
+        model = (td.Scalar('int32'), td.Identity()) >> embed_tree(self.logits_and_state())
+        embed_subtree.resolve_to(embed_tree(self.logits_and_state()))
         compiler = td.Compiler.create(model)
-        metrics = {k: tf.reduce_mean(v) for k, v in compiler.metric_tensors.items()}
-        loss = tf.reduce_sum(compiler.metric_tensors['all_loss'])
         
-        opt = tf.train.AdagradOptimizer(self.lr)
-        
-        grads_and_vars = opt.compute_gradients(loss)
-        found = 0
-        for i, (grad, var) in enumerate(grads_and_vars):
-            if var == word_embedding.weights:
-                found += 1
-                grad = tf.scalar_mul(self.embed_lr_factor, grad)
-                grads_and_vars[i] = (grad, var)
-        assert found == 1  # internal consistency check
-        train_op = opt.apply_gradients(grads_and_vars)
-
-        self.compiler = compiler
-        self.metrics = metrics
-        self.loss = loss
-        self.train_op = train_op
-        
-        
+        self.node_ids = compiler.metric_tensors['node_ids']
+        self.logits = compiler.metric_tensors['logits']
+        self.labels = compiler.metric_tensors['labels']

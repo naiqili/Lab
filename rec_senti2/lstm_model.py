@@ -159,4 +159,7 @@ class LSTMModel():
         self.loss = loss
         self.train_op = train_op
         
-        
+        tf.summary.scalar('loss', loss)
+        for _hits in ['root_binary_hits', 'all_binary_hits', 'all_hits', 'root_hits']:
+            tf.summary.scalar(_hits, metrics[_hits])
+        self.summary_op = tf.summary.merge_all()

@@ -1,4 +1,6 @@
 from nltk.tree import Tree
+import numpy as np
+import cPickle
 
 class TFNode:
     def __init__(self, label, is_leaf=True, left_node=None, right_node=None):
@@ -25,16 +27,18 @@ class TFNode:
 
 class TFTree:
     def __init__(self, nltk_t):
+        self._size = 0
         self.root = self._dfs_build(nltk_t)
-        
 
     def _dfs_build(self, nltk_t):
         if isinstance(nltk_t, Tree) and len(nltk_t) >= 2:
+            self._size += 1
             s = nltk_t.label()
             left_node = self._dfs_build(nltk_t[0])
             right_node = self._dfs_build(nltk_t[1])
             cur_node = TFNode(s, False, left_node, right_node)
         else:
+            self._size += 1
             s = nltk_t.label()
             cur_node = TFNode(s, True)
             cur_node.word = nltk_t[0]
@@ -94,6 +98,37 @@ class TFTree:
             label_lst.append(label)
             is_leaf_lst.append(0)
             return id_lst, wv_lst, left_lst, right_lst, label_lst, is_leaf_lst
+        
+    def build_mask(self, node=None):
+        if node == None:
+            node = self.root
+            self.subtree_mask = np.zeros((self._size, self._size)).astype(np.int32)
+            self.false_mask = np.ones((self._size, self._size)).astype(np.int32)
+        if node.is_leaf:
+            self.false_mask[node.id, node.id] = 0
+        else:
+            self.false_mask[node.id, node.id] = 0
+            self.build_mask(node.left_node)
+            self.build_mask(node.right_node)
+            self.subtree_mask[node.id, :] = np.logical_or(self.subtree_mask[node.left_node.id, :], self.subtree_mask[node.right_node.id, :]).astype(np.int32)
+            self.subtree_mask[node.id, node.left_node.id] = 1
+            self.subtree_mask[node.id, node.right_node.id] = 1
                                             
     def __str__(self):
         return str(self.root)
+
+if __name__=='__main__':
+    dict_path = "_data/dict.pkl"
+    (wv_word2ind, wv_ind2word) = cPickle.load(open(dict_path))
+    
+    line = '(2 (3 (3 Effective) (2 but)) (1 (1 too-tepid) (2 biopic)))'
+    nltk_t = Tree.fromstring(line)
+    tf_t = TFTree(nltk_t)
+    tf_t.to_code_tree(wv_word2ind)
+    tf_t.add_id()
+    all_lst = tf_t.to_list(binary=False)
+    tf_t.build_mask()
+    print tf_t.false_mask
+    print tf_t.subtree_mask
+    print tf_t.subtree_mask.reshape([-1])
+    
