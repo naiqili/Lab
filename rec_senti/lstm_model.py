@@ -20,65 +20,15 @@ class LSTMModel():
                 self.wv_embed = tf.contrib.layers.dropout(self.wv_embed, self.embed_keep_prob, is_training=self.is_training)
                 self.unk_embed = tf.contrib.layers.dropout(self.unk_embed, self.embed_keep_prob, is_training=self.is_training)
                 
-        embed_fw_abs_val = 4 * np.sqrt(6. / (self.fw_cell_size + self.embed_size))
-        fw_fw_abs_val = 4 * np.sqrt(6. / (self.fw_cell_size + self.fw_cell_size))
         with tf.variable_scope('Forward', reuse=reuse):
-            self._W_i_mid = self.W_i_mid = tf.get_variable('W_i_mid',
-                [self.embed_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-embed_fw_abs_val, maxval=embed_fw_abs_val))
-            self._W_i = self.W_i = tf.get_variable('W_i',
-                [self.fw_cell_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-fw_fw_abs_val, maxval=fw_fw_abs_val))
-            self._b_i = self.b_i = tf.get_variable('b_i',
-                [1, self.fw_cell_size], \
-                initializer=tf.constant_initializer(0.0))
-
-            self._W_f_mid = self.W_f_mid = tf.get_variable('W_f_mid',
-                [self.embed_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-embed_fw_abs_val, maxval=embed_fw_abs_val))
-            self._W_f_left = self.W_f_left = tf.get_variable('W_f_left',
-                [self.fw_cell_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-fw_fw_abs_val, maxval=fw_fw_abs_val))
-            self._W_f_right = self.W_f_right = tf.get_variable('W_f_right',
-                [self.fw_cell_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-fw_fw_abs_val, maxval=fw_fw_abs_val))
-            self._b_f = self.b_f = tf.get_variable('b_f',
-                [1, self.fw_cell_size], \
-                initializer=tf.constant_initializer(0.0))
-
-            self._W_o_mid = self.W_o_mid = tf.get_variable('W_o_mid',
-                [self.embed_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-embed_fw_abs_val, maxval=embed_fw_abs_val))
-            self._W_o = self.W_o = tf.get_variable('W_o',
-                [self.fw_cell_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-fw_fw_abs_val, maxval=fw_fw_abs_val))
-            self._b_o = self.b_o = tf.get_variable('b_o',
-                [1, self.fw_cell_size], \
-                initializer=tf.constant_initializer(0.0))
-
-            self._W_u_mid = self.W_u_mid = tf.get_variable('W_u_mid',
-                [self.embed_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-embed_fw_abs_val, maxval=embed_fw_abs_val))
-            self._W_u = self.W_u = tf.get_variable('W_u',
-                [self.fw_cell_size, self.fw_cell_size], \
-                initializer=tf.random_uniform_initializer(minval=-fw_fw_abs_val, maxval=fw_fw_abs_val))
-            self._b_u = self.b_u = tf.get_variable('b_u',
-                [1, self.fw_cell_size], \
+            self._lstm_W = self.lstm_W = tf.get_variable('lstm_W',
+                [self.embed_size + 2*self.fw_cell_size, 5*self.fw_cell_size])
+            self._lstm_b = self.lstm_b = tf.get_variable('lstm_b',
+                [1, 5*self.fw_cell_size], \
                 initializer=tf.constant_initializer(0.0))
             
             if self.drop_weight:
-                self.W_i_mid = tf.contrib.layers.dropout(self.W_i_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_i = tf.contrib.layers.dropout(self.W_i, self.weight_keep_prob, is_training=self.is_training)
-                
-                self.W_f_mid = tf.contrib.layers.dropout(self.W_f_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_f_left = tf.contrib.layers.dropout(self.W_f_left, self.weight_keep_prob, is_training=self.is_training)
-                self.W_f_right = tf.contrib.layers.dropout(self.W_f_right, self.weight_keep_prob, is_training=self.is_training)
-                
-                self.W_o_mid = tf.contrib.layers.dropout(self.W_o_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_o = tf.contrib.layers.dropout(self.W_o, self.weight_keep_prob, is_training=self.is_training)
-                
-                self.W_u_mid = tf.contrib.layers.dropout(self.W_u_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_u = tf.contrib.layers.dropout(self.W_u, self.weight_keep_prob, is_training=self.is_training)
+                self.lstm_W = tf.contrib.layers.dropout(self.lstm_W, self.weight_keep_prob, is_training=self.is_training)
 
         with tf.variable_scope('Projection', reuse=reuse):
             self._proj_W = self.proj_W = tf.get_variable('W',
@@ -94,31 +44,18 @@ class LSTMModel():
             return tf.expand_dims(tf.gather(embeddings, word_index), 0)
 
     def combine_children(self, x_mid, left_c, left_h, right_c, right_h):
-        _i = sigmoid(tf.matmul(x_mid, self.W_i_mid) + \
-                        tf.matmul(left_h, self.W_i) + \
-                        tf.matmul(right_h, self.W_i) + \
-                        self.b_i)
-        _f_left = sigmoid(tf.matmul(x_mid, self.W_f_mid) + \
-                             tf.matmul(left_h, self.W_f_left) + \
-                             tf.matmul(right_h, self.W_f_left) + \
-                             self.b_f)
-        _f_right = sigmoid(tf.matmul(x_mid, self.W_f_mid) + \
-                             tf.matmul(left_h, self.W_f_right) + \
-                             tf.matmul(right_h, self.W_f_right) + \
-                             self.b_f)
-        _o = sigmoid(tf.matmul(x_mid, self.W_o_mid) + \
-                        tf.matmul(left_h, self.W_o) + \
-                        tf.matmul(right_h, self.W_o) + \
-                        self.b_o)
-        _u = activation(tf.matmul(x_mid, self.W_u_mid) + \
-                     tf.matmul(left_h, self.W_u) + \
-                     tf.matmul(right_h, self.W_u) + \
-                     self.b_u)
-        _c = _i * _u + _f_left * left_c + _f_right * right_c
-        _h = _o * activation(_c)
-        return _c, _h
+        _concat = tf.matmul(tf.concat([x_mid, left_h, right_h], 1), self.lstm_W) + self.lstm_b
 
-    def build_model(self, left_ts, right_ts, wv_ts, target_ts, is_leaf_ts, len_ts):
+        # i = input_gate, j = new_input, f = forget_gate, o = output_gate
+        i, j, f0, f1, o = tf.split(value=_concat, num_or_size_splits=5, axis=1)
+
+        j = activation(j)
+        j = tf.contrib.layers.dropout(j, self.rec_keep_prob, is_training=self.is_training)
+        new_c = (left_c * sigmoid(f0) + right_c * sigmoid(f1) + sigmoid(i) * j)
+        new_h = activation(new_c) * sigmoid(o)
+        return new_c, new_h
+
+    def build_model(self, left_ts, right_ts, wv_ts, target_ts, is_leaf_ts, len_ts, mask):
         self.ground_truth = target_ts
         self.build_forward(left_ts, right_ts, wv_ts, is_leaf_ts, len_ts)
         self.build_cost(self.fw_hs, target_ts)
@@ -162,13 +99,14 @@ class LSTMModel():
         return (fw_cs, fw_hs)
 
     def build_cost(self, fw_hs, label_ts):
+        fw_hs = tf.contrib.layers.dropout(fw_hs, self.output_keep_prob, is_training=self.is_training)
         logits = tf.matmul(fw_hs, self.proj_W) + self.proj_b
         softmax = tf.nn.softmax(logits)
         self.pred = tf.squeeze(tf.argmax(logits, 1))
         self.binary_pred = tf.to_int32((softmax[:, 3] + softmax[:, 4]) > (softmax[:, 0] + softmax[:, 1]))
         _loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
                         logits=logits, labels=label_ts)
-        all_weights = [self._W_i_mid, self._W_i, self._W_f_mid, self._W_f_left, self._W_f_right, self._W_o_mid, self._W_o, self._W_u_mid, self._W_u, self._proj_W]
+        all_weights = [self.lstm_W, self._proj_W]
         self.loss = _loss + tf.reduce_sum([tf.nn.l2_loss(w) for w in all_weights]) * self.L2_lambda
         self.sum_loss = tf.reduce_sum(self.loss)
         self.loss_summary = tf.summary.scalar('sum_loss', self.sum_loss)

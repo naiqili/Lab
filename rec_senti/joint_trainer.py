@@ -10,8 +10,9 @@ from os import path
 from tfrecord_reader import get_data
 
 from lstm_model import LSTMModel
-from bi_lstm_model import BiLSTMModel
 from lstm_attn_model import LSTMAttnModel
+from rnn_attn_model import RNNAttnModel
+from rnn_attn2_model import RNNAttn2Model
 
 matplotlib.use('Agg')
 
@@ -34,11 +35,11 @@ class Trainer():
         valid_md.is_training = False
         valid_md.add_variables(reuse=True)
 
-        l_tts, wv_tts, left_tts, right_tts, target_tts, is_leaf_tts = get_data(filename=FLAGS.train_record, shuffle=True)
-        train_md.build_model(left_tts, right_tts, wv_tts, target_tts, is_leaf_tts, l_tts)
+        l_tts, wv_tts, left_tts, right_tts, target_tts, is_leaf_tts, mask_tts = get_data(filename=FLAGS.train_record, shuffle=True, mask_type=FLAGS.mask_type)
+        train_md.build_model(left_tts, right_tts, wv_tts, target_tts, is_leaf_tts, l_tts, mask_tts)
 
-        l_vts, wv_vts, left_vts, right_vts, target_vts, is_leaf_vts = get_data(filename=FLAGS.valid_record)
-        valid_md.build_model(left_vts, right_vts, wv_vts, target_vts, is_leaf_vts, l_vts)
+        l_vts, wv_vts, left_vts, right_vts, target_vts, is_leaf_vts, mask_vts = get_data(filename=FLAGS.valid_record, mask_type=FLAGS.mask_type)
+        valid_md.build_model(left_vts, right_vts, wv_vts, target_vts, is_leaf_vts, l_vts, mask_vts)
         
         self.train_md = train_md
         self.valid_md = valid_md
@@ -74,14 +75,15 @@ class Trainer():
             valid_losses.append(valid_loss)
             root_pred = valid_pred[-1]
             root_target = target_v[-1]
-            root_binary_target = (target_v[-1] > 2).astype(np.int32)
-            root_binary_pred = valid_binary_pred[-1]
+            if target_v[-1] != 2:
+                root_binary_target = (target_v[-1] > 2).astype(np.int32)
+                root_binary_pred = valid_binary_pred[-1]
+                root_binary_metrics[root_binary_pred, root_binary_target] += 1
             root_metrics[root_pred, root_target] += 1
-            root_binary_metrics[root_binary_pred, root_binary_target] += 1
             for k in range(len(valid_pred)):
                 overall_metrics[valid_pred[k], target_v[k]] += 1
                 target_temp = (target_v[k] > 2).astype(np.int32)
-                if not target_temp == 2:
+                if not target_v[k] == 2:
                     overall_binary_metrics[valid_binary_pred[k], target_temp] += 1
             #logger.debug("Validation loss %f" % valid_loss)
 
@@ -130,6 +132,7 @@ class Trainer():
 
                 if _step % self.FLAGS.train_freq == 0:
                     batch_train_loss = np.mean(self.batch_train_history)
+                    logger.debug('Current training loss: %f' % (batch_train_loss))
 
                 if _step != 0 and _step % self.FLAGS.valid_freq == 0:
                     batch_train_loss = sum(self.batch_train_history) / self.FLAGS.valid_freq
@@ -185,12 +188,11 @@ if __name__=='__main__':
     flags.DEFINE_string("wv_dict", '../tf_nlu/tmp/dict.pkl', "word vec dict file")
     flags.DEFINE_string("train_record", '_data/train.record', "training record file")
     flags.DEFINE_string("valid_record", '_data/valid.record', "valid record file")
-    flags.DEFINE_string("fig_path", './log/fig/', "Path to save the figure")
     flags.DEFINE_string("bestmodel_dir", './model/best/', "Path to save the best model")
     flags.DEFINE_string("logdir", './log/', "Path to save the log")
-    flags.DEFINE_string("summary_dir", './summary/', "Path to save the summary")
     flags.DEFINE_string("wv_emb_file", '../tf_nlu/tmp/embedding.pkl', "word vec embedding file")
     flags.DEFINE_string("model_name", 'LSTMModel', "Model name")
+    flags.DEFINE_string("mask_type", 'false_mask', "Model name")
     flags.DEFINE_float("lr", 0.01, "Learning rate")
     flags.DEFINE_float("L2_lambda", 0.0001, "Lambda of L2 loss")
     flags.DEFINE_float("embed_keep_prob", 0.95, "Keep prob of embedding dropout")
@@ -199,6 +201,8 @@ if __name__=='__main__':
     flags.DEFINE_float("fw_cs_keep_prob", 0.5, "Keep prob of fw_cs dropout")
     flags.DEFINE_float("bw_hs_keep_prob", 0.5, "Keep prob of bw_hs dropout")
     flags.DEFINE_float("bw_cs_keep_prob", 0.5, "Keep prob of bw_cs dropout")
+    flags.DEFINE_float("output_keep_prob", 0.5, "Keep prob of bw_cs dropout")
+    flags.DEFINE_float("rec_keep_prob", 1.0, "Keep prob of bw_cs dropout")
     flags.DEFINE_boolean("load_model", False, "Whether load the best model")
     flags.DEFINE_boolean("save_model", False, "Whether save the best model")
     flags.DEFINE_boolean("drop_embed", False, "Whether drop embeddings")
@@ -230,7 +234,9 @@ if __name__=='__main__':
                    'drop_bw_hs': FLAGS.drop_bw_hs, \
                    'bw_hs_keep_prob': FLAGS.bw_hs_keep_prob, \
                    'drop_bw_cs': FLAGS.drop_bw_cs, \
-                   'bw_cs_keep_prob': FLAGS.bw_cs_keep_prob
+                   'bw_cs_keep_prob': FLAGS.bw_cs_keep_prob, \
+                   'output_keep_prob': FLAGS.output_keep_prob, \
+                   'rec_keep_prob': FLAGS.rec_keep_prob
                    }
     
     model = eval(FLAGS.model_name)

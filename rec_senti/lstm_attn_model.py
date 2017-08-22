@@ -18,64 +18,14 @@ class LSTMAttnModel():
                 self.wv_embed = tf.contrib.layers.dropout(self.wv_embed, self.embed_keep_prob, is_training=self.is_training)
                 self.unk_embed = tf.contrib.layers.dropout(self.unk_embed, self.embed_keep_prob, is_training=self.is_training)
         with tf.variable_scope('Forward', reuse=reuse):
-            self._W_i_mid = self.W_i_mid = tf.get_variable('W_i_mid',
-                [self.embed_size, self.fw_cell_size])
-            self._W_i_left = self.W_i_left = tf.get_variable('W_i_left',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._W_i_right = self.W_i_right = tf.get_variable('W_i_right',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._b_i = self.b_i = tf.get_variable('b_i',
-                [1, self.fw_cell_size])
-
-            self._W_f_mid = self.W_f_mid = tf.get_variable('W_f_mid',
-                [self.embed_size, self.fw_cell_size])
-            self._W_f_left_left = self.W_f_left_left = tf.get_variable('W_f_left_left',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._W_f_left_right = self.W_f_left_right = tf.get_variable('W_f_left_right',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._W_f_right_left = self.W_f_right_left = tf.get_variable('W_f_right_left',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._W_f_right_right = self.W_f_right_right = tf.get_variable('W_f_right_right',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._b_f = self.b_f = tf.get_variable('b_f',
-                [1, self.fw_cell_size])
-
-            self._W_o_mid = self.W_o_mid = tf.get_variable('W_o_mid',
-                [self.embed_size, self.fw_cell_size])
-            self._W_o_left = self.W_o_left = tf.get_variable('W_o_left',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._W_o_right = self.W_o_right = tf.get_variable('W_o_right',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._b_o = self.b_o = tf.get_variable('b_o',
-                [1, self.fw_cell_size])
-
-            self._W_u_mid = self.W_u_mid = tf.get_variable('W_u_mid',
-                [self.embed_size, self.fw_cell_size])
-            self._W_u_left = self.W_u_left = tf.get_variable('W_u_left',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._W_u_right = self.W_u_right = tf.get_variable('W_u_right',
-                [self.fw_cell_size, self.fw_cell_size])
-            self._b_u = self.b_u = tf.get_variable('b_u',
-                [1, self.fw_cell_size])
+            self._lstm_W = self.lstm_W = tf.get_variable('lstm_W',
+                [self.embed_size + 2*self.fw_cell_size, 5*self.fw_cell_size])
+            self._lstm_b = self.lstm_b = tf.get_variable('lstm_b',
+                [1, 5*self.fw_cell_size], \
+                initializer=tf.constant_initializer(0.0))
             
             if self.drop_weight:
-                self.W_i_mid = tf.contrib.layers.dropout(self.W_i_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_i_left = tf.contrib.layers.dropout(self.W_i_left, self.weight_keep_prob, is_training=self.is_training)
-                self.W_i_right = tf.contrib.layers.dropout(self.W_i_right, self.weight_keep_prob, is_training=self.is_training)
-                
-                self.W_f_mid = tf.contrib.layers.dropout(self.W_f_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_f_left_left = tf.contrib.layers.dropout(self.W_f_left_left, self.weight_keep_prob, is_training=self.is_training)
-                self.W_f_left_right = tf.contrib.layers.dropout(self.W_f_left_right, self.weight_keep_prob, is_training=self.is_training)
-                self.W_f_right_left = tf.contrib.layers.dropout(self.W_f_right_left, self.weight_keep_prob, is_training=self.is_training)
-                self.W_f_right_right = tf.contrib.layers.dropout(self.W_f_right_right, self.weight_keep_prob, is_training=self.is_training)
-                
-                self.W_o_mid = tf.contrib.layers.dropout(self.W_o_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_o_left = tf.contrib.layers.dropout(self.W_o_left, self.weight_keep_prob, is_training=self.is_training)
-                self.W_o_right = tf.contrib.layers.dropout(self.W_o_right, self.weight_keep_prob, is_training=self.is_training)
-                
-                self.W_u_mid = tf.contrib.layers.dropout(self.W_u_mid, self.weight_keep_prob, is_training=self.is_training)
-                self.W_u_left = tf.contrib.layers.dropout(self.W_u_left, self.weight_keep_prob, is_training=self.is_training)
-                self.W_u_right = tf.contrib.layers.dropout(self.W_u_right, self.weight_keep_prob, is_training=self.is_training)
+                self.lstm_W = tf.contrib.layers.dropout(self.lstm_W, self.weight_keep_prob, is_training=self.is_training)
                 
         with tf.variable_scope('Attn', reuse=reuse):
             self._attn_W1 = self.attn_W1 = tf.get_variable('attn_W1',
@@ -102,34 +52,21 @@ class LSTMAttnModel():
             return tf.expand_dims(tf.gather(embeddings, word_index), 0)
 
     def combine_children(self, x_mid, left_c, left_h, right_c, right_h):
-        _i = sigmoid(tf.matmul(x_mid, self.W_i_mid) + \
-                        tf.matmul(left_h, self.W_i_left) + \
-                        tf.matmul(right_h, self.W_i_right) + \
-                        self.b_i)
-        _f_left = sigmoid(tf.matmul(x_mid, self.W_f_mid) + \
-                             tf.matmul(left_h, self.W_f_left_left) + \
-                             tf.matmul(right_h, self.W_f_left_right) + \
-                             self.b_f)
-        _f_right = sigmoid(tf.matmul(x_mid, self.W_f_mid) + \
-                              tf.matmul(left_h, self.W_f_right_left) + \
-                              tf.matmul(right_h, self.W_f_right_right) + \
-                              self.b_f)
-        _o = sigmoid(tf.matmul(x_mid, self.W_o_mid) + \
-                        tf.matmul(left_h, self.W_o_left) + \
-                        tf.matmul(right_h, self.W_o_right) + \
-                        self.b_o)
-        _u = activation(tf.matmul(x_mid, self.W_u_mid) + \
-                     tf.matmul(left_h, self.W_u_left) + \
-                     tf.matmul(right_h, self.W_u_right) + \
-                     self.b_u)
-        _c = _i * _u + _f_left * left_c + _f_right * right_c
-        _h = _o * activation(_c)
-        return _c, _h
+        _concat = tf.matmul(tf.concat([x_mid, left_h, right_h], 1), self.lstm_W) + self.lstm_b
 
-    def build_model(self, left_ts, right_ts, wv_ts, target_ts, is_leaf_ts, len_ts):
+        # i = input_gate, j = new_input, f = forget_gate, o = output_gate
+        i, j, f0, f1, o = tf.split(value=_concat, num_or_size_splits=5, axis=1)
+
+        j = activation(j)
+        j = tf.contrib.layers.dropout(j, self.rec_keep_prob, is_training=self.is_training)
+        new_c = (left_c * sigmoid(f0) + right_c * sigmoid(f1) + sigmoid(i) * j)
+        new_h = activation(new_c) * sigmoid(o)
+        return new_c, new_h
+
+    def build_model(self, left_ts, right_ts, wv_ts, target_ts, is_leaf_ts, len_ts, mask):
         self.ground_truth = target_ts
         self.build_forward(left_ts, right_ts, wv_ts, is_leaf_ts, len_ts)
-        self.build_attn(len_ts)
+        self.build_attn(len_ts, mask)
         self.build_cost(self.fw_hs, self.cont, target_ts)
                     
     def build_forward(self, left_ts, right_ts, wv_ts, is_leaf_ts, len_ts):
@@ -152,10 +89,6 @@ class LSTMAttnModel():
                 lambda: (tf.zeros([1, self.fw_cell_size]), tf.zeros([1, self.fw_cell_size]), tf.zeros([1, self.fw_cell_size]), tf.zeros([1, self.fw_cell_size])),
                 lambda: (fw_cs.read(left_id), fw_hs.read(left_id), fw_cs.read(right_id), fw_hs.read(right_id)))
             new_c, new_h = self.combine_children(x_mid, left_c, left_h, right_c, right_h)
-            if self.drop_fw_hs:
-                new_h = tf.contrib.layers.dropout(new_h, self.fw_hs_keep_prob, is_training=self.is_training)
-            if self.drop_fw_cs:
-                new_c = tf.contrib.layers.dropout(new_c, self.fw_cs_keep_prob, is_training=self.is_training)
     
             fw_cs = fw_cs.write(i, new_c)
             fw_hs = fw_hs.write(i, new_h)
@@ -170,9 +103,9 @@ class LSTMAttnModel():
         self.fw_hs = fw_hs.concat()
         return (fw_cs, fw_hs)
     
-    def build_attn(self, len_ts):
+    def build_attn(self, len_ts, mask):
         len_ts = tf.squeeze(len_ts)
-        _mask = 1 - tf.eye(len_ts)
+        mask = tf.reshape(mask, [len_ts, len_ts])
         # len x h
         em = self.fw_hs
         em = tf.reshape(em, [len_ts, -1])
@@ -186,22 +119,31 @@ class LSTMAttnModel():
         tmp = activation(tmp)
         # len x len
         _as = tf.einsum('ijk,k->ij', tmp, self.attn_b)
-        _as = _as * _mask
+        _as = tf.nn.softmax(_as)
+        _as = _as * mask
         # len x len x h
         cont_h = tf.einsum('ij,jk->ijk', _as, em)
         # len x h
         cont = tf.reduce_sum(cont_h, axis=1)
-        self._as = _as
+        self.attn_vecs = _as
         self.cont = cont
 
     def build_cost(self, fw_hs, cont, label_ts):
+        fw_hs = tf.contrib.layers.dropout(fw_hs, self.output_keep_prob, is_training=self.is_training)
         logits = tf.matmul(fw_hs, self.proj_W) + tf.matmul(cont, self.proj_attn_W) + self.proj_b
+        softmax = tf.nn.softmax(logits)
         self.pred = tf.squeeze(tf.argmax(logits, 1))
+        self.binary_pred = tf.to_int32((softmax[:, 3] + softmax[:, 4]) > (softmax[:, 0] + softmax[:, 1]))
         _loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
                         logits=logits, labels=label_ts)
-        all_weights = [self._W_i_mid, self._W_i_left, self._W_i_right, self._W_f_mid, self._W_f_left_left, self._W_f_left_right, self._W_f_right_left, self._W_f_right_right, self._W_o_mid, self._W_o_left, self._W_o_right, self._W_u_mid, self._W_u_left, self._W_u_right, self._proj_W, self._proj_attn_W]
-        self.loss = _loss + tf.reduce_sum([tf.nn.l2_loss(w) for w in all_weights]) * 0.5 * self.L2_lambda
-        self.mean_loss = tf.reduce_mean(self.loss)
-        self.loss_summary = tf.summary.scalar('Loss', self.mean_loss)
+        all_weights = [self.lstm_W, self._proj_W, self._proj_attn_W]
+        self.loss = _loss + tf.reduce_sum([tf.nn.l2_loss(w) for w in all_weights]) * self.L2_lambda
+        self.sum_loss = tf.reduce_sum(self.loss)
         if self.is_training:
-            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.mean_loss)
+            opt = tf.train.AdamOptimizer(self.lr)
+            grads_and_vars = opt.compute_gradients(self.sum_loss)
+            for i, (grad, var) in enumerate(grads_and_vars):
+                if var == self.wv_embed or var == self.unk_embed:
+                    grad = tf.scalar_mul(0.1, grad)
+                    grads_and_vars[i] = (grad, var)
+            self.train_op = opt.apply_gradients(grads_and_vars)
