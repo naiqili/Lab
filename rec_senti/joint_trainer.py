@@ -11,8 +11,12 @@ from tfrecord_reader import get_data
 
 from lstm_model import LSTMModel
 from lstm_attn_model import LSTMAttnModel
+from lstm_attn2_model import LSTMAttn2Model
 from rnn_attn_model import RNNAttnModel
 from rnn_attn2_model import RNNAttn2Model
+from gru_attn_model import GRUAttnModel
+from gru_attn2_model import GRUAttn2Model
+from gru2_attn_model import GRU2AttnModel
 
 matplotlib.use('Agg')
 
